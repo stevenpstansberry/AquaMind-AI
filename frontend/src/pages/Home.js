@@ -1,6 +1,19 @@
-function Home()
 
-{
+
+import { healthCheck } from "../services/APIServices";
+import React, { useState, useEffect } from 'react';
+
+
+
+
+function Home(){
+
+    const [healthState, setHealthState] = useState(null);
+
+    useEffect(() => {
+        setHealthState(healthCheck());
+    }, []);
+
 
 
 
