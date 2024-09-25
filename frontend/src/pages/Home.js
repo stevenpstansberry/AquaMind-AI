@@ -16,8 +16,8 @@ function Home() {
       }
     };
 
-    fetchHealthState(); // Call async function within useEffect
-  }, []); // Empty array means this runs only once, on component mount
+    fetchHealthState();
+  }, []);
 
   return (
     <div>
