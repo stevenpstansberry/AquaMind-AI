@@ -15,7 +15,6 @@ const lightTheme = createTheme({
     },
     background: {
       default: '#f0f4f8', // Soft White
-      paper: 'black', // Black
     },
     text: {
       primary: '#000000', // Black
@@ -38,7 +37,6 @@ const darkTheme = createTheme({
     },
     background: {
       default: '#121212', // Dark Grey
-      paper: '#f0f4f8', // Soft White
     },
     text: {
       primary: '#f1faee', // Soft White
