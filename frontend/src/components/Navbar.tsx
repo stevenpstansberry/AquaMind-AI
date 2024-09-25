@@ -83,7 +83,7 @@ const Navbar: React.FC = () => {
           sx={{
             display: { xs: 'none', sm: 'block' },
             textDecoration: 'none',
-            color: "inherit",
+            color: theme.palette.primary.main,
             fontWeight: 'bold',
             flexGrow: 1, // Push other items to the right
           }}

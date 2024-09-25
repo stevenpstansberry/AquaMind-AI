@@ -9,6 +9,7 @@ const lightTheme = createTheme({
     mode: 'light',
     primary: {
       main: '#0077b6', // Light Blue
+      
     },
     secondary: {
       main: '#48cae4', // Seafoam Green
