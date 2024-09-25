@@ -3,26 +3,33 @@ import React, { useState, useEffect } from 'react';
 import { Card, Tabs, Tab, Typography, Button, Box } from '@mui/material';
 import GoogleIcon from '@mui/icons-material/Google';
 import EmailIcon from '@mui/icons-material/Email';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useLocation } from 'react-router-dom';
 import {  useTheme } from '@mui/material/styles';
 
 const LoginRegisterCard: React.FC = () => {
   // State to toggle between login and register modes
   const [activeTab, setActiveTab] = useState(0); // 0 -> Login, 1 -> Register
 
-  // Get the URL parameters ('login' or 'register')
-  const { mode } = useParams<{ mode: string }>();
 
   const theme = useTheme();
 
-  // Set the active tab based on the URL parameter
+
+  // Get the current URL location
+  const location = useLocation();
+
+  // Set the active tab based on the query parameter
   useEffect(() => {
+    // Parse the query parameters from the URL
+    const searchParams = new URLSearchParams(location.search);
+    const mode = searchParams.get('mode'); // Get the 'mode' parameter value
+
     if (mode === 'register') {
-      setActiveTab(1);
+      setActiveTab(1); // Switch to Register tab if 'mode' is 'register'
+      console.log(location);
     } else {
-      setActiveTab(0);
+      setActiveTab(0); // Default to Sign In tab
     }
-  }, [mode]);
+  }, [location]);
 
   // Handler to change between tabs
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
