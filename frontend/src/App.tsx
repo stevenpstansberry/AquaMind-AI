@@ -17,6 +17,8 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import LoginRegisterCard from './pages/LoginRegisterCard';
+import { ThemeContextProvider } from './util/ThemeContext'; 
+
 
 // Component Imports
 import Home from './pages/Home'; 
@@ -43,27 +45,29 @@ const Layout: React.FC<React.PropsWithChildren<{}>> = ({ children }) => {
 
 const App: React.FC = () => {
   return (
-    <Router>
-      <Layout>
-        <Routes>
-          {/* Public Routes */}
-          <Route path="/" element={<Home />} />
-          <Route path="/home" element={<Home />} />
+    <ThemeContextProvider>
+      <Router>
+        <Layout>
+          <Routes>
+            {/* Public Routes */}
+            <Route path="/" element={<Home />} />
+            <Route path="/home" element={<Home />} />
 
-          {/* Private Routes */}
-          <Route path="/dashboard" element={<Home />} />
-          <Route path="/aquariums" element={<Home />} />
-          <Route path="/metrics" element={<Home />} />
-          <Route path="/alerts" element={<Home />} />
-          <Route path="/ai-insights" element={<Home />} />
-          <Route path="/settings" element={<Home />} />
+            {/* Private Routes */}
+            <Route path="/dashboard" element={<Home />} />
+            <Route path="/aquariums" element={<Home />} />
+            <Route path="/metrics" element={<Home />} />
+            <Route path="/alerts" element={<Home />} />
+            <Route path="/ai-insights" element={<Home />} />
+            <Route path="/settings" element={<Home />} />
 
-          {/* Protected Public Routes */}
-          <Route path="/login" element={<LoginRegisterCard />} />
-          {/* Future Routes */}
-        </Routes>
-      </Layout>
-    </Router>
+            {/* Protected Public Routes */}
+            <Route path="/login" element={<LoginRegisterCard />} />
+            {/* Future Routes */}
+          </Routes>
+        </Layout>
+      </Router>
+    /</ThemeContextProvider>  
   );
 };
 

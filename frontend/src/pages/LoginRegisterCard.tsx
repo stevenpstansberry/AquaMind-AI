@@ -17,7 +17,7 @@ const LoginRegisterCard: React.FC = () => {
   return (
     <Card sx={{ width: 400, margin: 'auto', padding: 4, textAlign: 'center', borderRadius: 4 }}>
       {/* Logo */}
-      <Typography variant="h5" sx={{ fontWeight: 'bold', marginBottom: 2 }}>
+      <Typography variant="h5" sx={{ fontWeight: 'bold', marginBottom: 2,  }}>
         Aquamind 
       </Typography>
 

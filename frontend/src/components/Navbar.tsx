@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { AppBar, Toolbar, Typography, Button, Box, InputBase } from '@mui/material';
 import { Link } from 'react-router-dom';
 import SearchIcon from '@mui/icons-material/Search';
-import { styled, alpha } from '@mui/material/styles';
+import { styled, alpha, useTheme } from '@mui/material/styles';
+import { useThemeContext } from '../util/ThemeContext';
 
 // Styled components for the search bar
 const Search = styled('div')(({ theme }) => ({
@@ -45,6 +46,9 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 
 const Navbar: React.FC = () => {
   const [elevated, setElevated] = useState(false);
+  const { toggleTheme, isDarkMode } = useThemeContext(); 
+  const theme = useTheme();
+
 
   // Scroll event handler to add shadow to navbar
   const handleScroll = () => {
@@ -67,7 +71,7 @@ const Navbar: React.FC = () => {
     <AppBar
       position="sticky"
       elevation={elevated ? 4 : 0} // Add shadow when scrolled
-      sx={{ backgroundColor: 'white', color: 'black', transition: 'box-shadow 0.3s' }}
+      sx={{ backgroundColor: theme.palette.background.default, color: theme.palette.text.primary, transition: 'box-shadow 0.3s' }}
     >
       <Toolbar>
         {/* Logo */}
@@ -79,7 +83,7 @@ const Navbar: React.FC = () => {
           sx={{
             display: { xs: 'none', sm: 'block' },
             textDecoration: 'none',
-            color: 'black',
+            color: "inherit",
             fontWeight: 'bold',
             flexGrow: 1, // Push other items to the right
           }}
@@ -107,6 +111,16 @@ const Navbar: React.FC = () => {
           <Button color="inherit" component={Link} to="/settings" sx={{ textTransform: 'none' }}>
             Settings
           </Button>
+
+
+        {/* Toggle Theme Button */}
+        <Button
+          color="inherit"
+          onClick={toggleTheme}
+          sx={{ textTransform: 'none' }}
+        >
+          {isDarkMode ? 'Light Mode' : 'Dark Mode'}
+        </Button>
         </Box>
 
         {/* Search Bar */}
@@ -120,8 +134,10 @@ const Navbar: React.FC = () => {
           />
         </Search>
 
+
+
         {/* Sign In / Register */}
-        <Button component={Link} to="/signin" sx={{ textTransform: 'none', color: 'black' }}>
+        <Button component={Link} to="/signin" sx={{ textTransform: 'none', color: 'inherit' }}>
           Sign In
         </Button>
         <Button
@@ -130,8 +146,8 @@ const Navbar: React.FC = () => {
           variant="contained"
           sx={{
             textTransform: 'none',
-            backgroundColor: 'black',
-            color: 'white',
+            backgroundColor: theme.palette.background.paper,
+            color: theme.palette.text.secondary,
             borderRadius: '20px',
             ml: 2,
             '&:hover': {
