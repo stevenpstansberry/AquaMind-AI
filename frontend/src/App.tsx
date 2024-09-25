@@ -15,20 +15,36 @@
  */
 
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import LoginRegisterCard from './pages/LoginRegisterCard';
 
 // Component Imports
 import Home from './pages/Home'; 
 import Navbar from './components/Navbar'; 
 
+// Define a Layout component to conditionally render Navbar
+const Layout: React.FC<React.PropsWithChildren<{}>> = ({ children }) => {
+  const location = useLocation();
+
+  // Specify paths where the Navbar should be hidden (e.g., "/login")
+  const hideNavbarPaths = ['/login'];
+
+  return (
+    <>
+      {/* Conditionally render Navbar based on the current path */}
+      {!hideNavbarPaths.includes(location.pathname) && <Navbar />}
+      
+      {/* Render the main content */}
+      <div className="content">{children}</div>
+    </>
+  );
+};
+
+
 const App: React.FC = () => {
   return (
     <Router>
-      <Navbar />
-
-      {/* Define main content area and routing */}
-      <div className="content">
+      <Layout>
         <Routes>
           {/* Public Routes */}
           <Route path="/" element={<Home />} />
@@ -42,12 +58,11 @@ const App: React.FC = () => {
           <Route path="/ai-insights" element={<Home />} />
           <Route path="/settings" element={<Home />} />
 
-
           {/* Protected Public Routes */}
           <Route path="/login" element={<LoginRegisterCard />} />
           {/* Future Routes */}
         </Routes>
-      </div>
+      </Layout>
     </Router>
   );
 };
