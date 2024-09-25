@@ -1,13 +1,25 @@
 // src/pages/LoginRegisterCard.tsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, Tabs, Tab, Typography, Button, Box } from '@mui/material';
 import GoogleIcon from '@mui/icons-material/Google';
 import EmailIcon from '@mui/icons-material/Email';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 
 const LoginRegisterCard: React.FC = () => {
   // State to toggle between login and register modes
   const [activeTab, setActiveTab] = useState(0); // 0 -> Login, 1 -> Register
+
+  // Get the URL parameters ('login' or 'register')
+  const { mode } = useParams<{ mode: string }>();
+
+  // Set the active tab based on the URL parameter
+  useEffect(() => {
+    if (mode === 'register') {
+      setActiveTab(1);
+    } else {
+      setActiveTab(0);
+    }
+  }, [mode]);
 
   // Handler to change between tabs
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {

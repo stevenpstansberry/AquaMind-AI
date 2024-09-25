@@ -146,7 +146,7 @@ const Navbar: React.FC = () => {
           variant="contained"
           sx={{
             textTransform: 'none',
-            backgroundColor: theme.palette.background.paper,
+            backgroundColor: theme.palette.text.primary,
             color: theme.palette.text.secondary,
             borderRadius: '20px',
             ml: 2,
