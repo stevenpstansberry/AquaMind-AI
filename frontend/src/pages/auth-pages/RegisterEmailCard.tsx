@@ -4,7 +4,7 @@ import { Visibility, VisibilityOff } from '@mui/icons-material';
 import IconButton from '@mui/material/IconButton';
 import InputAdornment from '@mui/material/InputAdornment';
 import {  useTheme } from '@mui/material/styles';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 
 
@@ -17,6 +17,7 @@ const RegisterEmailCard: React.FC = () => {
   const [subscribe, setSubscribe] = useState(false);
   const [snackbar, setSnackbar] = useState<SnackbarState>({ open: false, message: '', severity: 'info' });
 
+  const navigate = useNavigate();
 
   // Define type for Snackbar severity and state
   type SnackbarSeverity = 'success' | 'error' | 'warning' | 'info';
@@ -87,6 +88,10 @@ const RegisterEmailCard: React.FC = () => {
 
     console.log({ email, password, fullName, subscribe });
     showSnackbar('Registration successful!', 'success'); 
+
+    //TODO add API call to register user
+    navigate('/dashboard');
+
 
     };
 
