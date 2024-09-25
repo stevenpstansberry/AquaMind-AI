@@ -80,6 +80,20 @@ const LoginRegisterCard: React.FC = () => {
             zIndex: 0,
           }}
         />
+          <Box
+          sx={{
+            position: 'absolute',
+            bottom: '-80px',
+            left: '-50px',
+            width: '200px',
+            height: '200px',
+            backgroundColor: '#0077b6',
+            borderRadius: '50%',
+            opacity: 0.1,
+            transform: 'translateX(-50%)',
+            zIndex: 0,
+          }}
+        />
         
         {/* Content inside the card */}
         <Box sx={{ position: 'relative', zIndex: 1 }}>
@@ -149,6 +163,7 @@ const LoginRegisterCard: React.FC = () => {
                   variant="outlined"
                   fullWidth
                   startIcon={<EmailIcon />}
+                  component={Link} to="/register"
                   sx={{ marginBottom: 2, textTransform: 'none' }}
                 >
                   Register with Email

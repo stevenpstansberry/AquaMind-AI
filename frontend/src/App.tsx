@@ -16,8 +16,9 @@
 
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
-import LoginRegisterCard from './pages/LoginRegisterCard';
+import LoginRegisterCard from './pages/auth-pages/LoginRegisterCard';
 import { ThemeContextProvider } from './util/ThemeContext'; 
+import RegisterEmailCard from './pages/auth-pages/RegisterEmailCard';
 
 
 // Component Imports
@@ -29,7 +30,7 @@ const Layout: React.FC<React.PropsWithChildren<{}>> = ({ children }) => {
   const location = useLocation();
 
   // Specify paths where the Navbar should be hidden (e.g., "/login")
-  const hideNavbarPaths = ['/login'];
+  const hideNavbarPaths = ['/login', '/register'];
 
   return (
     <>
@@ -63,6 +64,7 @@ const App: React.FC = () => {
 
             {/* Protected Public Routes */}
             <Route path="/login" element={<LoginRegisterCard />} />
+            <Route path="/register" element={<RegisterEmailCard />} />
             {/* Future Routes */}
           </Routes>
         </Layout>
