@@ -84,7 +84,7 @@ const LoginRegisterCard: React.FC = () => {
         {/* Content inside the card */}
         <Box sx={{ position: 'relative', zIndex: 1 }}>
           {/* Logo */}
-          <Typography variant="h5" sx={{ fontWeight: 'bold', marginBottom: 2 }}>
+          <Typography variant="h5" sx={{ fontWeight: 'bold', marginBottom: 2, color: theme.palette.primary.main }}>
             Aquamind
           </Typography>
 
