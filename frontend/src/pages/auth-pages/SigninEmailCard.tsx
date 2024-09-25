@@ -7,7 +7,7 @@ import { Link, useNavigate } from 'react-router-dom';
 
 
 
-const RegisterEmailCard: React.FC = () => {
+const SignInEmailCard: React.FC = () => {
   // States for form fields
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -257,4 +257,4 @@ const RegisterEmailCard: React.FC = () => {
   );
 };
 
-export default RegisterEmailCard;
+export default SignInEmailCard;

@@ -137,12 +137,12 @@ const Navbar: React.FC = () => {
 
 
         {/* Sign In / Register */}
-        <Button component={Link} to="/login?mode=signin" sx={{ textTransform: 'none', color: 'inherit' }}>
+        <Button component={Link} to="/account?mode=signin" sx={{ textTransform: 'none', color: 'inherit' }}>
           Sign In
         </Button>
         <Button
           component={Link}
-          to="/login?mode=register"
+          to="/account?mode=register"
           variant="contained"
           sx={{
             textTransform: 'none',

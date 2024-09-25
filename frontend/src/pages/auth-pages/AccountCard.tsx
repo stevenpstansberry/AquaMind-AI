@@ -6,7 +6,7 @@ import EmailIcon from '@mui/icons-material/Email';
 import { Link, useLocation } from 'react-router-dom';
 import {  useTheme } from '@mui/material/styles';
 
-const LoginRegisterCard: React.FC = () => {
+const AccountCard: React.FC = () => {
   // State to toggle between login and register modes
   const [activeTab, setActiveTab] = useState(0); // 0 -> Login, 1 -> Register
 
@@ -183,4 +183,4 @@ const LoginRegisterCard: React.FC = () => {
   );
 };
 
-export default LoginRegisterCard;
+export default AccountCard;
