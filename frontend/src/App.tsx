@@ -16,6 +16,7 @@
 
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import LoginRegisterCard from './pages/LoginRegisterCard';
 
 // Component Imports
 import Home from './pages/Home'; 
@@ -41,6 +42,9 @@ const App: React.FC = () => {
           <Route path="/ai-insights" element={<Home />} />
           <Route path="/settings" element={<Home />} />
 
+
+          {/* Protected Public Routes */}
+          <Route path="/login" element={<LoginRegisterCard />} />
           {/* Future Routes */}
         </Routes>
       </div>
