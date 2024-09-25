@@ -25,9 +25,6 @@ Get personalized care instructions, feeding schedules, and maintenance tips base
 AquaMind AI will soon connect with IoT sensors placed in your aquarium to monitor real-time water conditions, such as temperature, pH, ammonia, and nitrate levels. These sensors will transmit live data via AWS IoT services and process the information using Amazon SQS or Amazon Kinesis to ensure reliable, scalable data streams.
 
 
-
----
-
 ## Tech Stack
 
 ### Frontend:
