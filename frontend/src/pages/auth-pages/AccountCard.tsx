@@ -138,13 +138,14 @@ const AccountCard: React.FC = () => {
                   variant="outlined"
                   fullWidth
                   startIcon={<EmailIcon />}
+                  component={Link} to="/signin"
                   sx={{ marginBottom: 2, textTransform: 'none' }}
                 >
                   Sign In with Email
                 </Button>
                 <Typography variant="body2" sx={{ marginTop: 2 }}>
                   Don't have an account?{' '}
-                  <Link to="#" onClick={() => setActiveTab(1)}>
+                  <Link to="" onClick={() => setActiveTab(1)}>
                     Register
                   </Link>
                 </Typography>

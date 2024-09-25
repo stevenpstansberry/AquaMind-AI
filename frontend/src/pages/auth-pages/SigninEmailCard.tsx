@@ -11,9 +11,7 @@ const SignInEmailCard: React.FC = () => {
   // States for form fields
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [fullName, setFullName] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [subscribe, setSubscribe] = useState(false);
   const [snackbar, setSnackbar] = useState<SnackbarState>({ open: false, message: '', severity: 'info' });
 
   const navigate = useNavigate();
@@ -73,10 +71,10 @@ const SignInEmailCard: React.FC = () => {
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
 
-    //Check if all fields are filled
-    if (!fullName.trim() || !email.trim() || !password.trim()) {
-        showSnackbar('All fields must be filled', 'warning');
-        return
+    // Check for empty fields
+    if (!email || !password) {
+        showSnackbar('Please fill in all fields', 'warning');
+        return;
     }
 
     // Check for valid email format
@@ -85,8 +83,8 @@ const SignInEmailCard: React.FC = () => {
         return;
         }
 
-    console.log({ email, password, fullName, subscribe });
-    showSnackbar('Registration successful!', 'success'); 
+    console.log({ email, password,});
+    showSnackbar('Login successful!', 'success'); 
 
     //TODO add API call to register user
     navigate('/dashboard');
@@ -153,7 +151,7 @@ const SignInEmailCard: React.FC = () => {
             </Typography>    
             {/* Title */}
             <Typography variant="h5" sx={{ fontWeight: 'bold', marginBottom: 2 }}>
-                Register with email
+                Sign in with email
             </Typography>
 
             {/* Email field */}
@@ -187,16 +185,6 @@ const SignInEmailCard: React.FC = () => {
                 helperText="Minimum of 7 characters"
             />
 
-            {/* Full Name field */}
-            <TextField
-                label="Full Name"
-                variant="outlined"
-                fullWidth
-                margin="normal"
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
-                helperText="Will be displayed on your profile"
-            />
 
             {/* CAPTCHA-like checkbox */}
             <Box sx={{ textAlign: 'left', marginTop: 2, marginBottom: 2 }}>
@@ -206,22 +194,10 @@ const SignInEmailCard: React.FC = () => {
                 />
             </Box>
 
-            {/* Subscribe to newsletter checkbox */}
-            <Box sx={{ textAlign: 'left', marginBottom: 2 }}>
-                <FormControlLabel
-                control={
-                    <Checkbox
-                    checked={subscribe}
-                    onChange={(e) => setSubscribe(e.target.checked)}
-                    />
-                }
-                label="Email me Aquamind news and tips. You can opt out at any time."
-                />
-            </Box>
 
             {/* Action buttons */}
             <Box sx={{ display: 'flex', justifyContent: 'space-between', marginTop: 2 }}>
-                <Button color="inherit" variant="text" component={Link} to="/account?mode=register">
+                <Button color="inherit" variant="text" component={Link} to="/account?mode=sigin">
                 Back
                 </Button>
                 <Button
