@@ -4,6 +4,7 @@ import { Card, Tabs, Tab, Typography, Button, Box } from '@mui/material';
 import GoogleIcon from '@mui/icons-material/Google';
 import EmailIcon from '@mui/icons-material/Email';
 import { Link, useParams } from 'react-router-dom';
+import {  useTheme } from '@mui/material/styles';
 
 const LoginRegisterCard: React.FC = () => {
   // State to toggle between login and register modes
@@ -11,6 +12,8 @@ const LoginRegisterCard: React.FC = () => {
 
   // Get the URL parameters ('login' or 'register')
   const { mode } = useParams<{ mode: string }>();
+
+  const theme = useTheme();
 
   // Set the active tab based on the URL parameter
   useEffect(() => {
@@ -39,8 +42,18 @@ const LoginRegisterCard: React.FC = () => {
 
       {/* Tabs for switching between Sign In and Register */}
       <Tabs value={activeTab} onChange={handleTabChange} centered>
-        <Tab label="Sign In" />
-        <Tab label="Register" />
+      <Tab
+          label="Sign In"
+          sx={{
+            color: activeTab === 0 ? theme.palette.primary.main : "#1CB2B7", 
+          }}
+        />
+        <Tab
+          label="Register"
+          sx={{
+            color: activeTab === 1 ? theme.palette.primary.main : "#1CB2B7", 
+          }}
+        />
       </Tabs>
 
       {/* Content changes based on activeTab */}
