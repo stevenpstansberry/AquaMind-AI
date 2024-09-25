@@ -4,75 +4,50 @@ Welcome to **AquaMind AI**! This intelligent, AI-driven assistant helps aquarium
 
 ## 🌊 Features
 
-### 1. AI-Powered Stocking Recommendations
+### 1. AI-Powered Stocking Recommendations 🐠
 
 AquaMind AI analyzes your aquarium specifications—tank size, water type, existing species, and more—to provide intelligent stocking recommendations. It considers fish compatibility, tank requirements, bioload, and user preferences to create a balanced and thriving aquarium environment.
 
-### 2. Conversational Advice with LLM Integration
+### 2. Conversational Advice with LLM Integration 🤖 💬 
 
-Our assistant is integrated with a **Large Language Model (LLM)**, such as **GPT** or **AWS Bedrock**, to provide detailed explanations and answer your questions in a conversational manner. Get expert-level advice, follow-up recommendations, and detailed care instructions just by chatting with AquaMind AI.
+Our AquaMind AI is directly powered by ChatGPT, to provide detailed explanations and answer your questions in a conversational manner. Get expert-level advice, follow-up recommendations, and detailed care instructions just by chatting with AquaMind AI.
 
-### 3. Fish and Plant Compatibility Checker
+### 3. Fish and Plant Compatibility Checker 🐟🌿
 
 A built-in compatibility checker helps you identify potential conflicts between fish species, plants, and invertebrates. Understand which combinations work best for your setup and which to avoid to maintain a harmonious aquatic environment.
 
-### 4. Personalized Care and Maintenance Suggestions
+### 4. Personalized Care and Maintenance Suggestions 📝
 
 Get personalized care instructions, feeding schedules, and maintenance tips based on your aquarium setup and the species you keep. AquaMind AI continuously learns from user interactions to provide more tailored advice over time.
 
-### 5. Real-Time Marketplace Integration (Optional)
+### 5. IoT realtime connectivity (Coming soon) 🌐📡
 
-AquaMind AI can integrate with e-commerce platforms and marketplaces (e.g., **Aquabid**, **LiveAquaria**) to provide real-time pricing, availability, and even purchase links for recommended species and equipment.
+AquaMind AI will soon connect with IoT sensors placed in your aquarium to monitor real-time water conditions, such as temperature, pH, ammonia, and nitrate levels. These sensors will transmit live data via AWS IoT services and process the information using Amazon SQS or Amazon Kinesis to ensure reliable, scalable data streams.
 
-### 6. Fish Disease Diagnosis (Coming Soon)
 
-Leveraging APIs for fish health, AquaMind AI will soon offer a fish disease diagnosis feature. Just describe the symptoms or upload a photo, and get instant advice on treatments and prevention.
 
-## 🐠 APIs and Data Sources Used
+---
 
-AquaMind AI integrates with several APIs and data sources to provide accurate and reliable recommendations:
+## Tech Stack
 
-1. **FishBase API**
+### Frontend:
+- **React**: User interface for managing aquariums and viewing data.
+  
+### Backend:
+- **Go**: Microservices architecture for handling API requests and business logic.
+- **GPT-4**: AI integration for delivering personalized advice.
+  
+### Database:
+- **PostgreSQL**: Secure, relational database for storing tank data and user profiles.
 
-   - Comprehensive data on thousands of fish species, including habitat, diet, maximum size, and water parameter requirements.
-   - Used for stocking recommendations and species compatibility checks.
+### Infrastructure:
+- **Kubernetes**: Orchestrates microservices for scalability and fault tolerance.
+- **AWS**: Cloud infrastructure for hosting, scaling, and managing resources.
+  
+### Monitoring:
+- **Prometheus**: Real-time monitoring of application performance and metrics.
+- **Grafana**: Visual dashboard for monitoring tank conditions and system health.
 
-2. **Aquatic Database API**
+---
 
-   - Detailed information on freshwater and saltwater species, including care levels, tank mates, and environmental needs.
-   - Powers the compatibility checker and personalized care suggestions.
 
-3. **Amazon Bedrock or OpenAI GPT API**
-
-   - Provides conversational capabilities through LLM integration, offering detailed explanations, answering user questions, and engaging in follow-up interactions.
-   - Ensures a user-friendly, interactive experience.
-
-4. **OpenSeaMap API (Optional)**
-
-   - Geographic data on aquatic environments to suggest biotope-specific aquarium setups.
-   - Used to enhance the educational aspect by providing insights into native species and their natural habitats.
-
-5. **Marketplace APIs (Aquabid, LiveAquaria)**
-
-   - Real-time integration with marketplaces for price checks, availability, and purchase links.
-   - Useful for users looking to directly purchase recommended species or equipment.
-
-6. **Fish Disease Diagnosis API (Coming Soon)**
-   - Accesses a database of fish diseases and symptoms to provide quick diagnostics and treatment suggestions.
-   - Will enhance the health management capabilities of AquaMind AI.
-
-## 🚀 Getting Started
-
-### Prerequisites
-
-- **Python 3.8+** or **Node.js 14+** for backend development.
-- **AWS Account** for deploying services with **AWS Lambda**, **API Gateway**, **S3**, and **Amazon Bedrock**.
-- **API Keys** for third-party APIs (e.g., FishBase API, Aquatic Database API, OpenAI GPT or Amazon Bedrock, Marketplace APIs).
-
-### Installation
-
-1. **Clone the Repository**
-   ```bash
-   git clone https://github.com/yourusername/aquamind-ai.git
-   cd aquamind-ai
-   ```
