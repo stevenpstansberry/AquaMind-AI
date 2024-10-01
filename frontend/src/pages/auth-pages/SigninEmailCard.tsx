@@ -4,10 +4,13 @@ import { Visibility, VisibilityOff } from '@mui/icons-material';
 import IconButton from '@mui/material/IconButton';
 import InputAdornment from '@mui/material/InputAdornment';
 import { Link, useNavigate } from 'react-router-dom';
+import { loginUser } from '../../services/APIServices';
+import { useAuth } from '../../util/AuthContext';
 
 
 
 const SignInEmailCard: React.FC = () => {
+
   // States for form fields
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -15,6 +18,7 @@ const SignInEmailCard: React.FC = () => {
   const [snackbar, setSnackbar] = useState<SnackbarState>({ open: false, message: '', severity: 'info' });
 
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   // Define type for Snackbar severity and state
   type SnackbarSeverity = 'success' | 'error' | 'warning' | 'info';
@@ -53,7 +57,7 @@ const SignInEmailCard: React.FC = () => {
     setSnackbar({ ...snackbar, open: false });
     };
 
-      /**
+  /**
    * Validates if the provided email has a proper format.
    * 
    * @function isValidEmail
@@ -66,31 +70,49 @@ const SignInEmailCard: React.FC = () => {
   };
 
 
+  // Define the expected response structure
+  interface LoginResponse {
+    email: string;
+    token: string;
+  }
+
+
 
   // Handle form submission
-  const handleSubmit = (event: React.FormEvent) => {
+  const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 
     // Check for empty fields
     if (!email || !password) {
-        showSnackbar('Please fill in all fields', 'warning');
-        return;
+      showSnackbar('Please fill in all fields', 'warning');
+      return;
     }
 
     // Check for valid email format
     if (!isValidEmail(email)) {
-        showSnackbar('Please enter a valid email address', 'warning');
-        return;
-        }
+      showSnackbar('Please enter a valid email address', 'warning');
+      return;
+    }
 
-    console.log({ email, password,});
-    showSnackbar('Login successful!', 'success'); 
+    try {
+      // Make API call to login the user
+      const response = await loginUser({ email, password });
 
-    //TODO add API call to register user
-    navigate('/dashboard');
+      // Call login from AuthContext and store the token and email
+      const { email: responseEmail, token } = response as LoginResponse;
+      login({ email: responseEmail, token });
+      login({ email, token });
 
+      // Show success and navigate to dashboard if login is successful
+      showSnackbar('Login successful!', 'success');
+      navigate('/dashboard');
 
-    };
+    } catch (error) {
+      // Handle API errors and show error message
+      showSnackbar('Login failed. Please check your credentials.', 'error');
+      console.error('Error logging in:', error);
+    }
+  };
 
 
 

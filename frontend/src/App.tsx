@@ -18,6 +18,8 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import LoginRegisterCard from './pages/auth-pages/AccountCard';
 import { ThemeContextProvider } from './util/ThemeContext'; 
+import { AuthProvider } from './util/AuthContext';
+import PrivateRoute from './routes/PrivateRoute';
 import RegisterEmailCard from './pages/auth-pages/RegisterEmailCard';
 import SignInEmailCard from './pages/auth-pages/SigninEmailCard';
 
@@ -25,6 +27,7 @@ import SignInEmailCard from './pages/auth-pages/SigninEmailCard';
 // Component Imports
 import Home from './pages/Home'; 
 import Navbar from './components/Navbar'; 
+import { Settings } from './pages/Pages';
 
 // Define a Layout component to conditionally render Navbar
 const Layout: React.FC<React.PropsWithChildren<{}>> = ({ children }) => {
@@ -47,31 +50,36 @@ const Layout: React.FC<React.PropsWithChildren<{}>> = ({ children }) => {
 
 const App: React.FC = () => {
   return (
-    <ThemeContextProvider>
-      <Router>
-        <Layout>
-          <Routes>
-            {/* Public Routes */}
-            <Route path="/" element={<Home />} />
-            <Route path="/home" element={<Home />} />
+    <AuthProvider>
+      <ThemeContextProvider>
+        <Router>
+          <Layout>
+            <Routes>
+              {/* Public Routes */}
+              <Route path="/" element={<Home />} />
+              <Route path="/home" element={<Home />} />
 
-            {/* Private Routes */}
-            <Route path="/dashboard" element={<Home />} />
-            <Route path="/aquariums" element={<Home />} />
-            <Route path="/metrics" element={<Home />} />
-            <Route path="/alerts" element={<Home />} />
-            <Route path="/ai-insights" element={<Home />} />
-            <Route path="/settings" element={<Home />} />
+              {/* Private Routes */}
+              
+              <Route path="/dashboard" element={<Home />} />
+              <Route path="/aquariums" element={<Home />} />
+              <Route path="/metrics" element={<Home />} />
+              <Route path="/alerts" element={<Home />} />
+              <Route path="/ai-insights" element={<Home />} />
+              <Route element={<PrivateRoute />}>
+                <Route path="/settings" element={<Settings />} />
+              </Route>
 
-            {/* Protected Public Routes */}
-            <Route path="/account" element={<LoginRegisterCard />} />
-            <Route path="/register" element={<RegisterEmailCard />} />
-            <Route path="/signin" element={<SignInEmailCard />} />
-            {/* Future Routes */}
-          </Routes>
-        </Layout>
-      </Router>
-    /</ThemeContextProvider>  
+              {/* Protected Public Routes */}
+              <Route path="/account" element={<LoginRegisterCard />} />
+              <Route path="/register" element={<RegisterEmailCard />} />
+              <Route path="/signin" element={<SignInEmailCard />} />
+              {/* Future Routes */}
+            </Routes>
+          </Layout>
+        </Router>
+      /</ThemeContextProvider>  
+    </AuthProvider>
   );
 };
 

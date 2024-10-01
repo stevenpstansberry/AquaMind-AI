@@ -4,6 +4,8 @@ import { Link } from 'react-router-dom';
 import SearchIcon from '@mui/icons-material/Search';
 import { styled, alpha, useTheme } from '@mui/material/styles';
 import { useThemeContext } from '../util/ThemeContext';
+import { getUser } from '../services/AuthServices';
+import { useAuth } from '../util/AuthContext';
 
 // Styled components for the search bar
 const Search = styled('div')(({ theme }) => ({
@@ -49,6 +51,7 @@ const Navbar: React.FC = () => {
   const { toggleTheme, isDarkMode } = useThemeContext(); 
   const theme = useTheme();
 
+  const { isLoggedIn, user, logout } = useAuth(); // Access isLoggedIn and logout function
 
   // Scroll event handler to add shadow to navbar
   const handleScroll = () => {
@@ -66,6 +69,9 @@ const Navbar: React.FC = () => {
       window.removeEventListener('scroll', handleScroll);
     };
   }, []);
+
+
+  
 
   return (
     <AppBar
@@ -136,27 +142,38 @@ const Navbar: React.FC = () => {
 
 
 
-        {/* Sign In / Register */}
-        <Button component={Link} to="/account?mode=signin" sx={{ textTransform: 'none', color: 'inherit' }}>
-          Sign In
-        </Button>
-        <Button
-          component={Link}
-          to="/account?mode=register"
-          variant="contained"
-          sx={{
-            textTransform: 'none',
-            backgroundColor: theme.palette.text.primary,
-            color: theme.palette.text.secondary,
-            borderRadius: '20px',
-            ml: 2,
-            '&:hover': {
-              backgroundColor: 'black',
-            },
-          }}
-        >
-          Register
-        </Button>
+{/* Conditional Auth Buttons */}
+{isLoggedIn ? (
+          <>
+            <Typography sx={{ marginRight: 2 }}>Hello, {user}!</Typography>
+            <Button onClick={logout} sx={{ textTransform: 'none', color: 'inherit' }}>
+              Logout
+            </Button>
+          </>
+        ) : (
+          <>
+            <Button component={Link} to="/account?mode=signin" sx={{ textTransform: 'none', color: 'inherit' }}>
+              Sign In
+            </Button>
+            <Button
+              component={Link}
+              to="/account?mode=register"
+              variant="contained"
+              sx={{
+                textTransform: 'none',
+                backgroundColor: theme.palette.text.primary,
+                color: theme.palette.text.secondary,
+                borderRadius: '20px',
+                ml: 2,
+                '&:hover': {
+                  backgroundColor: 'black',
+                },
+              }}
+            >
+              Register
+            </Button>
+          </>
+        )}
       </Toolbar>
     </AppBar>
   );
