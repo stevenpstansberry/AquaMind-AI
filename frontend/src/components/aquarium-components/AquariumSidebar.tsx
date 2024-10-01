@@ -11,16 +11,12 @@ interface Aquarium {
 
 interface AquariumSidebarProps {
   aquariums: Aquarium[];
+  onOpenWizard: () => void;
 }
 
-const AquariumSidebar: React.FC<AquariumSidebarProps> = ({ aquariums }) => {
+const AquariumSidebar: React.FC<AquariumSidebarProps> = ({ aquariums, onOpenWizard  }) => {
     const theme = useTheme(); // Access the current theme (dark or light)
-    const { toggleTheme, isDarkMode } = useThemeContext(); // Access dark mode context if needed
 
-    // Handler for adding a new aquarium
-    const handleAddAquarium = () => {
-    console.log('Navigate to aquarium creation page');
-    };
 
   return (
     <Box
@@ -83,7 +79,7 @@ const AquariumSidebar: React.FC<AquariumSidebarProps> = ({ aquariums }) => {
       <Button
         variant="contained"
         color="primary"
-        onClick={handleAddAquarium}
+        onClick={onOpenWizard} // Trigger the wizard from the sidebar
         sx={{
           width: '100%',
           marginTop: 'auto',

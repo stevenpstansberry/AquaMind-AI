@@ -17,6 +17,11 @@ const Aquariums: React.FC = () => {
 
   const { isLoggedIn, user, logout } = useAuth(); // Access isLoggedIn and logout function
 
+// Function to trigger the wizard modal
+const handleOpenWizard = () => {
+    setShowWizard(true);
+    };
+
   // Simulate fetching aquariums from API
   useEffect(() => {
     const fetchAquariums = async () => {
@@ -34,7 +39,7 @@ const Aquariums: React.FC = () => {
   return (
     <div style={{ display: 'flex' }}>
       {/* Sidebar */}
-      <AquariumSidebar aquariums={aquariums} />
+      <AquariumSidebar aquariums={aquariums} onOpenWizard={handleOpenWizard}/>
 
       {/* Main content */}
       <div style={{ marginLeft: '250px', padding: '20px', width: '100%' }}>
