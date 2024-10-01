@@ -12,6 +12,23 @@ import (
     _ "github.com/lib/pq"
 )
 
+
+func enableCORS(next http.Handler) http.Handler {
+    return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+        w.Header().Set("Access-Control-Allow-Origin", "*") // Allow all origins
+        w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+        w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+
+        // Handle preflight OPTIONS requests
+        if r.Method == http.MethodOptions {
+            w.WriteHeader(http.StatusOK)
+            return
+        }
+
+        next.ServeHTTP(w, r)
+    })
+}
+
 func main() {
     // Load environment variables from the .env file
     err := godotenv.Load()
@@ -52,6 +69,10 @@ func main() {
     http.HandleFunc("/register", handlers.RegisterUser)
     http.HandleFunc("/login", handlers.LoginUser)
 
+
+    // Apply  CORS middleware
+    corsHandler := enableCORS(http.DefaultServeMux)
+
     // Start the server
-    log.Fatal(http.ListenAndServe(":8080", nil))
+    log.Fatal(http.ListenAndServe(":8080", corsHandler))
 }
