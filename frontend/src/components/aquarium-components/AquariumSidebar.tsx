@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { List, ListItem, Typography, Button, Box, IconButton } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 
@@ -7,28 +7,14 @@ interface Aquarium {
   name: string;
 }
 
-const AquariumSidebar: React.FC = () => {
-  // State to store aquarium data
-  const [aquariums, setAquariums] = useState<Aquarium[]>([]);
+interface AquariumSidebarProps {
+  aquariums: Aquarium[];
+}
 
-  useEffect(() => {
-    const mockAquariums = [
-      { id: 1, name: 'Freshwater Tank' },
-      { id: 2, name: 'Saltwater Reef' },
-      { id: 3, name: 'Planted Tank' },
-    ];
-    setAquariums(mockAquariums);
-  }, []);
-
+const AquariumSidebar: React.FC<AquariumSidebarProps> = ({ aquariums }) => {
   // Handler for adding a new aquarium
   const handleAddAquarium = () => {
     console.log('Navigate to aquarium creation page');
-  };
-
-  // Handler for editing an aquarium
-  const handleEditAquarium = (id: number) => {
-    console.log(`Editing aquarium with id: ${id}`);
-    // Logic to edit the aquarium, e.g., open a modal or navigate to edit page
   };
 
   return (
@@ -36,7 +22,7 @@ const AquariumSidebar: React.FC = () => {
       sx={{
         width: '250px',
         height: '100vh',
-        backgroundColor: '#f0f0f0', // Slightly different background color
+        backgroundColor: '#f0f0f0',
         padding: '20px',
         position: 'fixed',
         top: 0,
@@ -45,7 +31,7 @@ const AquariumSidebar: React.FC = () => {
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-between',
-        borderTop: '4px solid #007bff', // Add top border
+        borderTop: '4px solid #007bff',
       }}
     >
       <div>
@@ -54,7 +40,7 @@ const AquariumSidebar: React.FC = () => {
           Your Aquariums
         </Typography>
 
-        {/* Aquarium List */}
+        {/* Check if there are any aquariums */}
         {aquariums.length > 0 ? (
           <List>
             {aquariums.map((aquarium) => (
@@ -72,7 +58,7 @@ const AquariumSidebar: React.FC = () => {
                 <IconButton
                   edge="end"
                   aria-label="edit"
-                  onClick={() => handleEditAquarium(aquarium.id)}
+                  onClick={() => console.log(`Editing aquarium with id: ${aquarium.id}`)}
                   size="small"
                 >
                   <EditIcon fontSize="small" />
@@ -81,7 +67,9 @@ const AquariumSidebar: React.FC = () => {
             ))}
           </List>
         ) : (
-          <Typography>No aquariums yet. Click the button below to add one!</Typography>
+          <Typography>
+            You have no aquariums. Get started by adding one!
+          </Typography>
         )}
       </div>
 
