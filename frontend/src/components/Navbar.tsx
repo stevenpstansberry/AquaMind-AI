@@ -142,8 +142,8 @@ const Navbar: React.FC = () => {
 
 
 
-{/* Conditional Auth Buttons */}
-{isLoggedIn ? (
+          {/* Conditional Auth Buttons */}
+          {isLoggedIn ? (
           <>
             <Typography sx={{ marginRight: 2 }}>Hello, {user}!</Typography>
             <Button onClick={logout} sx={{ textTransform: 'none', color: 'inherit' }}>
