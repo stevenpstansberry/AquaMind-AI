@@ -4,6 +4,7 @@ import { Visibility, VisibilityOff } from '@mui/icons-material';
 import IconButton from '@mui/material/IconButton';
 import InputAdornment from '@mui/material/InputAdornment';
 import { Link, useNavigate } from 'react-router-dom';
+import { loginUser } from '../../services/APIServices';
 
 
 
@@ -68,29 +69,35 @@ const SignInEmailCard: React.FC = () => {
 
 
   // Handle form submission
-  const handleSubmit = (event: React.FormEvent) => {
+  const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 
     // Check for empty fields
     if (!email || !password) {
-        showSnackbar('Please fill in all fields', 'warning');
-        return;
+      showSnackbar('Please fill in all fields', 'warning');
+      return;
     }
 
     // Check for valid email format
     if (!isValidEmail(email)) {
-        showSnackbar('Please enter a valid email address', 'warning');
-        return;
-        }
+      showSnackbar('Please enter a valid email address', 'warning');
+      return;
+    }
 
-    console.log({ email, password,});
-    showSnackbar('Login successful!', 'success'); 
+    try {
+      // Make API call to login the user
+      const response = await loginUser({ email, password });
 
-    //TODO add API call to register user
-    navigate('/dashboard');
+      // Show success and navigate to dashboard if login is successful
+      showSnackbar('Login successful!', 'success');
+      navigate('/dashboard');
 
-
-    };
+    } catch (error) {
+      // Handle API errors and show error message
+      showSnackbar('Login failed. Please check your credentials.', 'error');
+      console.error('Error logging in:', error);
+    }
+  };
 
 
 
