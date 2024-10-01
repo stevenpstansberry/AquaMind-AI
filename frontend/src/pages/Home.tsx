@@ -1,4 +1,4 @@
-function Home() {
+const Home: React.FC = () => {
   return <div>meow</div>;
 }
 
