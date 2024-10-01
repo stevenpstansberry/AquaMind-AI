@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import './AquariumSidebar.css'; 
+import { List, ListItem, Typography, Button, Box } from '@mui/material';
 
 interface Aquarium {
   id: number;
@@ -10,7 +10,6 @@ const AquariumSidebar: React.FC = () => {
   // State to store aquarium data
   const [aquariums, setAquariums] = useState<Aquarium[]>([]);
 
-  // Mock data for now, later replace with an API call to fetch aquariums
   useEffect(() => {
     const mockAquariums = [
       { id: 1, name: 'Freshwater Tank' },
@@ -23,29 +22,58 @@ const AquariumSidebar: React.FC = () => {
   // Handler for adding a new aquarium
   const handleAddAquarium = () => {
     console.log('Navigate to aquarium creation page');
-    // Here you can redirect the user to the aquarium creation wizard
   };
 
   return (
-    <div className="aquarium-sidebar">
-      <h3>Your Aquariums</h3>
-      <ul className="aquarium-list">
+    <Box
+      sx={{
+        width: '250px',
+        height: '100vh',
+        backgroundColor: '#f0f0f0', // Slightly different background color
+        padding: '20px',
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        boxShadow: '2px 0 5px rgba(0, 0, 0, 0.1)',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'space-between',
+        borderTop: '4px solid #007bff', // Add top border
+      }}
+    >
+      <div>
+        {/* Heading */}
+        <Typography variant="h6" gutterBottom>
+          Your Aquariums
+        </Typography>
+
+        {/* Aquarium List */}
         {aquariums.length > 0 ? (
-          aquariums.map(aquarium => (
-            <li key={aquarium.id} className="aquarium-item">
-              {aquarium.name}
-            </li>
-          ))
+          <List>
+            {aquariums.map((aquarium) => (
+              <ListItem key={aquarium.id}>
+                <Typography>{aquarium.name}</Typography>
+              </ListItem>
+            ))}
+          </List>
         ) : (
-          <p>No aquariums yet. Click the button below to add one!</p>
+          <Typography>No aquariums yet. Click the button below to add one!</Typography>
         )}
-      </ul>
+      </div>
 
       {/* Button to create a new aquarium */}
-      <button className="add-aquarium-btn" onClick={handleAddAquarium}>
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={handleAddAquarium}
+        sx={{
+          width: '100%',
+          marginTop: 'auto',
+        }}
+      >
         + Add New Aquarium
-      </button>
-    </div>
+      </Button>
+    </Box>
   );
 };
 
