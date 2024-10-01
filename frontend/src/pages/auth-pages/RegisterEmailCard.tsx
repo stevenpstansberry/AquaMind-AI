@@ -4,6 +4,7 @@ import { Visibility, VisibilityOff } from '@mui/icons-material';
 import IconButton from '@mui/material/IconButton';
 import InputAdornment from '@mui/material/InputAdornment';
 import { Link, useNavigate } from 'react-router-dom';
+import { registerUser } from '../../services/APIServices';
 
 
 
@@ -35,64 +36,70 @@ const RegisterEmailCard: React.FC = () => {
   };
 
 
-    /**
-    * Displays a Snackbar message.
-    * 
-    * @function showSnackbar
-    * @param {string} message - The message to display.
-    * @param {string} severity - The severity level of the message ('success', 'error', 'warning', 'info').
-    */
-    const showSnackbar = (message: string, severity: 'success' | 'error' | 'warning' | 'info') => {
-        setSnackbar({ open: true, message, severity });
-    };
+/**
+* Displays a Snackbar message.
+* 
+* @function showSnackbar
+* @param {string} message - The message to display.
+* @param {string} severity - The severity level of the message ('success', 'error', 'warning', 'info').
+*/
+const showSnackbar = (message: string, severity: 'success' | 'error' | 'warning' | 'info') => {
+    setSnackbar({ open: true, message, severity });
+};
 
-    /**
-     * Closes the Snackbar message.
-     * 
-     * @function handleCloseSnackbar
-     */
-    const handleCloseSnackbar = () => {
-    setSnackbar({ ...snackbar, open: false });
-    };
+/**
+ * Closes the Snackbar message.
+ * 
+ * @function handleCloseSnackbar
+ */
+const handleCloseSnackbar = () => {
+setSnackbar({ ...snackbar, open: false });
+};
 
-      /**
-   * Validates if the provided email has a proper format.
-   * 
-   * @function isValidEmail
-   * @param {string} email - The email address to validate.
-   * @returns {boolean} - True if the email is valid, otherwise false.
-   */
-  const isValidEmail = (email: string): boolean => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-  };
+/**
+ * Validates if the provided email has a proper format.
+ * 
+ * @function isValidEmail
+ * @param {string} email - The email address to validate.
+ * @returns {boolean} - True if the email is valid, otherwise false.
+ */
+const isValidEmail = (email: string): boolean => {
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+return emailRegex.test(email);
+};
 
 
 
   // Handle form submission
-  const handleSubmit = (event: React.FormEvent) => {
+  const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 
-    //Check if all fields are filled
+    // Check if all fields are filled
     if (!fullName.trim() || !email.trim() || !password.trim()) {
-        showSnackbar('All fields must be filled', 'warning');
-        return
+      showSnackbar('All fields must be filled', 'warning');
+      return;
     }
 
     // Check for valid email format
     if (!isValidEmail(email)) {
-        showSnackbar('Please enter a valid email address', 'warning');
-        return;
-        }
+      showSnackbar('Please enter a valid email address', 'warning');
+      return;
+    }
 
-    console.log({ email, password, fullName, subscribe });
-    showSnackbar('Registration successful!', 'success'); 
+    try {
+      // Call the registerUser API function
+      const response = await registerUser({ email, password, full_name: fullName });
+      console.log(response);
 
-    //TODO add API call to register user
-    navigate('/dashboard');
+      showSnackbar('Registration successful!', 'success');
 
-
-    };
+      // Navigate to dashboard after successful registration
+      navigate('/dashboard');
+    } catch (error) {
+      console.error('Error registering user:', error);
+      showSnackbar('Error registering user', 'error');
+    }
+  };
 
 
 
