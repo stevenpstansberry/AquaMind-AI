@@ -5,10 +5,12 @@ import IconButton from '@mui/material/IconButton';
 import InputAdornment from '@mui/material/InputAdornment';
 import { Link, useNavigate } from 'react-router-dom';
 import { loginUser } from '../../services/APIServices';
+import { useAuth } from '../../util/AuthContext';
 
 
 
 const SignInEmailCard: React.FC = () => {
+
   // States for form fields
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -16,6 +18,7 @@ const SignInEmailCard: React.FC = () => {
   const [snackbar, setSnackbar] = useState<SnackbarState>({ open: false, message: '', severity: 'info' });
 
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   // Define type for Snackbar severity and state
   type SnackbarSeverity = 'success' | 'error' | 'warning' | 'info';
@@ -54,7 +57,7 @@ const SignInEmailCard: React.FC = () => {
     setSnackbar({ ...snackbar, open: false });
     };
 
-      /**
+  /**
    * Validates if the provided email has a proper format.
    * 
    * @function isValidEmail
@@ -65,6 +68,13 @@ const SignInEmailCard: React.FC = () => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
   };
+
+
+  // Define the expected response structure
+  interface LoginResponse {
+    email: string;
+    token: string;
+  }
 
 
 
@@ -87,6 +97,11 @@ const SignInEmailCard: React.FC = () => {
     try {
       // Make API call to login the user
       const response = await loginUser({ email, password });
+
+      // Call login from AuthContext and store the token and email
+      const { email: responseEmail, token } = response as LoginResponse;
+      login({ email: responseEmail, token });
+      login({ email, token });
 
       // Show success and navigate to dashboard if login is successful
       showSnackbar('Login successful!', 'success');
