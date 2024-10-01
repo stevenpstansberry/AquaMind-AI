@@ -15,7 +15,7 @@ interface AquariumSidebarProps {
 }
 
 const AquariumSidebar: React.FC<AquariumSidebarProps> = ({ aquariums, onOpenWizard  }) => {
-    const theme = useTheme(); // Access the current theme (dark or light)
+    const theme = useTheme(); 
 
 
   return (
