@@ -1,6 +1,8 @@
 import React from 'react';
 import { List, ListItem, Typography, Button, Box, IconButton } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
+import { styled, alpha, useTheme } from '@mui/material/styles';
+import { useThemeContext } from '../../util/ThemeContext';
 
 interface Aquarium {
   id: number;
@@ -12,17 +14,20 @@ interface AquariumSidebarProps {
 }
 
 const AquariumSidebar: React.FC<AquariumSidebarProps> = ({ aquariums }) => {
-  // Handler for adding a new aquarium
-  const handleAddAquarium = () => {
+    const theme = useTheme(); // Access the current theme (dark or light)
+    const { toggleTheme, isDarkMode } = useThemeContext(); // Access dark mode context if needed
+
+    // Handler for adding a new aquarium
+    const handleAddAquarium = () => {
     console.log('Navigate to aquarium creation page');
-  };
+    };
 
   return (
     <Box
       sx={{
         width: '250px',
         height: '100vh',
-        backgroundColor: '#f0f0f0',
+        backgroundColor: theme.palette.background.default, 
         padding: '20px',
         position: 'fixed',
         top: 0,
@@ -31,7 +36,8 @@ const AquariumSidebar: React.FC<AquariumSidebarProps> = ({ aquariums }) => {
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-between',
-        borderTop: '4px solid #007bff',
+        borderTop: `4px solid ${theme.palette.primary.main}`, 
+        color: theme.palette.text.primary, 
       }}
     >
       <div>
