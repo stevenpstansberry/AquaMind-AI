@@ -1,9 +1,12 @@
 import React, { createContext, useState, useContext, ReactNode } from 'react';
 
+//TODO: add username
+
 // Define types for the auth context
 interface AuthContextType {
   user: string | null;
   token: string | null;
+  isLoggedIn: boolean;
   login: (userData: { email: string; token: string }) => void;
   logout: () => void;
 }
@@ -12,6 +15,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType>({
   user: null,
   token: null,
+  isLoggedIn: false, 
   login: () => {},
   logout: () => {},
 });
@@ -23,6 +27,9 @@ export const useAuth = () => useContext(AuthContext);
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<string | null>(null);
   const [token, setToken] = useState<string | null>(null);
+
+  const isLoggedIn = !!user && !!token;
+
 
   // Login function to store user data and token
   const login = ({ email, token }: { email: string; token: string }) => {
@@ -51,7 +58,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, token, login, logout }}>
+    <AuthContext.Provider value={{ user, token, isLoggedIn, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
