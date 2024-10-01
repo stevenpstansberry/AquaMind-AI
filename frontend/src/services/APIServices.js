@@ -20,9 +20,6 @@ const baseURL =
     ? process.env.REACT_APP_AQUAMIND_DEV_URL // Localhost for dev
     : process.env.REACT_APP_AQUAMIND_PROD_URL; // Production URL for prod
 
-axios.defaults.headers.common["X-Api-Key"] =
-  process.env.REACT_APP_AQUAMIND_PROD_KEY;
-
 /**
  * Sends a GET request to a specified API endpoint.
  *
@@ -37,15 +34,10 @@ const getFromAPI = async (endpoint) => {
 
   // Log the request details before making the request
   console.log("Making GET request to:", url);
-  console.log("Request Headers:", {
-    "X-Api-Key": process.env.REACT_APP_AQUAMIND_PROD_KEY,
-  });
 
   try {
     const response = await axios.get(url, {
-      headers: {
-        "X-Api-Key": process.env.REACT_APP_AQUAMIND_PROD_KEY,
-      },
+      headers: {},
     });
 
     // Log the response status and data
@@ -90,7 +82,6 @@ const postToAPI = async (endpoint, data) => {
     const response = await axios.post(url, data, {
       headers: {
         "Content-Type": "application/json",
-        "X-Api-Key": process.env.REACT_APP_AQUAMIND_PROD_KEY,
       },
     });
 

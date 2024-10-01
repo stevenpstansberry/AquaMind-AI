@@ -6,26 +6,27 @@ import (
     "log"
     "net/http"
     "os"
+
     "github.com/joho/godotenv"
     "github.com/stevenpstansberry/AquaMind-AI/handlers"
     "github.com/stevenpstansberry/AquaMind-AI/models"
     _ "github.com/lib/pq"
 )
 
-
+// CORS middleware to handle cross-origin requests
 func enableCORS(next http.Handler) http.Handler {
     return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
         w.Header().Set("Access-Control-Allow-Origin", "*") // Allow all origins
         w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
-        w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
-
-        // Handle preflight OPTIONS requests
+        w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Api-Key") 
+        // Handle preflight OPTIONS request
         if r.Method == http.MethodOptions {
+            // Just return OK if it's an OPTIONS request
             w.WriteHeader(http.StatusOK)
             return
         }
 
-        next.ServeHTTP(w, r)
+        next.ServeHTTP(w, r) // Continue to the next handler if it's not an OPTIONS request
     })
 }
 
@@ -69,10 +70,9 @@ func main() {
     http.HandleFunc("/register", handlers.RegisterUser)
     http.HandleFunc("/login", handlers.LoginUser)
 
-
-    // Apply  CORS middleware
+    // Apply the CORS middleware to all routes
     corsHandler := enableCORS(http.DefaultServeMux)
 
-    // Start the server
+    // Start the server with the CORS handler
     log.Fatal(http.ListenAndServe(":8080", corsHandler))
 }
