@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getUser } from '../services/AuthServices';
+import AquariumSidebar from '../components/aquarium-components/AquariumSidebar';
 
 const Aquariums: React.FC = () => {
   const [userName, setUserName] = useState<string | null>(null);
@@ -14,7 +15,8 @@ const Aquariums: React.FC = () => {
 
   return (
     <div>
-      {userName ? <h1>Hello, {userName}!</h1> : <h1>Welcome to the homepage!</h1>}
+      <h1>Your Aquariums</h1>
+      <AquariumSidebar/>
     </div>
   );
 };
