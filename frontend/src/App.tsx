@@ -27,7 +27,8 @@ import SignInEmailCard from './pages/auth-pages/SigninEmailCard';
 // Component Imports
 import Home from './pages/Home'; 
 import Navbar from './components/Navbar'; 
-import { Aquariums, Settings } from './pages/Pages';
+import { Settings } from './pages/Pages';
+import Aquariums from './pages/Aquariums';
 
 // Define a Layout component to conditionally render Navbar
 const Layout: React.FC<React.PropsWithChildren<{}>> = ({ children }) => {

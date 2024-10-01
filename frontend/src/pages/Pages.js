@@ -4,12 +4,6 @@ export function Dashboard() {
   return <h1>Dashboard</h1>;
 }
 
-// src/pages/Aquariums.js
-
-export function Aquariums() {
-  return <h1>Aquariums</h1>;
-}
-
 // src/pages/Metrics.js
 
 export function Metrics() {
