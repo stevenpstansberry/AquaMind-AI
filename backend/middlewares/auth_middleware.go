@@ -3,9 +3,10 @@ package middlewares
 import (
     "net/http"
     "strings"
-    "backend/utils"
+    "backend/util"
 )
 
+// JWTAuthMiddleware is used to protect routes
 func JWTAuthMiddleware(next http.HandlerFunc) http.HandlerFunc {
     return func(w http.ResponseWriter, r *http.Request) {
         authHeader := r.Header.Get("Authorization")
@@ -24,8 +25,7 @@ func JWTAuthMiddleware(next http.HandlerFunc) http.HandlerFunc {
             return
         }
 
-        // Set the claims (like Email) in the request context (optional)
-        // and pass control to the next handler
+        // Pass the claims (like Email) in the request context if needed
         next.ServeHTTP(w, r)
     }
 }
