@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { List, ListItem, Typography, Button, Box } from '@mui/material';
+import { List, ListItem, Typography, Button, Box, IconButton } from '@mui/material';
+import EditIcon from '@mui/icons-material/Edit';
 
 interface Aquarium {
   id: number;
@@ -22,6 +23,12 @@ const AquariumSidebar: React.FC = () => {
   // Handler for adding a new aquarium
   const handleAddAquarium = () => {
     console.log('Navigate to aquarium creation page');
+  };
+
+  // Handler for editing an aquarium
+  const handleEditAquarium = (id: number) => {
+    console.log(`Editing aquarium with id: ${id}`);
+    // Logic to edit the aquarium, e.g., open a modal or navigate to edit page
   };
 
   return (
@@ -51,8 +58,25 @@ const AquariumSidebar: React.FC = () => {
         {aquariums.length > 0 ? (
           <List>
             {aquariums.map((aquarium) => (
-              <ListItem key={aquarium.id}>
+              <ListItem
+                key={aquarium.id}
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  paddingRight: 0,
+                }}
+              >
                 <Typography>{aquarium.name}</Typography>
+                {/* Edit Icon */}
+                <IconButton
+                  edge="end"
+                  aria-label="edit"
+                  onClick={() => handleEditAquarium(aquarium.id)}
+                  size="small"
+                >
+                  <EditIcon fontSize="small" />
+                </IconButton>
               </ListItem>
             ))}
           </List>
