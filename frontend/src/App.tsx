@@ -27,7 +27,7 @@ import SignInEmailCard from './pages/auth-pages/SigninEmailCard';
 // Component Imports
 import Home from './pages/Home'; 
 import Navbar from './components/Navbar'; 
-import { Settings } from './pages/Pages';
+import { Aquariums, Settings } from './pages/Pages';
 
 // Define a Layout component to conditionally render Navbar
 const Layout: React.FC<React.PropsWithChildren<{}>> = ({ children }) => {
@@ -62,7 +62,7 @@ const App: React.FC = () => {
               {/* Private Routes */}
               
               <Route path="/dashboard" element={<Home />} />
-              <Route path="/aquariums" element={<Home />} />
+              <Route path="/aquariums" element={<Aquariums />} />
               <Route path="/metrics" element={<Home />} />
               <Route path="/alerts" element={<Home />} />
               <Route path="/ai-insights" element={<Home />} />
@@ -78,7 +78,7 @@ const App: React.FC = () => {
             </Routes>
           </Layout>
         </Router>
-      /</ThemeContextProvider>  
+      </ThemeContextProvider>  
     </AuthProvider>
   );
 };
