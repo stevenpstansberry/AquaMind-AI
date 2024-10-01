@@ -5,6 +5,13 @@ import (
     _ "github.com/lib/pq" // PostgreSQL driver
 )
 
+var db *sql.DB
+
+// InitDB initializes the connection to the database (called from main.go)
+func InitDB(database *sql.DB) {
+    db = database
+}
+
 type User struct {
     ID       int
     Email    string
