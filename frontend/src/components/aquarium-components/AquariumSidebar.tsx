@@ -1,29 +1,55 @@
+/**
+ * @file AquariumSidebar.tsx
+ * @author Steven Stansberry
+ * @location /src/components/aquarium-components/AquariumSidebar.tsx
+ * @description 
+ * This component renders a sidebar that displays a list of aquariums. The sidebar also includes a button to trigger the aquarium creation wizard 
+ * and allows users to edit existing aquariums through the edit icon next to each aquarium entry.
+ */
+
 import React from 'react';
 import { List, ListItem, Typography, Button, Box, IconButton } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
-import { styled, alpha, useTheme } from '@mui/material/styles';
-import { useThemeContext } from '../../util/ThemeContext';
+import { useTheme } from '@mui/material/styles';
 
+/**
+ * Interface representing an aquarium object.
+ * @typedef {Object} Aquarium
+ * @property {number} id - The unique identifier of the aquarium.
+ * @property {string} name - The name of the aquarium.
+ */
 interface Aquarium {
   id: number;
   name: string;
 }
 
+/**
+ * Props for the AquariumSidebar component.
+ * @typedef {Object} AquariumSidebarProps
+ * @property {Aquarium[]} aquariums - Array of aquarium objects to be displayed in the sidebar.
+ * @property {function} onOpenWizard - Callback function to open the aquarium creation wizard.
+ */
 interface AquariumSidebarProps {
   aquariums: Aquarium[];
   onOpenWizard: () => void;
 }
 
-const AquariumSidebar: React.FC<AquariumSidebarProps> = ({ aquariums, onOpenWizard  }) => {
-    const theme = useTheme(); 
-
+/**
+ * AquariumSidebar component renders a sidebar that displays the user's aquariums and provides 
+ * an option to add a new aquarium. Each aquarium can be edited by clicking the edit icon.
+ * 
+ * @param {AquariumSidebarProps} props - The properties passed to the component.
+ * @returns {JSX.Element} The rendered AquariumSidebar component.
+ */
+const AquariumSidebar: React.FC<AquariumSidebarProps> = ({ aquariums, onOpenWizard }) => {
+  const theme = useTheme();
 
   return (
     <Box
       sx={{
         width: '250px',
         height: '100vh',
-        backgroundColor: theme.palette.background.default, 
+        backgroundColor: theme.palette.background.default,
         padding: '20px',
         position: 'fixed',
         top: 0,
@@ -32,8 +58,8 @@ const AquariumSidebar: React.FC<AquariumSidebarProps> = ({ aquariums, onOpenWiza
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-between',
-        borderTop: `4px solid ${theme.palette.primary.main}`, 
-        color: theme.palette.text.primary, 
+        borderTop: `4px solid ${theme.palette.primary.main}`,
+        color: theme.palette.text.primary,
       }}
     >
       <div>
