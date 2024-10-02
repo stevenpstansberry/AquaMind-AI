@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Card, CardContent, Typography, Button, Box, Backdrop, TextField, CircularProgress } from '@mui/material';
 import AquariumTypeStep from './AquariumTypeStep';
 import TankSizeStep from './TankSizeStep';
@@ -25,6 +25,8 @@ const AquariumWizard: React.FC<AquariumWizardProps> = ({ onClose }) => {
   const [userInput, setUserInput] = useState(''); // Track user input for chat
   const [loading, setLoading] = useState(false); // Loading state for GPT response
 
+  const chatContainerRef = useRef<HTMLDivElement>(null); // Create a ref for the chat container
+
   const handleNext = () => {
     setCurrentStep((prevStep) => prevStep + 1);
   };
@@ -35,6 +37,13 @@ const AquariumWizard: React.FC<AquariumWizardProps> = ({ onClose }) => {
 
   const steps = ['Aquarium Type', 'Tank Size', 'Species', 'Equipment', 'Summary'];
 
+  // Function to scroll to the bottom of the chat container
+  const scrollToBottom = () => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+    }
+  };
+
   // Simulate sending a message to AI and receiving a response
   const handleSendMessage = async () => {
     if (!userInput.trim()) return;
@@ -44,7 +53,7 @@ const AquariumWizard: React.FC<AquariumWizardProps> = ({ onClose }) => {
     setMessages((prev) => [...prev, newMessage]);
     setUserInput(''); // Clear the input
 
-    // Simulated AI response
+    // Simulated AI response 
     setLoading(true);
     setTimeout(() => {
       const aiResponse = { sender: 'AI', text: `Simulated response to: "${newMessage.text}"` };
@@ -52,6 +61,11 @@ const AquariumWizard: React.FC<AquariumWizardProps> = ({ onClose }) => {
       setLoading(false);
     }, 1000);
   };
+
+  // Use effect to scroll to the bottom whenever messages change
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
 
   return (
     <Backdrop open={true} sx={{ zIndex: 1000 }}>
@@ -122,8 +136,16 @@ const AquariumWizard: React.FC<AquariumWizardProps> = ({ onClose }) => {
             >
               {/* Chat area */}
               <Box
+                ref={chatContainerRef} // Attach the ref to the chat container
                 flex={1}
-                sx={{ overflowY: 'auto', padding: '15px', border: '1px solid #ddd', borderRadius: '5px', bgcolor: '#f9f9f9' }}
+                sx={{
+                  overflowY: 'auto',
+                  padding: '15px',
+                  border: '1px solid #ddd',
+                  borderRadius: '5px',
+                  bgcolor: '#f9f9f9',
+                  maxHeight: '300px', // Ensure chat area has a fixed height
+                }}
               >
                 {messages.map((message, index) => (
                   <Box key={index} display="flex" justifyContent={message.sender === 'User' ? 'flex-end' : 'flex-start'} mb={1}>
