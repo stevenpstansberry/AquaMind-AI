@@ -31,34 +31,49 @@ const AquariumWizard: React.FC<AquariumWizardProps> = ({ onClose }) => {
     const steps = ['Aquarium Type', 'Tank Size', 'Species', 'Equipment', 'Summary'];
   
     return (
-      <Backdrop open={true} sx={{ zIndex: 1000 }}>
-        <Card sx={{ width: '600px', padding: '20px', position: 'relative', zIndex: 1001 }}>
-          <Box display="flex" justifyContent="space-between">
-            <Typography variant="h5">Aquarium Setup Wizard</Typography>
-            <Button onClick={onClose} sx={{ fontSize: '1.5rem' }}>×</Button>
-          </Box>
-  
-          <AquariumWizardProgress activeStep={currentStep} steps={steps} />
-  
-          <CardContent>
-            {currentStep === 0 && <AquariumTypeStep onNext={handleNext} setAquariumData={setAquariumData} />}
-            {currentStep === 1 && <TankSizeStep onNext={handleNext} onBack={handlePrev} setAquariumData={setAquariumData} />}
-            {currentStep === 2 && <SpeciesSelectionStep onNext={handleNext} onBack={handlePrev} setAquariumData={setAquariumData} />}
-            {currentStep === 3 && <EquipmentStep onNext={handleNext} onBack={handlePrev} setAquariumData={setAquariumData} />}
-            {currentStep === 4 && <SummaryStep aquariumData={aquariumData} onBack={handlePrev} />}
-          </CardContent>
-  
-          <Box display="flex" justifyContent="space-between" mt={2}>
-            {currentStep > 0 && <Button onClick={handlePrev}>Back</Button>}
-            {currentStep < steps.length - 1 ? (
-              <Button variant="contained" onClick={handleNext}>Next</Button>
-            ) : (
-              <Button variant="contained" onClick={onClose}>Finish</Button>
-            )}
-          </Box>
-        </Card>
-      </Backdrop>
-    );
-  };
+        <Backdrop open={true} sx={{ zIndex: 1000 }}>
+          <Card sx={{
+            width: '800px',
+            padding: '30px',
+            position: 'relative',
+            zIndex: 1001,
+            maxHeight: '90vh',
+            overflowY: 'auto',
+          }}>
+            <Box display="flex" justifyContent="space-between">
+              <Typography variant="h5">Aquarium Setup Wizard</Typography>
+              <Button onClick={onClose} sx={{ fontSize: '1.5rem' }}>×</Button>
+            </Box>
+    
+            <AquariumWizardProgress activeStep={currentStep} steps={steps} />
+    
+            <CardContent>
+              {currentStep === 0 && <AquariumTypeStep onNext={handleNext} setAquariumData={setAquariumData} />}
+              {currentStep === 1 && <TankSizeStep onNext={handleNext} onBack={handlePrev} setAquariumData={setAquariumData} />}
+              {currentStep === 2 && <SpeciesSelectionStep onNext={handleNext} onBack={handlePrev} setAquariumData={setAquariumData} />}
+              {currentStep === 3 && <EquipmentStep onNext={handleNext} onBack={handlePrev} setAquariumData={setAquariumData} />}
+              {currentStep === 4 && <SummaryStep aquariumData={aquariumData} onBack={handlePrev} />}
+            </CardContent>
+    
+            {/* Button container */}
+            <Box display="flex" justifyContent="space-between" mt={2}>
+              {/* Conditionally render Back button or a placeholder */}
+              {currentStep > 0 ? (
+                <Button onClick={handlePrev}>Back</Button>
+              ) : (
+                <Box /> 
+              )}
+    
+              {/* Always align the Next/Finish button to the right */}
+              {currentStep < steps.length - 1 ? (
+                <Button variant="contained" onClick={handleNext}>Next</Button>
+              ) : (
+                <Button variant="contained" onClick={onClose}>Finish</Button>
+              )}
+            </Box>
+          </Card>
+        </Backdrop>
+      );
+    };
   
   export default AquariumWizard;
