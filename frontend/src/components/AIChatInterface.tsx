@@ -1,26 +1,52 @@
-// src/components/AIChatInterface.tsx
+/**
+ * @file AIChatInterface.tsx
+ * @author Steven Stansberry
+ * @location /src/components/AIChatInterface.tsx
+ * @description 
+ * This component renders a simple AI chat interface for the Aquamind AI application. It allows users to send messages 
+ * and receive simulated AI responses. The chat interface automatically scrolls to the latest message and provides 
+ * an animated loading indicator while waiting for a simulated AI response.
+ */
+
 import React, { useState, useRef, useEffect } from 'react';
 import { Box, Typography, Button, TextField, CircularProgress } from '@mui/material';
 
+/**
+ * Props for the AIChatInterface component.
+ * @typedef {Object} AIChatInterfaceProps
+ * @property {boolean} showChat - A flag to toggle the visibility of the chat interface.
+ * @property {function} onClose - A callback function to handle closing the chat interface.
+ */
 interface AIChatInterfaceProps {
   showChat: boolean;
   onClose: () => void;
 }
 
+/**
+ * AIChatInterface component provides a simple messaging interface between the user and a simulated AI.
+ * Users can type messages, send them, and receive a simulated AI response.
+ * 
+ * @param {AIChatInterfaceProps} props - The properties passed to the component.
+ * @returns {JSX.Element} The rendered AIChatInterface component.
+ */
 const AIChatInterface: React.FC<AIChatInterfaceProps> = ({ showChat, onClose }) => {
   const [messages, setMessages] = useState<{ sender: string, text: string }[]>([]);
   const [userInput, setUserInput] = useState('');
   const [loading, setLoading] = useState(false);
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
-  // Function to scroll to the bottom of the chat container
+  /**
+   * Scrolls to the bottom of the chat container when new messages are added.
+   */
   const scrollToBottom = () => {
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
     }
   };
 
-  // Simulate sending a message to AI and receiving a response
+  /**
+   * Handles sending a message. The user's message is added to the chat, followed by a simulated AI response.
+   */
   const handleSendMessage = async () => {
     if (!userInput.trim()) return;
 
@@ -38,7 +64,9 @@ const AIChatInterface: React.FC<AIChatInterfaceProps> = ({ showChat, onClose }) 
     }, 1000);
   };
 
-  // Use effect to scroll to the bottom whenever messages change
+  /**
+   * useEffect hook to scroll to the bottom of the chat whenever new messages are added.
+   */
   useEffect(() => {
     scrollToBottom();
   }, [messages]);

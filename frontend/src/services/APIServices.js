@@ -1,5 +1,5 @@
 /**
- * @fileoverview Service to interact with the FitGraph API.
+ * @fileoverview Service to interact with the API.
  *
  * @file src/services/APIServices.js
  *
