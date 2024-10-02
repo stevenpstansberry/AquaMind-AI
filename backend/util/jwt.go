@@ -7,6 +7,10 @@ import (
     "time"
     "github.com/dgrijalva/jwt-go"
     "errors"
+    "log"
+    "os"
+
+    "github.com/joho/godotenv"
 )
 
 // Claims represents the structure for JWT claims. It embeds the StandardClaims
@@ -16,9 +20,27 @@ type Claims struct {
     jwt.StandardClaims                   // Embedded standard claims (e.g., expiration time)
 }
 
-// jwtKey is the secret key used to sign JWT tokens. 
-// In production, this should be securely stored (e.g., AWS Secrets Manager, environment variables).
-var jwtKey = []byte("your_secret_key")
+// jwtKey is a global variable that stores the secret key for signing JWTs.
+var jwtKey []byte
+
+// init function is executed when the package is initialized.
+// It loads the environment variables and retrieves the JWT secret key once.
+func init() {
+    // Load environment variables from .env file (optional in case it's used locally)
+    err := godotenv.Load()
+    if err != nil {
+        log.Println("No .env file found, using system environment variables")
+    }
+
+    // Get the JWT secret key from environment variables
+    jwtSecret := os.Getenv("JWT_SECRET")
+    if jwtSecret == "" {
+        log.Fatal("JWT_SECRET is not set in the environment")
+    }
+
+    // Set the secret key for JWT as a global variable
+    jwtKey = []byte(jwtSecret)
+}
 
 // GenerateJWT creates and signs a new JWT token for the given email.
 // The token is valid for 24 hours.
@@ -44,7 +66,7 @@ func GenerateJWT(email string) (string, error) {
     // Create the token with claims
     token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
-    // Sign the token with the secret key
+    // Sign the token with the secret key (jwtKey)
     tokenString, err := token.SignedString(jwtKey)
     if err != nil {
         return "", err
@@ -68,7 +90,7 @@ func ValidateJWT(tokenString string) (*Claims, error) {
 
     // Parse the JWT string and store the result in `claims`
     token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
-        return jwtKey, nil
+        return jwtKey, nil // jwtKey is now accessible globally
     })
 
     // Check if there was an error in parsing or the token is invalid
