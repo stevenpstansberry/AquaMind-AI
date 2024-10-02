@@ -36,6 +36,13 @@ const AquariumWizard: React.FC<AquariumWizardProps> = ({ onClose }) => {
     setIsStepValid(true); // Assume previous steps are valid
   };
 
+  // TODO: implement saving to backend
+  // Function to handle "Finish" step
+  const handleFinish = () => {
+    console.log("Saving Aquarium:", aquariumData); // Simulate saving to backend
+    onClose(); // Close the wizard after logging
+  };
+
   const steps = ['Aquarium Type', 'Tank Size', 'Species', 'Equipment', 'Summary'];
 
   return (
@@ -82,7 +89,7 @@ const AquariumWizard: React.FC<AquariumWizardProps> = ({ onClose }) => {
             {currentStep < steps.length - 1 ? (
              <Button variant="contained" onClick={handleNext} disabled={!isStepValid}>Next</Button>
             ) : (
-              <Button variant="contained" onClick={onClose}>Finish</Button>
+              <Button variant="contained" onClick={handleFinish}>Finish</Button>
             )}
           </Box>
         </Box>
