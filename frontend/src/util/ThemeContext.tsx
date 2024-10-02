@@ -1,4 +1,12 @@
-// src/contexts/ThemeContext.tsx
+/**
+ * @file ThemeContext.tsx
+ * @author Steven Stansberry
+ * @location /src/util/ThemeContext.tsx
+ * @description 
+ * This file provides the context for managing the application's theme, allowing users to toggle between light and dark modes.
+ * It defines custom light and dark themes and provides a context for toggling the theme throughout the app.
+ */
+
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -18,7 +26,7 @@ const lightTheme = createTheme({
       paper: '#f8f9fa', // Slightly off-white for cards and containers
     },
     text: {
-      primary: '#333333', // Dark grey for primary text (easier than pure black)
+      primary: '#333333', // Dark grey for primary text (easier on the eyes than pure black)
       secondary: '#666666', // Medium grey for secondary text
     },
     action: {
@@ -49,7 +57,12 @@ const darkTheme = createTheme({
   },
 });
 
-// Create a context to manage the theme
+/**
+ * Interface defining the shape of the theme context.
+ * @typedef {Object} ThemeContextType
+ * @property {function} toggleTheme - Function to toggle between light and dark mode.
+ * @property {boolean} isDarkMode - Boolean indicating whether dark mode is currently enabled.
+ */
 interface ThemeContextType {
   toggleTheme: () => void;
   isDarkMode: boolean;
@@ -57,10 +70,22 @@ interface ThemeContextType {
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
-// ThemeProvider component to wrap the app
+/**
+ * ThemeContextProvider component wraps the app and provides the theme context.
+ * It allows toggling between light and dark modes and applies the selected theme to the app.
+ * 
+ * @param {Object} props - The component props.
+ * @param {ReactNode} props.children - The children components that will have access to the theme context.
+ * @returns {JSX.Element} The ThemeContextProvider with the applied theme.
+ */
 export const ThemeContextProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [isDarkMode, setIsDarkMode] = useState(false);
 
+  /**
+   * Toggles the theme between light and dark mode.
+   * 
+   * @function toggleTheme
+   */
   const toggleTheme = () => {
     setIsDarkMode(!isDarkMode);
   };
@@ -77,7 +102,12 @@ export const ThemeContextProvider: React.FC<{ children: ReactNode }> = ({ childr
   );
 };
 
-// Custom hook to use the theme context
+/**
+ * Custom hook to access the theme context.
+ * Throws an error if used outside of the ThemeContextProvider.
+ * 
+ * @returns {ThemeContextType} The theme context values.
+ */
 export const useThemeContext = () => {
   const context = useContext(ThemeContext);
   if (!context) {
