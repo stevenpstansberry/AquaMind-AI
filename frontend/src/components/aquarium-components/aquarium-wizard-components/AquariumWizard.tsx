@@ -86,11 +86,11 @@ const AquariumWizard: React.FC<AquariumWizardProps> = ({ onClose }) => {
         <AquariumWizardProgress activeStep={currentStep} steps={steps} />
         <CardContent>
           {/* Step components */}
-          {currentStep === 0 && <AquariumTypeStep onNext={handleNext} setAquariumData={setAquariumData} />}
-          {currentStep === 1 && <TankSizeStep onNext={handleNext} onBack={handlePrev} setAquariumData={setAquariumData} />}
-          {currentStep === 2 && <SpeciesSelectionStep onNext={handleNext} onBack={handlePrev} setAquariumData={setAquariumData} />}
-          {currentStep === 3 && <EquipmentStep onNext={handleNext} onBack={handlePrev} setAquariumData={setAquariumData} />}
-          {currentStep === 4 && <SummaryStep aquariumData={aquariumData} onBack={handlePrev} />}
+          {currentStep === 0 && <AquariumTypeStep  setAquariumData={setAquariumData} />}
+          {currentStep === 1 && <TankSizeStep   setAquariumData={setAquariumData} />}
+          {currentStep === 2 && <SpeciesSelectionStep   setAquariumData={setAquariumData} />}
+          {currentStep === 3 && <EquipmentStep  setAquariumData={setAquariumData} />}
+          {currentStep === 4 && <SummaryStep aquariumData={aquariumData}  />}
         </CardContent>
 
         {/* Button container */}

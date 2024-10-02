@@ -2,11 +2,10 @@ import React, { useState } from 'react';
 import { Button, Typography, Grid, Box } from '@mui/material';
 
 interface AquariumTypeStepProps {
-  onNext: () => void;
   setAquariumData: React.Dispatch<React.SetStateAction<any>>;
 }
 
-const AquariumTypeStep: React.FC<AquariumTypeStepProps> = ({ onNext, setAquariumData }) => {
+const AquariumTypeStep: React.FC<AquariumTypeStepProps> = ({ setAquariumData }) => {
   const [selectedType, setSelectedType] = useState<string | null>(null); // Track selected type
 
   const handleTypeSelection = (type: string) => {

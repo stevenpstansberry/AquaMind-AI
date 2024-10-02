@@ -5,10 +5,9 @@ interface SummaryStepProps {
       species: string[];
       equipment: string[];
     };
-    onBack: () => void;
   }
   
-  const SummaryStep: React.FC<SummaryStepProps> = ({ aquariumData, onBack }) => {
+  const SummaryStep: React.FC<SummaryStepProps> = ({ aquariumData }) => {
     return (
       <div>
         <h3>Summary</h3>
@@ -16,7 +15,6 @@ interface SummaryStepProps {
         <p>Size: {aquariumData.size}</p>
         <p>Species: {aquariumData.species.join(', ')}</p>
         <p>Equipment: {aquariumData.equipment.join(', ')}</p>
-        <button onClick={onBack}>Back</button>
       </div>
     );
   };
