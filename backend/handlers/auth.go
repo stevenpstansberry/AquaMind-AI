@@ -1,3 +1,7 @@
+// Package handlers contains HTTP handlers for user authentication,
+// including user registration and login. These handlers interact
+// with the models package to manage users in the database and use
+// utility functions for password hashing and JWT generation.
 package handlers
 
 import (
@@ -9,13 +13,38 @@ import (
     "github.com/stevenpstansberry/AquaMind-AI/util"
 )
 
+// Credentials represents the structure for incoming authentication requests.
+// It includes the user's email, password, and optionally, full name (for registration).
 type Credentials struct {
-    Email    string `json:"email"`
-    Password string `json:"password"`
-    FullName string `json:"full_name,omitempty"` // Optional for login
+    Email    string `json:"email"`     // The user's email address
+    Password string `json:"password"`  // The user's password
+    FullName string `json:"full_name,omitempty"` // Optional full name for registration
 }
 
-// RegisterUser handles user registration
+// RegisterUser handles user registration by accepting user details (email, password, full name),
+// hashing the password, and storing the user in the database. It returns a JWT token upon success.
+//
+// Method: POST
+// Endpoint: /register
+//
+// The function performs the following steps:
+//   - Parse and validate the incoming request body (expects JSON).
+//   - Check if the user already exists in the database.
+//   - Hash the user's password using bcrypt.
+//   - Store the user details in the database.
+//   - Generate a JWT token for the registered user.
+//   - Return the token as a JSON response or an error message in case of failure.
+//
+// Request body (JSON):
+//   {
+//     "email": "user@example.com",
+//     "password": "userpassword",
+//     "full_name": "User Full Name"
+//   }
+//
+// Response (JSON):
+//   - On success: {"token": "generated-jwt-token"}
+//   - On error: HTTP status code with an appropriate error message.
 func RegisterUser(w http.ResponseWriter, r *http.Request) {
     var creds Credentials
 
@@ -63,8 +92,28 @@ func RegisterUser(w http.ResponseWriter, r *http.Request) {
     json.NewEncoder(w).Encode(map[string]string{"token": token})
 }
 
-
-// LoginUser handles user login and returns a JWT token
+// LoginUser handles user authentication by verifying the user's email and password.
+// If valid, it returns a JWT token for future authenticated requests.
+//
+// Method: POST
+// Endpoint: /login
+//
+// The function performs the following steps:
+//   - Parse and validate the incoming request body (expects JSON).
+//   - Check if the user exists in the database.
+//   - Compare the provided password with the stored hashed password.
+//   - Generate a JWT token upon successful authentication.
+//   - Return the token as a JSON response or an error message if authentication fails.
+//
+// Request body (JSON):
+//   {
+//     "email": "user@example.com",
+//     "password": "userpassword"
+//   }
+//
+// Response (JSON):
+//   - On success: {"token": "generated-jwt-token"}
+//   - On error: HTTP status code with an appropriate error message.
 func LoginUser(w http.ResponseWriter, r *http.Request) {
     var creds Credentials
 

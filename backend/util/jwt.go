@@ -1,3 +1,6 @@
+// Package utils provides utility functions for generating and validating JWT tokens.
+// These functions are used for securing routes by generating tokens upon user login
+// and validating them for protected routes.
 package utils
 
 import (
@@ -6,16 +9,26 @@ import (
     "errors"
 )
 
-// Claims struct used to store the JWT claims
+// Claims represents the structure for JWT claims. It embeds the StandardClaims
+// from the JWT package and includes an Email field to store the user's email address.
 type Claims struct {
-    Email string `json:"email"`
-    jwt.StandardClaims
+    Email string `json:"email"`           // The user's email address
+    jwt.StandardClaims                   // Embedded standard claims (e.g., expiration time)
 }
 
-// Secret key used to sign the JWT. This should be stored securely, such as in AWS Secrets Manager.
+// jwtKey is the secret key used to sign JWT tokens. 
+// In production, this should be securely stored (e.g., AWS Secrets Manager, environment variables).
 var jwtKey = []byte("your_secret_key")
 
-// GenerateJWT generates a new JWT for a given email
+// GenerateJWT creates and signs a new JWT token for the given email.
+// The token is valid for 24 hours.
+//
+// Params:
+//   - email: the email address to embed in the token claims.
+//
+// Returns:
+//   - string: the signed JWT token.
+//   - error: an error if the token generation fails.
 func GenerateJWT(email string) (string, error) {
     // Set expiration time (e.g., 24 hours)
     expirationTime := time.Now().Add(24 * time.Hour)
@@ -41,7 +54,15 @@ func GenerateJWT(email string) (string, error) {
     return tokenString, nil
 }
 
-// ValidateJWT validates a JWT and returns the claims if valid
+// ValidateJWT parses and validates a JWT token. If the token is valid,
+// it returns the claims contained in the token.
+//
+// Params:
+//   - tokenString: the JWT token string to validate.
+//
+// Returns:
+//   - *Claims: the claims (including the email) if the token is valid.
+//   - error: an error if the token is invalid or if there was an issue parsing it.
 func ValidateJWT(tokenString string) (*Claims, error) {
     claims := &Claims{}
 
