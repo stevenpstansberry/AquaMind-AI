@@ -1,12 +1,25 @@
-import React from 'react';
-
-const SummaryStep: React.FC = () => {
+interface SummaryStepProps {
+    aquariumData: {
+      type: string;
+      size: string;
+      species: string[];
+      equipment: string[];
+    };
+    onBack: () => void;
+  }
+  
+  const SummaryStep: React.FC<SummaryStepProps> = ({ aquariumData, onBack }) => {
     return (
-        <div>
-            <h2>Summary</h2>
-            <p>This is the summary step of the aquarium wizard.</p>
-        </div>
+      <div>
+        <h3>Summary</h3>
+        <p>Type: {aquariumData.type}</p>
+        <p>Size: {aquariumData.size}</p>
+        <p>Species: {aquariumData.species.join(', ')}</p>
+        <p>Equipment: {aquariumData.equipment.join(', ')}</p>
+        <button onClick={onBack}>Back</button>
+      </div>
     );
-};
-
-export default SummaryStep;
+  };
+  
+  export default SummaryStep;
+  
