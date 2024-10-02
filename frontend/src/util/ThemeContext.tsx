@@ -8,21 +8,21 @@ const lightTheme = createTheme({
   palette: {
     mode: 'light',
     primary: {
-      main: '#0077b6', // Light Blue
-      
+      main: '#1976d2', // Soft blue, commonly used for primary buttons
     },
     secondary: {
-      main: '#48cae4', // Seafoam Green
+      main: '#ff9800', // Warm orange for accents
     },
     background: {
-      default: '#f0f4f8', // Soft White
+      default: '#ffffff', // White background for clarity
+      paper: '#f8f9fa', // Slightly off-white for cards and containers
     },
     text: {
-      primary: '#000000', // Black
-      secondary: '#f0f4f8', //Soft White
+      primary: '#333333', // Dark grey for primary text (easier than pure black)
+      secondary: '#666666', // Medium grey for secondary text
     },
     action: {
-      active: '#ffb703', // Coral / Accent Color
+      active: '#ff5722', // Friendly coral color for active states
     },
   },
 });
