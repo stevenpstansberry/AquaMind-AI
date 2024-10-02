@@ -120,9 +120,10 @@ const SignInEmailCard: React.FC = () => {
       // Make API call to login the user
       const response = await loginUser({ email, password });
 
+
       // Call login from AuthContext and store the token and email
-      const { email: responseEmail, token } = response as LoginResponse;
-      login({ email: responseEmail, token });
+      const { token } = response as LoginResponse;
+      login({ email, token });
 
       // Show success and navigate to dashboard if login is successful
       showSnackbar('Login successful!', 'success');

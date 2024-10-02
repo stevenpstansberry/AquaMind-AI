@@ -80,6 +80,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setToken(null);
     localStorage.removeItem('token'); // Remove token from local storage
     localStorage.removeItem('user');
+    window.location.reload(); // Reload the page to clear any remaining state
   };
 
   /**
