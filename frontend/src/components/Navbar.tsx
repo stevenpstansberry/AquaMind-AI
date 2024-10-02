@@ -1,10 +1,20 @@
+/**
+ * @file Navbar.tsx
+ * @author Steven Stansberry
+ * @location /src/components/Navbar.tsx
+ * @description 
+ * This file contains the Navbar component for the Aquamind AI application. The Navbar provides
+ * navigation links, a search bar, theme toggle functionality, and authentication controls (Sign In/Logout).
+ * It also implements a scroll detection feature that dynamically adds a shadow to the AppBar
+ * when the user scrolls down.
+ */
+
 import React, { useState, useEffect } from 'react';
 import { AppBar, Toolbar, Typography, Button, Box, InputBase } from '@mui/material';
 import { Link } from 'react-router-dom';
 import SearchIcon from '@mui/icons-material/Search';
 import { styled, alpha, useTheme } from '@mui/material/styles';
 import { useThemeContext } from '../util/ThemeContext';
-import { getUser } from '../services/AuthServices';
 import { useAuth } from '../util/AuthContext';
 
 // Styled components for the search bar
@@ -46,6 +56,10 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   },
 }));
 
+/**
+ * Navbar component for Aquamind AI. 
+ * Provides navigation links, a theme toggle, search bar, and authentication controls.
+ */
 const Navbar: React.FC = () => {
   const [elevated, setElevated] = useState(false);
   const { toggleTheme, isDarkMode } = useThemeContext(); 
@@ -53,7 +67,9 @@ const Navbar: React.FC = () => {
 
   const { isLoggedIn, user, logout } = useAuth(); // Access isLoggedIn and logout function
 
-  // Scroll event handler to add shadow to navbar
+  /**
+   * Scroll event handler to add shadow to the navbar when scrolled down.
+   */
   const handleScroll = () => {
     if (window.scrollY > 50) {
       setElevated(true);
@@ -69,9 +85,6 @@ const Navbar: React.FC = () => {
       window.removeEventListener('scroll', handleScroll);
     };
   }, []);
-
-
-  
 
   return (
     <AppBar
@@ -118,7 +131,6 @@ const Navbar: React.FC = () => {
             Settings
           </Button>
 
-
         {/* Toggle Theme Button */}
         <Button
           color="inherit"
@@ -140,10 +152,8 @@ const Navbar: React.FC = () => {
           />
         </Search>
 
-
-
-          {/* Conditional Auth Buttons */}
-          {isLoggedIn ? (
+        {/* Conditional Auth Buttons */}
+        {isLoggedIn ? (
           <>
             <Typography sx={{ marginRight: 2 }}>Hello, {user}!</Typography>
             <Button onClick={logout} sx={{ textTransform: 'none', color: 'inherit' }}>
