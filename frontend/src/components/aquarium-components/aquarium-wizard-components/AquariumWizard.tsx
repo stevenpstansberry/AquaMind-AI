@@ -56,7 +56,7 @@ const AquariumWizard: React.FC<AquariumWizardProps> = ({ onClose }) => {
           {/* Step components */}
           {currentStep === 0 && <AquariumTypeStep setAquariumData={setAquariumData} />}
           {currentStep === 1 && <TankSizeStep setAquariumData={setAquariumData} />}
-          {currentStep === 2 && <SpeciesSelectionStep setAquariumData={setAquariumData} />}
+          {currentStep === 2 && <SpeciesSelectionStep setAquariumData={setAquariumData} aquariumData={aquariumData} />}
           {currentStep === 3 && <EquipmentStep setAquariumData={setAquariumData} />}
           {currentStep === 4 && <SummaryStep aquariumData={aquariumData} />}
         </CardContent>
