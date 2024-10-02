@@ -25,13 +25,13 @@ const AquariumWizard: React.FC<AquariumWizardProps> = ({ onClose }) => {
   const [showChat, setShowChat] = useState(false); // Toggle between wizard and chat interface
 
   const handleNext = () => {
-    console.log(aquariumData);
+    console.log("next", aquariumData);
     setCurrentStep((prevStep) => prevStep + 1);
     setIsStepValid(false); // Reset the validity check for the next step
   };
 
   const handlePrev = () => {
-    console.log(aquariumData);
+    console.log("back", aquariumData);
     setCurrentStep((prevStep) => prevStep - 1);
     setIsStepValid(true); // Assume previous steps are valid
   };
@@ -57,10 +57,10 @@ const AquariumWizard: React.FC<AquariumWizardProps> = ({ onClose }) => {
         <AquariumWizardProgress activeStep={currentStep} steps={steps} />
         <CardContent>
           {/* Step components */}
-          {currentStep === 0 && <AquariumTypeStep setAquariumData={setAquariumData} setIsStepValid={setIsStepValid} />}
-          {currentStep === 1 && <TankSizeStep setAquariumData={setAquariumData} setIsStepValid={setIsStepValid}/>}
+          {currentStep === 0 && <AquariumTypeStep setAquariumData={setAquariumData} setIsStepValid={setIsStepValid} aquariumData={aquariumData} />}
+          {currentStep === 1 && <TankSizeStep setAquariumData={setAquariumData} setIsStepValid={setIsStepValid} aquariumData={aquariumData} />}
           {currentStep === 2 && <SpeciesSelectionStep setAquariumData={setAquariumData} aquariumData={aquariumData} setIsStepValid={setIsStepValid}/>}
-          {currentStep === 3 && <EquipmentStep setAquariumData={setAquariumData} setIsStepValid={setIsStepValid}/>}
+          {currentStep === 3 && <EquipmentStep setAquariumData={setAquariumData} setIsStepValid={setIsStepValid} aquariumData={aquariumData}/>}
           {currentStep === 4 && <SummaryStep aquariumData={aquariumData} />}
         </CardContent>
 
