@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {  Typography, Grid, Box, Card, CardContent } from '@mui/material';
 
 interface EquipmentStepProps { 
   setAquariumData: React.Dispatch<React.SetStateAction<any>>;
+  aquariumData: { type: string; size: string; species: string[]; equipment: string[] };
+  setIsStepValid: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const equipmentOptions = [
@@ -18,8 +20,8 @@ const equipmentOptions = [
   { name: 'Aquarium Stand', description: 'Supports your aquarium with stability.' },
 ];
 
-const EquipmentStep: React.FC<EquipmentStepProps> = ({ setAquariumData }) => {
-  const [selectedEquipment, setSelectedEquipment] = useState<string[]>([]);
+const EquipmentStep: React.FC<EquipmentStepProps> = ({ aquariumData, setAquariumData, setIsStepValid }) => {
+  const [selectedEquipment, setSelectedEquipment] =  useState<string[]>(aquariumData.equipment || []);
 
   const handleEquipmentSelection = (equipment: string) => {
     if (selectedEquipment.includes(equipment)) {
@@ -31,6 +33,22 @@ const EquipmentStep: React.FC<EquipmentStepProps> = ({ setAquariumData }) => {
     // Update parent component's state
     setAquariumData((prevData: any) => ({ ...prevData, equipment: [...selectedEquipment, equipment] }));
   };
+
+  useEffect(() => {
+    // Update the parent aquariumData with selected species
+    setAquariumData((prevData: any) => ({ ...prevData, equipment: selectedEquipment }));
+
+    // Check if at least one species is selected to enable the "Next" button
+    if (selectedEquipment.length > 0) {
+      setIsStepValid(true);
+    } else {
+      setIsStepValid(false);
+    }
+
+    // Log the selected equipment
+    console.log('Selected equipment:', selectedEquipment);
+
+  }, [selectedEquipment, setAquariumData, setIsStepValid]);
 
   return (
     <Box>

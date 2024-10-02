@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, TextField, Typography, Grid, Button, Card, CardContent, CardActionArea } from '@mui/material';
+import { Box, TextField, Typography, Grid, Card, CardContent, CardActionArea } from '@mui/material';
 
 interface Fish {
   name: string;
@@ -9,9 +9,9 @@ interface Fish {
 }
 
 interface FishSelectionHelperProps {
-  aquariumType: string;   // 'Freshwater' or 'Saltwater'
-  tankSize: number;       // Tank size in gallons
-  setSelectedFish: (fish: string[]) => void;  // Function to update the selected fish in parent component
+  setAquariumData: React.Dispatch<React.SetStateAction<any>>;
+  aquariumData: { type: string; size: string; species: string[]; equipment: string[] };
+  initialSelectedFish: string[];  // Added prop to receive initially selected fish
 }
 
 const fishSpecies: Fish[] = [
@@ -22,36 +22,55 @@ const fishSpecies: Fish[] = [
   // Add more fish species as needed
 ];
 
-const FishSelectionHelper: React.FC<FishSelectionHelperProps> = ({ aquariumType, tankSize, setSelectedFish }) => {
+const FishSelectionHelper: React.FC<FishSelectionHelperProps> = ({
+  setAquariumData,
+  aquariumData,
+  initialSelectedFish,
+}) => {
   const [searchTerm, setSearchTerm] = useState('');        
-  const [availableFish, setAvailableFish] = useState<Fish[]>([]);  // Specify type as Fish[]
-  const [selectedFish, setSelectedFishState] = useState<string[]>([]); 
-  
-  // Filter fish based on aquarium type and size
+  const [availableFish, setAvailableFish] = useState<Fish[]>([]);  
+  const [selectedFish, setSelectedFish] = useState<string[]>(initialSelectedFish || []); // Initialize from parent
+
   useEffect(() => {
+    setSelectedFish(initialSelectedFish || []); // Reset to initialSelectedFish if passed from parent
+  }, [initialSelectedFish]);
+
+  useEffect(() => {
+    // Filter fish based on aquarium type and tank size
     const filteredFish = fishSpecies.filter(
-      fish => fish.type === aquariumType && fish.minTankSize <= tankSize
+      fish => fish.type === aquariumData.type && fish.minTankSize <= Number(aquariumData.size)
     );
     setAvailableFish(filteredFish);
-  }, [aquariumType, tankSize]);
-  
+  }, [aquariumData.type, aquariumData.size]);
+
+  // Handle fish selection and update aquariumData.species directly
+  const handleFishSelection = (fishName: string) => {
+    let updatedSelection: string[]; 
+
+    if (selectedFish.includes(fishName)) {
+      updatedSelection = selectedFish.filter(fish => fish !== fishName);  // Deselect fish
+    } else {
+      updatedSelection = [...selectedFish, fishName];  // Select fish
+    }
+
+    setSelectedFish(updatedSelection);  // Update local state
+    setAquariumData((prevData: any) => ({
+      ...prevData,
+      species: updatedSelection, // Update aquariumData with the new selected species
+    }));
+
+    console.log("new data: ", aquariumData);
+  };
+
   // Handle search input
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
   };
 
-  // Handle fish selection
-  const handleFishSelection = (fishName: string) => {
-    if (selectedFish.includes(fishName)) {
-      setSelectedFishState(prev => prev.filter(fish => fish !== fishName));  // Deselect fish
-    } else {
-      setSelectedFishState(prev => [...prev, fishName]);  // Select fish
-    }
-    setSelectedFish(selectedFish); // Auto-update the parent component with selected fish
-  };
-
   // Apply search filter on fish list
-  const filteredFish = availableFish.filter(fish => fish.name.toLowerCase().includes(searchTerm.toLowerCase()));
+  const filteredFish = availableFish.filter(fish =>
+    fish.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <Box>

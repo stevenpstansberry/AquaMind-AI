@@ -21,16 +21,26 @@ const AquariumWizard: React.FC<AquariumWizardProps> = ({ onClose }) => {
     equipment: [],
   });
 
+  const [isStepValid, setIsStepValid] = useState(false); // New state to track step completion
   const [showChat, setShowChat] = useState(false); // Toggle between wizard and chat interface
 
   const handleNext = () => {
-    console.log(aquariumData);
+    console.log("next", aquariumData);
     setCurrentStep((prevStep) => prevStep + 1);
+    setIsStepValid(false); // Reset the validity check for the next step
   };
 
   const handlePrev = () => {
-    console.log(aquariumData);
+    console.log("back", aquariumData);
     setCurrentStep((prevStep) => prevStep - 1);
+    setIsStepValid(true); // Assume previous steps are valid
+  };
+
+  // TODO: implement saving to backend
+  // Function to handle "Finish" step
+  const handleFinish = () => {
+    console.log("Saving Aquarium:", aquariumData); // Simulate saving to backend
+    onClose(); // Close the wizard after logging
   };
 
   const steps = ['Aquarium Type', 'Tank Size', 'Species', 'Equipment', 'Summary'];
@@ -54,10 +64,10 @@ const AquariumWizard: React.FC<AquariumWizardProps> = ({ onClose }) => {
         <AquariumWizardProgress activeStep={currentStep} steps={steps} />
         <CardContent>
           {/* Step components */}
-          {currentStep === 0 && <AquariumTypeStep setAquariumData={setAquariumData} />}
-          {currentStep === 1 && <TankSizeStep setAquariumData={setAquariumData} />}
-          {currentStep === 2 && <SpeciesSelectionStep setAquariumData={setAquariumData} aquariumData={aquariumData} />}
-          {currentStep === 3 && <EquipmentStep setAquariumData={setAquariumData} />}
+          {currentStep === 0 && <AquariumTypeStep setAquariumData={setAquariumData} setIsStepValid={setIsStepValid} aquariumData={aquariumData} />}
+          {currentStep === 1 && <TankSizeStep setAquariumData={setAquariumData} setIsStepValid={setIsStepValid} aquariumData={aquariumData} />}
+          {currentStep === 2 && <SpeciesSelectionStep setAquariumData={setAquariumData} aquariumData={aquariumData} setIsStepValid={setIsStepValid}/>}
+          {currentStep === 3 && <EquipmentStep setAquariumData={setAquariumData} setIsStepValid={setIsStepValid} aquariumData={aquariumData}/>}
           {currentStep === 4 && <SummaryStep aquariumData={aquariumData} />}
         </CardContent>
 
@@ -77,9 +87,9 @@ const AquariumWizard: React.FC<AquariumWizardProps> = ({ onClose }) => {
 
             {/* Always align the Next/Finish button to the right */}
             {currentStep < steps.length - 1 ? (
-              <Button variant="contained" onClick={handleNext}>Next</Button>
+             <Button variant="contained" onClick={handleNext} disabled={!isStepValid}>Next</Button>
             ) : (
-              <Button variant="contained" onClick={onClose}>Finish</Button>
+              <Button variant="contained" onClick={handleFinish}>Finish</Button>
             )}
           </Box>
         </Box>
