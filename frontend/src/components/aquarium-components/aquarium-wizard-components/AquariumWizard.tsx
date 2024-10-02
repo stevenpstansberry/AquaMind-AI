@@ -24,10 +24,12 @@ const AquariumWizard: React.FC<AquariumWizardProps> = ({ onClose }) => {
   const [showChat, setShowChat] = useState(false); // Toggle between wizard and chat interface
 
   const handleNext = () => {
+    console.log(aquariumData);
     setCurrentStep((prevStep) => prevStep + 1);
   };
 
   const handlePrev = () => {
+    console.log(aquariumData);
     setCurrentStep((prevStep) => prevStep - 1);
   };
 
