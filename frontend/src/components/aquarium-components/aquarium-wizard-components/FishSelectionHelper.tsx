@@ -26,7 +26,7 @@ const FishSelectionHelper: React.FC<FishSelectionHelperProps> = ({ aquariumType,
   const [searchTerm, setSearchTerm] = useState('');        
   const [availableFish, setAvailableFish] = useState<Fish[]>([]);  // Specify type as Fish[]
   const [selectedFish, setSelectedFishState] = useState<string[]>([]); 
-  
+
   // Filter fish based on aquarium type and size
   useEffect(() => {
     const filteredFish = fishSpecies.filter(
@@ -42,12 +42,16 @@ const FishSelectionHelper: React.FC<FishSelectionHelperProps> = ({ aquariumType,
 
   // Handle fish selection
   const handleFishSelection = (fishName: string) => {
+    let updatedSelection: string[]; // New selection state
+
     if (selectedFish.includes(fishName)) {
-      setSelectedFishState(prev => prev.filter(fish => fish !== fishName));  // Deselect fish
+      updatedSelection = selectedFish.filter(fish => fish !== fishName);  // Deselect fish
     } else {
-      setSelectedFishState(prev => [...prev, fishName]);  // Select fish
+      updatedSelection = [...selectedFish, fishName];  // Select fish
     }
-    setSelectedFish(selectedFish); // Auto-update the parent component with selected fish
+
+    setSelectedFishState(updatedSelection);  // Update local state
+    setSelectedFish(updatedSelection);       // Update parent state with the new selection
   };
 
   // Apply search filter on fish list

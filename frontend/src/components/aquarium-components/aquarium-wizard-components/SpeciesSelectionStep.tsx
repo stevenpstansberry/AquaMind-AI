@@ -1,19 +1,31 @@
 import React, { useState, useEffect } from 'react';
-import FishSelectionHelper from './FishSelectionHelper'; 
+import FishSelectionHelper from './FishSelectionHelper';
 import { Typography, Box } from '@mui/material';
 
 interface SpeciesSelectionStepProps {
   setAquariumData: React.Dispatch<React.SetStateAction<any>>;
   aquariumData: { type: string; size: string; species: string[] }; // Pass the aquarium data
+  setIsStepValid: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const SpeciesSelectionStep: React.FC<SpeciesSelectionStepProps> = ({ setAquariumData, aquariumData }) => {
+const SpeciesSelectionStep: React.FC<SpeciesSelectionStepProps> = ({ setAquariumData, aquariumData, setIsStepValid }) => {
   const [selectedFish, setSelectedFish] = useState<string[]>([]); // Local state to store selected fish
 
   useEffect(() => {
-    // Update the selected species in the parent state when selectedFish changes
+    // Update the parent aquariumData with selected species
     setAquariumData((prevData: any) => ({ ...prevData, species: selectedFish }));
-  }, [selectedFish, setAquariumData]);
+
+    // Check if at least one species is selected to enable the "Next" button
+    if (selectedFish.length > 0) {
+      setIsStepValid(true);
+    } else {
+      setIsStepValid(false);
+    }
+
+    // Log the selected fish
+    console.log('Selected fish:', selectedFish);
+
+  }, [selectedFish, setAquariumData, setIsStepValid]);
 
   return (
     <Box>
@@ -21,7 +33,7 @@ const SpeciesSelectionStep: React.FC<SpeciesSelectionStepProps> = ({ setAquarium
       <FishSelectionHelper
         aquariumType={aquariumData.type} // Pass the type (Freshwater/Saltwater)
         tankSize={parseInt(aquariumData.size)} // Pass the tank size in gallons
-        setSelectedFish={setSelectedFish} // Pass a function to update selected fish
+        setSelectedFish={setSelectedFish} // Function to update selected fish
       />
     </Box>
   );

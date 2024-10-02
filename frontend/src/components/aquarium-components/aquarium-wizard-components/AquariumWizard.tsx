@@ -21,16 +21,19 @@ const AquariumWizard: React.FC<AquariumWizardProps> = ({ onClose }) => {
     equipment: [],
   });
 
+  const [isStepValid, setIsStepValid] = useState(false); // New state to track step completion
   const [showChat, setShowChat] = useState(false); // Toggle between wizard and chat interface
 
   const handleNext = () => {
     console.log(aquariumData);
     setCurrentStep((prevStep) => prevStep + 1);
+    setIsStepValid(false); // Reset the validity check for the next step
   };
 
   const handlePrev = () => {
     console.log(aquariumData);
     setCurrentStep((prevStep) => prevStep - 1);
+    setIsStepValid(true); // Assume previous steps are valid
   };
 
   const steps = ['Aquarium Type', 'Tank Size', 'Species', 'Equipment', 'Summary'];
@@ -54,10 +57,10 @@ const AquariumWizard: React.FC<AquariumWizardProps> = ({ onClose }) => {
         <AquariumWizardProgress activeStep={currentStep} steps={steps} />
         <CardContent>
           {/* Step components */}
-          {currentStep === 0 && <AquariumTypeStep setAquariumData={setAquariumData} />}
-          {currentStep === 1 && <TankSizeStep setAquariumData={setAquariumData} />}
-          {currentStep === 2 && <SpeciesSelectionStep setAquariumData={setAquariumData} aquariumData={aquariumData} />}
-          {currentStep === 3 && <EquipmentStep setAquariumData={setAquariumData} />}
+          {currentStep === 0 && <AquariumTypeStep setAquariumData={setAquariumData} setIsStepValid={setIsStepValid} />}
+          {currentStep === 1 && <TankSizeStep setAquariumData={setAquariumData} setIsStepValid={setIsStepValid}/>}
+          {currentStep === 2 && <SpeciesSelectionStep setAquariumData={setAquariumData} aquariumData={aquariumData} setIsStepValid={setIsStepValid}/>}
+          {currentStep === 3 && <EquipmentStep setAquariumData={setAquariumData} setIsStepValid={setIsStepValid}/>}
           {currentStep === 4 && <SummaryStep aquariumData={aquariumData} />}
         </CardContent>
 
@@ -77,7 +80,7 @@ const AquariumWizard: React.FC<AquariumWizardProps> = ({ onClose }) => {
 
             {/* Always align the Next/Finish button to the right */}
             {currentStep < steps.length - 1 ? (
-              <Button variant="contained" onClick={handleNext}>Next</Button>
+             <Button variant="contained" onClick={handleNext} disabled={!isStepValid}>Next</Button>
             ) : (
               <Button variant="contained" onClick={onClose}>Finish</Button>
             )}

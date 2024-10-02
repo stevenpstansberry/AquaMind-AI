@@ -3,14 +3,16 @@ import { Button, Typography, Grid, Box } from '@mui/material';
 
 interface AquariumTypeStepProps {
   setAquariumData: React.Dispatch<React.SetStateAction<any>>;
+  setIsStepValid: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const AquariumTypeStep: React.FC<AquariumTypeStepProps> = ({ setAquariumData }) => {
+const AquariumTypeStep: React.FC<AquariumTypeStepProps> = ({ setAquariumData, setIsStepValid }) => {
   const [selectedType, setSelectedType] = useState<string | null>(null); // Track selected type
 
   const handleTypeSelection = (type: string) => {
     setSelectedType(type); // Set the selected type
     setAquariumData((prevData: any) => ({ ...prevData, type })); // Update the aquarium data
+    setIsStepValid(true); // Mark the step as valid once a type is selected
   };
 
   return (

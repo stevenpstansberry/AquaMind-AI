@@ -3,9 +3,10 @@ import { Typography, TextField, Box, InputAdornment } from '@mui/material';
 
 interface TankSizeStepProps {
   setAquariumData: React.Dispatch<React.SetStateAction<any>>;
+  setIsStepValid: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const TankSizeStep: React.FC<TankSizeStepProps> = ({ setAquariumData }) => {
+const TankSizeStep: React.FC<TankSizeStepProps> = ({ setAquariumData, setIsStepValid }) => {
   const [customSize, setCustomSize] = useState('');
   const [sizeError, setSizeError] = useState(false);
 
@@ -15,9 +16,13 @@ const TankSizeStep: React.FC<TankSizeStepProps> = ({ setAquariumData }) => {
     setCustomSize(value);
 
     // Validate to allow only numbers
-    if (/^\d+$/.test(value) || value === '') {
+    if (/^\d+$/.test(value)) {
       setSizeError(false);
       setAquariumData((prevData: any) => ({ ...prevData, size: `${value} gallons` }));
+    } else if (value === '') {
+      // If the input is cleared, invalidate the step
+      setIsStepValid(false);
+      setAquariumData((prevData: any) => ({ ...prevData, size: '' }));
     } else {
       setSizeError(true);
     }
@@ -27,6 +32,7 @@ const TankSizeStep: React.FC<TankSizeStepProps> = ({ setAquariumData }) => {
   useEffect(() => {
     if (!sizeError && customSize) {
       setAquariumData((prevData: any) => ({ ...prevData, size: `${customSize} gallons` }));
+      setIsStepValid(true); // Mark the step as valid
     }
   }, [customSize, sizeError, setAquariumData]);
 
