@@ -1,37 +1,56 @@
-// src/pages/LoginRegisterCard.tsx
+/**
+ * @file AccountCard.tsx
+ * @author Steven Stansberry
+ * @location /src/pages/auth-pages/AccountCard.tsx
+ * @description 
+ * This component renders a card with tabs that toggle between "Sign In" and "Register" modes. The card allows 
+ * users to either sign in or register using Google (OAuth) or email. 
+ */
+
 import React, { useState, useEffect } from 'react';
 import { Card, Tabs, Tab, Typography, Button, Box } from '@mui/material';
 import GoogleIcon from '@mui/icons-material/Google';
 import EmailIcon from '@mui/icons-material/Email';
 import { Link, useLocation } from 'react-router-dom';
-import {  useTheme } from '@mui/material/styles';
+import { useTheme } from '@mui/material/styles';
 
+/**
+ * AccountCard component renders a login/register interface with toggling tabs.
+ * It supports both Google and email-based sign-in/register methods.
+ * 
+ * @returns {JSX.Element} The rendered login/register card component.
+ */
 const AccountCard: React.FC = () => {
   // State to toggle between login and register modes
   const [activeTab, setActiveTab] = useState(0); // 0 -> Login, 1 -> Register
 
-
   const theme = useTheme();
-
 
   // Get the current URL location
   const location = useLocation();
 
-  // Set the active tab based on the query parameter
+  /**
+   * Set the active tab based on the URL query parameter.
+   * If 'mode=register', switch to the Register tab.
+   */
   useEffect(() => {
-    // Parse the query parameters from the URL
     const searchParams = new URLSearchParams(location.search);
     const mode = searchParams.get('mode'); // Get the 'mode' parameter value
 
     if (mode === 'register') {
-      setActiveTab(1); // Switch to Register tab if 'mode' is 'register'
+      setActiveTab(1); // Switch to Register tab
       console.log(location);
     } else {
       setActiveTab(0); // Default to Sign In tab
     }
   }, [location]);
 
-  // Handler to change between tabs
+  /**
+   * Handler to change between Sign In and Register tabs.
+   * 
+   * @param {React.SyntheticEvent} event - The event triggered when a tab is selected.
+   * @param {number} newValue - The new active tab index.
+   */
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setActiveTab(newValue);
   };
@@ -39,7 +58,7 @@ const AccountCard: React.FC = () => {
   return (
     <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
       <Card sx={{ width: 400, padding: 4, textAlign: 'center', borderRadius: 4, position: 'relative', overflow: 'hidden' }}>
-        {/* Add Bubbles Inside the Card */}
+        {/* Add Decorative Bubbles Inside the Card */}
         <Box
           sx={{
             position: 'absolute',
@@ -80,7 +99,7 @@ const AccountCard: React.FC = () => {
             zIndex: 0,
           }}
         />
-          <Box
+        <Box
           sx={{
             position: 'absolute',
             bottom: '-80px',
@@ -145,7 +164,7 @@ const AccountCard: React.FC = () => {
                 </Button>
                 <Typography variant="body2" sx={{ marginTop: 2 }}>
                   Don't have an account?{' '}
-                  <Link to="" onClick={() => setActiveTab(1)}>
+                  <Link to="#" onClick={() => setActiveTab(1)}>
                     Register
                   </Link>
                 </Typography>
