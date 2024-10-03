@@ -120,6 +120,10 @@ const Aquariums: React.FC = () => {
                   boxShadow: '0px 2px 5px rgba(0, 0, 0, 0.05)',
                   borderRadius: '8px',  
                   backgroundColor: '#fafafa',
+                  '&:hover': {
+                    transform: 'scale(1.01)', // Subtle scaling
+                    boxShadow: '0px 2px 10px rgba(0, 0, 0, 0.12)', // Softer shadow
+                  }
                 }}
               >
                 <Toolbar sx={{ justifyContent: 'space-between' }}>
