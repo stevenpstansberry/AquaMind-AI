@@ -12,7 +12,8 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../util/AuthContext';
 import AquariumSidebar from '../components/aquarium-components/AquariumSidebar';
 import AquariumWizard from '../components/aquarium-components/aquarium-wizard-components/AquariumWizard';
-import { Button, Box, AppBar, Toolbar, Typography, Grid, Card, CardContent } from '@mui/material';
+import { Button, Box, AppBar, Toolbar, Typography, Grid, Card, CardContent, IconButton } from '@mui/material';
+import AddCircleIcon from '@mui/icons-material/AddCircle'; // Import plus icon
 
 interface Aquarium {
   id: string;  // Changed to string for UUID support
@@ -113,9 +114,12 @@ const Aquariums: React.FC = () => {
                 position="static"
                 color="default"
                 sx={{
-                  boxShadow: 'none',
                   borderBottom: '2px solid #333', // Dark underline
                   paddingBottom: '10px', // Space under text
+                  border: '1px solid #e0e0e0',
+                  boxShadow: '0px 2px 5px rgba(0, 0, 0, 0.05)',
+                  borderRadius: '8px',  
+                  backgroundColor: '#fafafa',
                 }}
               >
                 <Toolbar sx={{ justifyContent: 'space-between' }}>
@@ -131,14 +135,19 @@ const Aquariums: React.FC = () => {
                 </Toolbar>
               </AppBar>
 
-              {/* Grid of Cards with Subtle Hover Effect */}
+              {/* Grid of Cards with Subtle Hover Effect and Plus Icon */}
               <Grid container spacing={3} sx={{ marginTop: '20px' }}>
                 {/* Fish Card (larger) */}
                 <Grid item xs={12} md={6} lg={6}>
                   <Card 
                     sx={{ 
                       height: '100%',
+                      position: 'relative', 
                       transition: 'transform 0.15s ease-in-out, box-shadow 0.15s ease-in-out',
+                      border: '1px solid #e0e0e0',
+                      boxShadow: '0px 2px 5px rgba(0, 0, 0, 0.05)',
+                      borderRadius: '8px',  
+                      backgroundColor: '#fafafa',
                       '&:hover': {
                         transform: 'scale(1.01)',  // Subtle scaling
                         boxShadow: '0px 2px 10px rgba(0, 0, 0, 0.12)', // Softer shadow
@@ -151,6 +160,20 @@ const Aquariums: React.FC = () => {
                         {currentAquarium.species.join(', ')}
                       </Typography>
                     </CardContent>
+                    {/* Plus Icon */}
+                    <IconButton 
+                      color="primary" 
+                      sx={{ 
+                        position: 'absolute', 
+                        top: '10px', 
+                        right: '10px', 
+                        color: '#B0BEC5',  
+                        fontSize: '20px'  
+                      }}
+                      aria-label="add fish"
+                    >
+                      <AddCircleIcon />
+                    </IconButton>
                   </Card>
                 </Grid>
 
@@ -159,7 +182,12 @@ const Aquariums: React.FC = () => {
                   <Card 
                     sx={{ 
                       height: '100%',
+                      position: 'relative', // To position the plus icon
                       transition: 'transform 0.15s ease-in-out, box-shadow 0.15s ease-in-out',
+                      border: '1px solid #e0e0e0',
+                      boxShadow: '0px 2px 5px rgba(0, 0, 0, 0.05)',
+                      borderRadius: '8px',  
+                      backgroundColor: '#fafafa',
                       '&:hover': {
                         transform: 'scale(1.01)', // Subtle scaling
                         boxShadow: '0px 2px 10px rgba(0, 0, 0, 0.12)', // Softer shadow
@@ -170,6 +198,20 @@ const Aquariums: React.FC = () => {
                       <Typography variant="h6">Plants</Typography>
                       <Typography variant="body1">No plants added yet.</Typography>
                     </CardContent>
+                    {/* Plus Icon */}
+                    <IconButton 
+                      color="primary" 
+                      sx={{ 
+                        position: 'absolute', 
+                        top: '10px', 
+                        right: '10px', 
+                        color: '#B0BEC5',  
+                        fontSize: '20px'  
+                      }}
+                      aria-label="add plant"
+                    >
+                      <AddCircleIcon />
+                    </IconButton>
                   </Card>
                 </Grid>
 
@@ -178,7 +220,12 @@ const Aquariums: React.FC = () => {
                   <Card 
                     sx={{ 
                       height: '100%',
+                      position: 'relative', // To position the plus icon
                       transition: 'transform 0.15s ease-in-out, box-shadow 0.15s ease-in-out',
+                      border: '1px solid #e0e0e0',
+                      boxShadow: '0px 2px 5px rgba(0, 0, 0, 0.05)',
+                      borderRadius: '8px',  
+                      backgroundColor: '#fafafa',
                       '&:hover': {
                         transform: 'scale(1.01)', // Subtle scaling
                         boxShadow: '0px 2px 10px rgba(0, 0, 0, 0.12)', // Softer shadow
@@ -191,6 +238,20 @@ const Aquariums: React.FC = () => {
                         {currentAquarium.equipment.join(', ')}
                       </Typography>
                     </CardContent>
+                    {/* Plus Icon */}
+                    <IconButton 
+                      color="primary" 
+                      sx={{ 
+                        position: 'absolute', 
+                        top: '10px', 
+                        right: '10px', 
+                        color: '#B0BEC5',  
+                        fontSize: '20px'  
+                      }}
+                      aria-label="add equipment"
+                    >
+                      <AddCircleIcon />
+                    </IconButton>
                   </Card>
                 </Grid>
 
@@ -199,7 +260,12 @@ const Aquariums: React.FC = () => {
                   <Card 
                     sx={{ 
                       height: '100%',
+                      position: 'relative', // To position the plus icon
                       transition: 'transform 0.15s ease-in-out, box-shadow 0.15s ease-in-out',
+                      border: '1px solid #e0e0e0',
+                      boxShadow: '0px 2px 5px rgba(0, 0, 0, 0.05)',
+                      borderRadius: '8px',  
+                      backgroundColor: '#fafafa',
                       '&:hover': {
                         transform: 'scale(1.01)', // Subtle scaling
                         boxShadow: '0px 2px 10px rgba(0, 0, 0, 0.12)', // Softer shadow
@@ -214,6 +280,20 @@ const Aquariums: React.FC = () => {
                         Ammonia: 0 ppm
                       </Typography>
                     </CardContent>
+                    {/* Plus Icon */}
+                    <IconButton 
+                      color="primary" 
+                      sx={{ 
+                        position: 'absolute', 
+                        top: '10px', 
+                        right: '10px', 
+                        color: '#B0BEC5',  
+                        fontSize: '20px'  
+                      }}
+                      aria-label="add parameters"
+                    >
+                      <AddCircleIcon />
+                    </IconButton>
                   </Card>
                 </Grid>
               </Grid>
@@ -223,12 +303,16 @@ const Aquariums: React.FC = () => {
 
         {/* Bottom Section for Aquarium Insights and Add New Aquarium */}
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 'auto' }}>
-          {/* Aquarium Insights (at the bottom) */}
+          {/* Aquarium Insights (at the bottom, no plus icon) */}
           <Card 
             sx={{ 
               width: '100%', 
               height: '150px',
               transition: 'transform 0.15s ease-in-out, box-shadow 0.15s ease-in-out',
+              border: '1px solid #e0e0e0',
+              boxShadow: '0px 2px 5px rgba(0, 0, 0, 0.05)',
+              borderRadius: '8px',  
+              backgroundColor: '#fafafa',
               '&:hover': {
                 transform: 'scale(1.01)', // Subtle scaling
                 boxShadow: '0px 2px 10px rgba(0, 0, 0, 0.12)', // Softer shadow
@@ -238,7 +322,7 @@ const Aquariums: React.FC = () => {
             <CardContent>
               <Typography variant="h6">Aquarium Insights (AI-Powered)</Typography>
               <Typography variant="body1">
-                Placeholder response
+                Your tank's water temperature is optimal for Tetra species. Make sure to monitor pH levels regularly.
               </Typography>
             </CardContent>
           </Card>
