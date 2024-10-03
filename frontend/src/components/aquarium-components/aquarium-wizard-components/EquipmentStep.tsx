@@ -14,17 +14,52 @@ interface EquipmentStepProps {
   setIsStepValid: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const equipmentOptions = [
-  { name: 'Filter', fields: ['Model Name', 'Flow Rate', 'Type'] },
-  { name: 'Heater', fields: ['Model Name', 'Wattage', 'Temperature Range'] },
-  { name: 'Light', fields: ['Model Name', 'Wattage', 'Spectrum Type'] },
-  { name: 'Air Pump', fields: ['Model Name', 'Flow Rate'] },
-  { name: 'Protein Skimmer', fields: ['Model Name', 'Capacity'] },
-  { name: 'CO2 System', fields: ['Model Name', 'Flow Rate'] },
-  { name: 'UV Sterilizer', fields: ['Model Name', 'Wattage'] },
-  { name: 'Wave Maker', fields: ['Model Name', 'Flow Rate'] },
-  { name: 'Thermometer', fields: ['Model Name', 'Accuracy'] },
-  { name: 'Aquarium Stand', fields: ['Model Name', 'Material'] },
+const equipmentCategories = [
+  {
+    category: 'Filtration Equipment',
+    items: [
+      { name: 'Filter', fields: ['Brand', 'Model Name', 'Flow Rate', 'Type'] },
+      { name: 'Protein Skimmer', fields: ['Brand', 'Model Name', 'Capacity'] },
+      { name: 'UV Sterilizer', fields: ['Brand', 'Model Name', 'Wattage'] },
+      { name: 'Wave Maker', fields: ['Brand', 'Model Name', 'Flow Rate'] }
+    ],
+  },
+  {
+    category: 'Heating & Lighting',
+    items: [
+      { name: 'Heater', fields: ['Brand', 'Model Name', 'Wattage', 'Temperature Range'] },
+      { name: 'Light', fields: ['Brand', 'Model Name', 'Wattage', 'Spectrum Type'] },
+      { name: 'Thermometer', fields: ['Brand', 'Model Name', 'Accuracy'] }
+    ],
+  },
+  {
+    category: 'Aeration',
+    items: [
+      { name: 'Air Pump', fields: ['Brand', 'Model Name', 'Flow Rate'] },
+      { name: 'CO2 System', fields: ['Brand', 'Model Name', 'Flow Rate'] }
+    ],
+  },
+  {
+    category: 'Feeding',
+    items: [
+      { name: 'Food', fields: ['Brand', 'Type of Food', 'Species-Specific', 'Quantity per Feeding', 'Feeding Frequency'] }
+    ],
+  },
+  {
+    category: 'Chemicals',
+    items: [
+      { name: 'Water Conditioner', fields: ['Brand', 'Type of Chemical', 'Dosage', 'Frequency of Use', 'Purpose'] },
+      { name: 'Fertilizer', fields: ['Brand', 'Dosage', 'Frequency of Use', 'Purpose'] }
+    ],
+  },
+  {
+    category: 'Maintenance',
+    items: [
+      { name: 'Filter Replacement', fields: ['Brand', 'Model', 'Replacement Schedule'] },
+      { name: 'Water Change Tools', fields: ['Tool Type', 'Frequency of Water Change'] },
+      { name: 'Test Kits', fields: ['Brand', 'Type of Test (pH, Ammonia, etc.)', 'Frequency of Use'] }
+    ],
+  },
 ];
 
 const EquipmentStep: React.FC<EquipmentStepProps> = ({
@@ -71,43 +106,50 @@ const EquipmentStep: React.FC<EquipmentStepProps> = ({
       </Typography>
 
       <Grid container spacing={2}>
-        {equipmentOptions.map((equipment, index) => {
-          const isSelected = selectedEquipment.some(e => e.name === equipment.name);
-          const equipmentDetails = selectedEquipment.find(e => e.name === equipment.name)?.details || {};
+        {equipmentCategories.map((category, catIndex) => (
+          <Grid item xs={12} key={catIndex}>
+            <Typography variant="h6">{category.category}</Typography>
 
-          return (
-            <Grid item xs={12} key={index}>
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={isSelected}
-                    onChange={() => handleEquipmentToggle(equipment.name)}
-                    color="primary"
-                  />
-                }
-                label={equipment.name}
-              />
+            {/* Iterate through the equipment items in each category */}
+            {category.items.map((equipment, index) => {
+              const isSelected = selectedEquipment.some(e => e.name === equipment.name);
+              const equipmentDetails = selectedEquipment.find(e => e.name === equipment.name)?.details || {};
 
-              {/* Optional fields for equipment details */}
-              <Collapse in={isSelected} timeout="auto" unmountOnExit>
-                <Grid container spacing={2} sx={{ pl: 4, mt: 1 }}>
-                  {equipment.fields.map(field => (
-                    <Grid item xs={12} sm={6} md={4} key={field}>
-                      <TextField
-                        label={field}
-                        fullWidth
-                        value={equipmentDetails[field] || ''}
-                        onChange={(e) =>
-                          handleDetailChange(equipment.name, field, e.target.value)
-                        }
+              return (
+                <Grid item xs={12} key={index}>
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={isSelected}
+                        onChange={() => handleEquipmentToggle(equipment.name)}
+                        color="primary"
                       />
+                    }
+                    label={equipment.name}
+                  />
+
+                  {/* Optional fields for equipment details */}
+                  <Collapse in={isSelected} timeout="auto" unmountOnExit>
+                    <Grid container spacing={2} sx={{ pl: 4, mt: 1 }}>
+                      {equipment.fields.map(field => (
+                        <Grid item xs={12} sm={6} md={4} key={field}>
+                          <TextField
+                            label={field}
+                            fullWidth
+                            value={equipmentDetails[field] || ''}
+                            onChange={(e) =>
+                              handleDetailChange(equipment.name, field, e.target.value)
+                            }
+                          />
+                        </Grid>
+                      ))}
                     </Grid>
-                  ))}
+                  </Collapse>
                 </Grid>
-              </Collapse>
-            </Grid>
-          );
-        })}
+              );
+            })}
+          </Grid>
+        ))}
       </Grid>
     </Box>
   );
