@@ -131,11 +131,20 @@ const Aquariums: React.FC = () => {
                 </Toolbar>
               </AppBar>
 
-              {/* Grid of Cards */}
+              {/* Grid of Cards with Subtle Hover Effect */}
               <Grid container spacing={3} sx={{ marginTop: '20px' }}>
                 {/* Fish Card (larger) */}
                 <Grid item xs={12} md={6} lg={6}>
-                  <Card sx={{ height: '100%' }}>
+                  <Card 
+                    sx={{ 
+                      height: '100%',
+                      transition: 'transform 0.15s ease-in-out, box-shadow 0.15s ease-in-out',
+                      '&:hover': {
+                        transform: 'scale(1.01)',  // Subtle scaling
+                        boxShadow: '0px 2px 10px rgba(0, 0, 0, 0.12)', // Softer shadow
+                      }
+                    }}
+                  >
                     <CardContent>
                       <Typography variant="h6">Fish</Typography>
                       <Typography variant="body1">
@@ -147,7 +156,16 @@ const Aquariums: React.FC = () => {
 
                 {/* Plant Card (larger) */}
                 <Grid item xs={12} md={6} lg={6}>
-                  <Card sx={{ height: '100%' }}>
+                  <Card 
+                    sx={{ 
+                      height: '100%',
+                      transition: 'transform 0.15s ease-in-out, box-shadow 0.15s ease-in-out',
+                      '&:hover': {
+                        transform: 'scale(1.01)', // Subtle scaling
+                        boxShadow: '0px 2px 10px rgba(0, 0, 0, 0.12)', // Softer shadow
+                      }
+                    }}
+                  >
                     <CardContent>
                       <Typography variant="h6">Plants</Typography>
                       <Typography variant="body1">No plants added yet.</Typography>
@@ -157,7 +175,16 @@ const Aquariums: React.FC = () => {
 
                 {/* Equipment Card */}
                 <Grid item xs={12} md={6} lg={4}>
-                  <Card sx={{ height: '100%' }}>
+                  <Card 
+                    sx={{ 
+                      height: '100%',
+                      transition: 'transform 0.15s ease-in-out, box-shadow 0.15s ease-in-out',
+                      '&:hover': {
+                        transform: 'scale(1.01)', // Subtle scaling
+                        boxShadow: '0px 2px 10px rgba(0, 0, 0, 0.12)', // Softer shadow
+                      }
+                    }}
+                  >
                     <CardContent>
                       <Typography variant="h6">Equipment</Typography>
                       <Typography variant="body1">
@@ -169,11 +196,19 @@ const Aquariums: React.FC = () => {
 
                 {/* Aquarium Parameters Card */}
                 <Grid item xs={12} md={6} lg={8}>
-                  <Card sx={{ height: '100%' }}>
+                  <Card 
+                    sx={{ 
+                      height: '100%',
+                      transition: 'transform 0.15s ease-in-out, box-shadow 0.15s ease-in-out',
+                      '&:hover': {
+                        transform: 'scale(1.01)', // Subtle scaling
+                        boxShadow: '0px 2px 10px rgba(0, 0, 0, 0.12)', // Softer shadow
+                      }
+                    }}
+                  >
                     <CardContent>
                       <Typography variant="h6">Aquarium Parameters</Typography>
                       <Typography variant="body1">
-                        {/* Placeholder for parameters like temperature, pH, etc. */}
                         Temperature: 78°F<br />
                         pH Level: 7.2<br />
                         Ammonia: 0 ppm
@@ -189,12 +224,21 @@ const Aquariums: React.FC = () => {
         {/* Bottom Section for Aquarium Insights and Add New Aquarium */}
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 'auto' }}>
           {/* Aquarium Insights (at the bottom) */}
-          <Card sx={{ width: '100%', height: '150px' }}> {/* Increased width and set height */}
+          <Card 
+            sx={{ 
+              width: '100%', 
+              height: '150px',
+              transition: 'transform 0.15s ease-in-out, box-shadow 0.15s ease-in-out',
+              '&:hover': {
+                transform: 'scale(1.01)', // Subtle scaling
+                boxShadow: '0px 2px 10px rgba(0, 0, 0, 0.12)', // Softer shadow
+              }
+            }}
+          >
             <CardContent>
               <Typography variant="h6">Aquarium Insights (AI-Powered)</Typography>
               <Typography variant="body1">
-                {/* Placeholder for GPT-based insights */}
-                Your tank's water temperature is optimal for Tetra species. Make sure to monitor pH levels regularly.
+                Placeholder response
               </Typography>
             </CardContent>
           </Card>
