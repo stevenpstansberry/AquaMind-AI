@@ -1,78 +1,113 @@
 import React, { useState, useEffect } from 'react';
-import {  Typography, Grid, Box, Card, CardContent } from '@mui/material';
+import { Typography, Grid, Box, TextField, Checkbox, FormControlLabel, Collapse } from '@mui/material';
 
-interface EquipmentStepProps { 
+interface EquipmentStepProps {
   setAquariumData: React.Dispatch<React.SetStateAction<any>>;
-  aquariumData: { name: string; id: string; type: string; size: string;  species: { name: string; count: number }[]; equipment: string[] };
+  aquariumData: {
+    name: string;
+    id: string;
+    type: string;
+    size: string;
+    species: { name: string; count: number }[];
+    equipment: { name: string; details: any }[];
+  };
   setIsStepValid: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const equipmentOptions = [
-  { name: 'Filter', description: 'Necessary for water purification.' },
-  { name: 'Heater', description: 'Maintains stable water temperature.' },
-  { name: 'Light', description: 'For plant growth and to display the tank.' },
-  { name: 'Air Pump', description: 'Increases oxygen levels in the water.' },
-  { name: 'Protein Skimmer', description: 'Removes organic compounds, ideal for saltwater tanks.' },
-  { name: 'CO2 System', description: 'For planted tanks to provide carbon dioxide.' },
-  { name: 'UV Sterilizer', description: 'Controls bacteria and parasites in the tank.' },
-  { name: 'Wave Maker', description: 'Creates currents, ideal for saltwater tanks.' },
-  { name: 'Thermometer', description: 'Monitors water temperature.' },
-  { name: 'Aquarium Stand', description: 'Supports your aquarium with stability.' },
+  { name: 'Filter', fields: ['Model Name', 'Flow Rate', 'Type'] },
+  { name: 'Heater', fields: ['Model Name', 'Wattage', 'Temperature Range'] },
+  { name: 'Light', fields: ['Model Name', 'Wattage', 'Spectrum Type'] },
+  { name: 'Air Pump', fields: ['Model Name', 'Flow Rate'] },
+  { name: 'Protein Skimmer', fields: ['Model Name', 'Capacity'] },
+  { name: 'CO2 System', fields: ['Model Name', 'Flow Rate'] },
+  { name: 'UV Sterilizer', fields: ['Model Name', 'Wattage'] },
+  { name: 'Wave Maker', fields: ['Model Name', 'Flow Rate'] },
+  { name: 'Thermometer', fields: ['Model Name', 'Accuracy'] },
+  { name: 'Aquarium Stand', fields: ['Model Name', 'Material'] },
 ];
 
-const EquipmentStep: React.FC<EquipmentStepProps> = ({ aquariumData, setAquariumData, setIsStepValid }) => {
-  const [selectedEquipment, setSelectedEquipment] =  useState<string[]>(aquariumData.equipment || []);
+const EquipmentStep: React.FC<EquipmentStepProps> = ({
+  aquariumData,
+  setAquariumData,
+  setIsStepValid,
+}) => {
+  const [selectedEquipment, setSelectedEquipment] = useState<{ name: string; details: any }[]>(
+    aquariumData.equipment || []
+  );
 
-  const handleEquipmentSelection = (equipment: string) => {
-    if (selectedEquipment.includes(equipment)) {
-      setSelectedEquipment(prev => prev.filter(item => item !== equipment)); // Deselect if already selected
+  // Function to toggle equipment selection
+  const handleEquipmentToggle = (equipmentName: string) => {
+    if (selectedEquipment.some(e => e.name === equipmentName)) {
+      // Remove equipment if already selected
+      setSelectedEquipment(prev =>
+        prev.filter(item => item.name !== equipmentName)
+      );
     } else {
-      setSelectedEquipment(prev => [...prev, equipment]); // Add new equipment
+      // Add new equipment with empty details
+      setSelectedEquipment(prev => [...prev, { name: equipmentName, details: {} }]);
     }
+  };
 
-    // Update parent component's state
-    setAquariumData((prevData: any) => ({ ...prevData, equipment: [...selectedEquipment, equipment] }));
+  // Handle updating specific equipment details
+  const handleDetailChange = (equipmentName: string, field: string, value: string) => {
+    setSelectedEquipment(prev =>
+      prev.map(e => e.name === equipmentName ? { ...e, details: { ...e.details, [field]: value } } : e)
+    );
   };
 
   useEffect(() => {
-    // Update the parent aquariumData with selected species
+    // Update aquariumData with selected equipment and details
     setAquariumData((prevData: any) => ({ ...prevData, equipment: selectedEquipment }));
 
-    // Check if at least one species is selected to enable the "Next" button
-    if (selectedEquipment.length > 0) {
-      setIsStepValid(true);
-    } else {
-      setIsStepValid(false);
-    }
-
-    // Log the selected equipment
-    console.log('Selected equipment:', selectedEquipment);
-
+    // Validate the step: at least one equipment should be selected
+    setIsStepValid(selectedEquipment.length > 0);
   }, [selectedEquipment, setAquariumData, setIsStepValid]);
 
   return (
     <Box>
       <Typography variant="h6" gutterBottom>
-        Select Equipment
+        Select Equipment and Add Details (Optional)
       </Typography>
 
-      <Grid container spacing={3}>
-        {equipmentOptions.map((equipment, index) => (
-          <Grid item xs={12} sm={6} md={4} key={index}>
-            <Card
-              sx={{
-                border: selectedEquipment.includes(equipment.name) ? '2px solid #007bff' : '1px solid #ddd',
-                cursor: 'pointer',
-              }}
-              onClick={() => handleEquipmentSelection(equipment.name)}
-            >
-              <CardContent>
-                <Typography variant="h6">{equipment.name}</Typography>
-                <Typography variant="body2">{equipment.description}</Typography>
-              </CardContent>
-            </Card>
-          </Grid>
-        ))}
+      <Grid container spacing={2}>
+        {equipmentOptions.map((equipment, index) => {
+          const isSelected = selectedEquipment.some(e => e.name === equipment.name);
+          const equipmentDetails = selectedEquipment.find(e => e.name === equipment.name)?.details || {};
+
+          return (
+            <Grid item xs={12} key={index}>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={isSelected}
+                    onChange={() => handleEquipmentToggle(equipment.name)}
+                    color="primary"
+                  />
+                }
+                label={equipment.name}
+              />
+
+              {/* Optional fields for equipment details */}
+              <Collapse in={isSelected} timeout="auto" unmountOnExit>
+                <Grid container spacing={2} sx={{ pl: 4, mt: 1 }}>
+                  {equipment.fields.map(field => (
+                    <Grid item xs={12} sm={6} md={4} key={field}>
+                      <TextField
+                        label={field}
+                        fullWidth
+                        value={equipmentDetails[field] || ''}
+                        onChange={(e) =>
+                          handleDetailChange(equipment.name, field, e.target.value)
+                        }
+                      />
+                    </Grid>
+                  ))}
+                </Grid>
+              </Collapse>
+            </Grid>
+          );
+        })}
       </Grid>
     </Box>
   );
