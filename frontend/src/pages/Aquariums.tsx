@@ -15,9 +15,14 @@ import AquariumWizard from '../components/aquarium-components/aquarium-wizard-co
 import { Button, Box } from '@mui/material';
 
 interface Aquarium {
-  id: number;
+  id: string;             
   name: string;
+  type: string;
+  size: string;
+  species: string[];
+  equipment: string[];
 }
+
 
 const Aquariums: React.FC = () => {
   const [userName, setUserName] = useState<string | null>(null);
@@ -33,16 +38,38 @@ const Aquariums: React.FC = () => {
 
   useEffect(() => {
     const fetchAquariums = async () => {
-      const mockAquariums = [
-        { id: 1, name: 'Freshwater Tank' },
-        { id: 2, name: 'Saltwater Reef' },
-        { id: 3, name: 'Planted Tank' },
+      const mockAquariums: Aquarium[] = [
+        {
+          id: "51f8ee76-4f84-44ac-b29e-04db8f90cb2e",
+          name: "Test Tank",
+          type: "Freshwater",
+          size: "55",
+          species: ["Tetra"],
+          equipment: ["Air Pump"]
+        },
+        {
+          id: "bfa7d8f1-8d8e-477d-b8b7-43dfec6760a9",
+          name: "Saltwater Reef",
+          type: "Saltwater",
+          size: "75",
+          species: ["Clownfish", "Blue Tang"],
+          equipment: ["Protein Skimmer", "Wave Maker"]
+        },
+        {
+          id: "e4ad3b5f-74eb-4b19-97f9-d2f53f58741a",
+          name: "Planted Tank",
+          type: "Freshwater",
+          size: "40",
+          species: ["Angelfish"],
+          equipment: ["CO2 System", "Heater"]
+        }
       ];
       setAquariums(mockAquariums);
     };
-
+  
     fetchAquariums();
   }, []);
+  
 
   return (
     <div style={{ display: 'flex', height: '100vh' }}>

@@ -13,9 +13,14 @@ import EditIcon from '@mui/icons-material/Edit';
 import { useTheme } from '@mui/material/styles';
 
 interface Aquarium {
-  id: number;
+  id: string;             
   name: string;
+  type: string;
+  size: string;
+  species: string[];
+  equipment: string[];
 }
+
 
 interface AquariumSidebarProps {
   aquariums: Aquarium[];
