@@ -12,36 +12,24 @@ import { List, ListItem, Typography, Button, Box, IconButton } from '@mui/materi
 import EditIcon from '@mui/icons-material/Edit';
 import { useTheme } from '@mui/material/styles';
 
-/**
- * Interface representing an aquarium object.
- * @typedef {Object} Aquarium
- * @property {number} id - The unique identifier of the aquarium.
- * @property {string} name - The name of the aquarium.
- */
 interface Aquarium {
-  id: number;
+  id: string;             
   name: string;
+  type: string;
+  size: string;
+  species: string[];
+  equipment: string[];
 }
 
-/**
- * Props for the AquariumSidebar component.
- * @typedef {Object} AquariumSidebarProps
- * @property {Aquarium[]} aquariums - Array of aquarium objects to be displayed in the sidebar.
- * @property {function} onOpenWizard - Callback function to open the aquarium creation wizard.
- */
+
 interface AquariumSidebarProps {
   aquariums: Aquarium[];
   onOpenWizard: () => void;
+  setCurrentAquarium: (aquarium: Aquarium) => void;
+  currentAquarium: Aquarium | null; // Track the currently selected aquarium
 }
 
-/**
- * AquariumSidebar component renders a sidebar that displays the user's aquariums and provides 
- * an option to add a new aquarium. Each aquarium can be edited by clicking the edit icon.
- * 
- * @param {AquariumSidebarProps} props - The properties passed to the component.
- * @returns {JSX.Element} The rendered AquariumSidebar component.
- */
-const AquariumSidebar: React.FC<AquariumSidebarProps> = ({ aquariums, onOpenWizard }) => {
+const AquariumSidebar: React.FC<AquariumSidebarProps> = ({ aquariums, onOpenWizard, setCurrentAquarium, currentAquarium }) => {
   const theme = useTheme();
 
   return (
@@ -63,12 +51,10 @@ const AquariumSidebar: React.FC<AquariumSidebarProps> = ({ aquariums, onOpenWiza
       }}
     >
       <div>
-        {/* Heading */}
         <Typography variant="h6" gutterBottom>
           Your Aquariums
         </Typography>
 
-        {/* Check if there are any aquariums */}
         {aquariums.length > 0 ? (
           <List>
             {aquariums.map((aquarium) => (
@@ -79,10 +65,15 @@ const AquariumSidebar: React.FC<AquariumSidebarProps> = ({ aquariums, onOpenWiza
                   justifyContent: 'space-between',
                   alignItems: 'center',
                   paddingRight: 0,
+                  cursor: 'pointer',
+                  // Apply a different background color if this aquarium is selected
+                  backgroundColor: currentAquarium?.id === aquarium.id ? theme.palette.action.selected : 'inherit',
+                  borderRadius: '4px', // Add border-radius to look neat
+                  padding: '8px',
                 }}
+                onClick={() => setCurrentAquarium(aquarium) } // Select aquarium on click
               >
                 <Typography>{aquarium.name}</Typography>
-                {/* Edit Icon */}
                 <IconButton
                   edge="end"
                   aria-label="edit"
@@ -101,11 +92,10 @@ const AquariumSidebar: React.FC<AquariumSidebarProps> = ({ aquariums, onOpenWiza
         )}
       </div>
 
-      {/* Button to create a new aquarium */}
       <Button
         variant="contained"
         color="primary"
-        onClick={onOpenWizard} // Trigger the wizard from the sidebar
+        onClick={onOpenWizard}
         sx={{
           width: '100%',
           marginTop: 'auto',

@@ -1,5 +1,6 @@
 import React, { useState } from 'react'; 
 import { Card, CardContent, Typography, Button, Box, Backdrop } from '@mui/material';
+import { v4 as uuidv4 } from 'uuid';
 import AquariumTypeStep from './AquariumTypeStep';
 import TankSizeStep from './TankSizeStep';
 import SpeciesSelectionStep from './SpeciesSelectionStep';
@@ -15,13 +16,15 @@ interface AquariumWizardProps {
 const AquariumWizard: React.FC<AquariumWizardProps> = ({ onClose }) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [aquariumData, setAquariumData] = useState({
+    id: '',         
+    name: '',
     type: '',
     size: '',
     species: [],
     equipment: [],
   });
 
-  const [isStepValid, setIsStepValid] = useState(false); // New state to track step completion
+  const [isStepValid, setIsStepValid] = useState(false); // State to track step completion
   const [showChat, setShowChat] = useState(false); // Toggle between wizard and chat interface
 
   const handleNext = () => {
@@ -36,10 +39,13 @@ const AquariumWizard: React.FC<AquariumWizardProps> = ({ onClose }) => {
     setIsStepValid(true); // Assume previous steps are valid
   };
 
-  // TODO: implement saving to backend
   // Function to handle "Finish" step
   const handleFinish = () => {
-    console.log("Saving Aquarium:", aquariumData); // Simulate saving to backend
+    // Generate a uuid if it doesn't exist yet
+    const id = aquariumData.id || uuidv4();
+    const finalAquariumData = { ...aquariumData, id };
+
+    console.log("Saving Aquarium:", finalAquariumData); // Simulate saving to backend
     onClose(); // Close the wizard after logging
   };
 
@@ -68,7 +74,7 @@ const AquariumWizard: React.FC<AquariumWizardProps> = ({ onClose }) => {
           {currentStep === 1 && <TankSizeStep setAquariumData={setAquariumData} setIsStepValid={setIsStepValid} aquariumData={aquariumData} />}
           {currentStep === 2 && <SpeciesSelectionStep setAquariumData={setAquariumData} aquariumData={aquariumData} setIsStepValid={setIsStepValid}/>}
           {currentStep === 3 && <EquipmentStep setAquariumData={setAquariumData} setIsStepValid={setIsStepValid} aquariumData={aquariumData}/>}
-          {currentStep === 4 && <SummaryStep aquariumData={aquariumData} />}
+          {currentStep === 4 && <SummaryStep aquariumData={aquariumData} setAquariumData={setAquariumData} />}
         </CardContent>
 
         {/* Button container */}
