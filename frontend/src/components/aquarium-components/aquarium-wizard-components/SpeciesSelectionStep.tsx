@@ -4,7 +4,7 @@ import { Box } from '@mui/material';
 
 interface SpeciesSelectionStepProps {
   setAquariumData: React.Dispatch<React.SetStateAction<any>>;
-  aquariumData: { type: string; size: string; species: string[]; equipment: string[] };
+  aquariumData: { name: string; id: string; type: string; size: string;  species: { name: string; count: number }[]; equipment: string[] };
   setIsStepValid: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
@@ -30,9 +30,9 @@ const SpeciesSelectionStep: React.FC<SpeciesSelectionStepProps> = ({
     <Box>
       {/* Pass aquariumType and tankSize to the FishSelectionHelper */}
       <FishSelectionHelper
-        setAquariumData={setAquariumData} // Function to update aquarium data
-        aquariumData={aquariumData} // Pass the aquarium data
-        initialSelectedFish={aquariumData.species}  // Pass the previously selected fish
+        setAquariumData={setAquariumData}
+        aquariumData={aquariumData}
+        initialSelectedFish={aquariumData.species.map((s) => s.name)} // Extract fish names
       />
     </Box>
   );

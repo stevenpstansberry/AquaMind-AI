@@ -10,8 +10,8 @@ interface Fish {
 
 interface FishSelectionHelperProps {
   setAquariumData: React.Dispatch<React.SetStateAction<any>>;
-  aquariumData: { type: string; size: string; species: string[]; equipment: string[] };
-  initialSelectedFish: string[];  // Added prop to receive initially selected fish
+  aquariumData: { name: string; id: string; type: string; size: string; species: { name: string; count: number }[]; equipment: string[] };
+  initialSelectedFish: string[];  // Array of fish names
 }
 
 const fishSpecies: Fish[] = [
@@ -45,21 +45,27 @@ const FishSelectionHelper: React.FC<FishSelectionHelperProps> = ({
 
   // Handle fish selection and update aquariumData.species directly
   const handleFishSelection = (fishName: string) => {
-    let updatedSelection: string[]; 
+    const speciesIndex = aquariumData.species.findIndex((s: { name: string }) => s.name === fishName);
 
-    if (selectedFish.includes(fishName)) {
-      updatedSelection = selectedFish.filter(fish => fish !== fishName);  // Deselect fish
-    } else {
-      updatedSelection = [...selectedFish, fishName];  // Select fish
+    // Update aquariumData with selected fish and count
+    setAquariumData((prevData: any) => {
+      const updatedSpecies = [...prevData.species];
+
+      if (speciesIndex !== -1) {
+        // Increment the count if species already exists
+        updatedSpecies[speciesIndex].count += 1;
+      } else {
+        // Add new species with count 1
+        updatedSpecies.push({ name: fishName, count: 1 });
+      }
+
+      return { ...prevData, species: updatedSpecies };
+    });
+
+    // Update local selected fish state for highlighting
+    if (!selectedFish.includes(fishName)) {
+      setSelectedFish((prev) => [...prev, fishName]);
     }
-
-    setSelectedFish(updatedSelection);  // Update local state
-    setAquariumData((prevData: any) => ({
-      ...prevData,
-      species: updatedSelection, // Update aquariumData with the new selected species
-    }));
-
-    console.log("new data: ", aquariumData);
   };
 
   // Handle search input

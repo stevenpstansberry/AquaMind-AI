@@ -16,11 +16,11 @@ interface AquariumWizardProps {
 const AquariumWizard: React.FC<AquariumWizardProps> = ({ onClose }) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [aquariumData, setAquariumData] = useState({
-    id: '',         
+    id: '',
     name: '',
     type: '',
     size: '',
-    species: [],
+    species: [],  // Update species structure
     equipment: [],
   });
 

@@ -2,14 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { TextField, Box, Typography } from '@mui/material';
 
 interface SummaryStepProps {
-  aquariumData: {
-    id?: string;
-    name: string;
-    type: string;
-    size: string;
-    species: string[];
-    equipment: string[];
-  };
+  aquariumData: { name: string; id: string; type: string; size: string;  species: { name: string; count: number }[]; equipment: string[] };
   setAquariumData: React.Dispatch<React.SetStateAction<any>>;
 }
 
