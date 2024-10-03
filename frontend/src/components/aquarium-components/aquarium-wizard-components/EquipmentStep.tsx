@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Typography, Grid, Box, TextField, Checkbox, FormControlLabel, Collapse, IconButton } from '@mui/material';
-import { ExpandMore } from '@mui/icons-material'; // Import expand/collapse icon
+import { ExpandMore, Add as AddIcon } from '@mui/icons-material'; // Import add icon
 
 interface EquipmentStepProps {
   setAquariumData: React.Dispatch<React.SetStateAction<any>>;
@@ -15,7 +15,7 @@ interface EquipmentStepProps {
   setIsStepValid: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const equipmentCategories = [
+const initialCategories = [
   {
     category: 'Filtration Equipment',
     items: [
@@ -68,8 +68,10 @@ const EquipmentStep: React.FC<EquipmentStepProps> = ({
   setAquariumData,
   setIsStepValid,
 }) => {
+  const [equipmentCategories, setEquipmentCategories] = useState(initialCategories); // We now modify this dynamically
   const [selectedEquipment, setSelectedEquipment] = useState<{ name: string; details: any }[]>(aquariumData.equipment || []);
-  const [expandedCategories, setExpandedCategories] = useState<boolean[]>(Array(equipmentCategories.length).fill(false));
+  const [expandedCategories, setExpandedCategories] = useState<boolean[]>(Array(initialCategories.length).fill(false));
+  const [customEquipmentName, setCustomEquipmentName] = useState<{ [key: number]: string }>({}); // Custom name state
 
   // Function to toggle equipment selection
   const handleEquipmentToggle = (equipmentName: string) => {
@@ -94,6 +96,27 @@ const EquipmentStep: React.FC<EquipmentStepProps> = ({
       updated[index] = !updated[index];
       return updated;
     });
+  };
+
+  // Add custom equipment and dynamically inject it into the list of items in a category
+  const handleAddCustomEquipment = (catIndex: number) => {
+    const customName = customEquipmentName[catIndex]?.trim();
+    if (customName && !selectedEquipment.some(e => e.name === customName)) {
+      // Update selected equipment with custom equipment
+      setSelectedEquipment(prev => [...prev, { name: customName, details: {} }]);
+
+      // Add the custom equipment to the current category's items
+      setEquipmentCategories(prevCategories => {
+        const updatedCategories = [...prevCategories];
+        updatedCategories[catIndex].items.push({
+          name: customName,
+          fields: ['Brand', 'Model Name', 'Details'], // Add fields for the custom equipment
+        });
+        return updatedCategories;
+      });
+
+      setCustomEquipmentName(prev => ({ ...prev, [catIndex]: '' })); // Clear input after adding
+    }
   };
 
   useEffect(() => {
@@ -170,6 +193,24 @@ const EquipmentStep: React.FC<EquipmentStepProps> = ({
                   </Grid>
                 );
               })}
+
+              {/* Add Custom Equipment Section */}
+              <Box sx={{ mt: 2, display: 'flex', alignItems: 'center' }}>
+                <TextField
+                  label="Custom Equipment Name"
+                  value={customEquipmentName[catIndex] || ''}
+                  onChange={(e) => setCustomEquipmentName({ ...customEquipmentName, [catIndex]: e.target.value })}
+                  size="small"
+                />
+                <IconButton
+                  onClick={() => handleAddCustomEquipment(catIndex)}
+                  color="primary"
+                  disabled={!customEquipmentName[catIndex]?.trim()} // Disable if empty
+                  sx={{ ml: 2 }}
+                >
+                  <AddIcon />
+                </IconButton>
+              </Box>
             </Collapse>
           </Grid>
         ))}
