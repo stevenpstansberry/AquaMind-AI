@@ -4,7 +4,8 @@ import { Typography, TextField, Box, InputAdornment } from '@mui/material';
 interface TankSizeStepProps {
   setAquariumData: React.Dispatch<React.SetStateAction<any>>;
   setIsStepValid: React.Dispatch<React.SetStateAction<boolean>>;
-  aquariumData: { type: string; size: string; species: string[]; equipment: string[] };
+  aquariumData: { type: string; size: string;  species: { name: string; count: number }[]; equipment: string[] };
+
 }
 
 const TankSizeStep: React.FC<TankSizeStepProps> = ({ setAquariumData, setIsStepValid, aquariumData }) => {

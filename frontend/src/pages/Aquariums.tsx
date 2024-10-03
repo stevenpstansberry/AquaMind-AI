@@ -16,13 +16,15 @@ import { Button, Box, AppBar, Toolbar, Typography, Grid, Card, CardContent, Icon
 import AddCircleIcon from '@mui/icons-material/AddCircle'; // Import plus icon
 
 interface Aquarium {
-  id: string;  // Changed to string for UUID support
-  name: string;
-  type: string;
-  size: string;
-  species: string[];
-  equipment: string[];
+  id: string;   // UUID
+  name: string; // Aquarium name
+  type: string; // Freshwater, Saltwater, etc.
+  size: string; // Size in gallons
+  species: { name: string; count: number }[];  // Species with name and count
+  plants: { name: string; count: number }[];   // Plants with name and count
+  equipment: string[]; // List of equipment as strings
 }
+
 
 const Aquariums: React.FC = () => {
   const [aquariums, setAquariums] = useState<Aquarium[]>([]);
@@ -43,7 +45,12 @@ const Aquariums: React.FC = () => {
           name: "Test Tank",
           type: "Freshwater",
           size: "55",
-          species: ["Tetra"],
+          species: [
+            { name: "Tetra", count: 5 },  // Example with name and count
+          ],
+          plants: [
+            { name: "Anubias", count: 3 },  // Example with name and count
+          ],
           equipment: ["Air Pump"]
         },
         {
@@ -51,7 +58,11 @@ const Aquariums: React.FC = () => {
           name: "Saltwater Reef",
           type: "Saltwater",
           size: "75",
-          species: ["Clownfish", "Blue Tang"],
+          species: [
+            { name: "Clownfish", count: 2 },
+            { name: "Blue Tang", count: 1 },
+          ],
+          plants: [],  // No plants added
           equipment: ["Protein Skimmer", "Wave Maker"]
         },
         {
@@ -59,15 +70,21 @@ const Aquariums: React.FC = () => {
           name: "Planted Tank",
           type: "Freshwater",
           size: "40",
-          species: ["Angelfish"],
+          species: [
+            { name: "Angelfish", count: 1 },
+          ],
+          plants: [
+            { name: "Anubias", count: 5 },
+          ],
           equipment: ["CO2 System", "Heater"]
         }
       ];
       setAquariums(mockAquariums);
     };
-
+  
     fetchAquariums();
   }, []);
+  
 
   return (
     <div style={{ display: 'flex', height: '100vh' }}>
@@ -161,7 +178,11 @@ const Aquariums: React.FC = () => {
                     <CardContent>
                       <Typography variant="h6">Fish</Typography>
                       <Typography variant="body1">
-                        {currentAquarium.species.join(', ')}
+                        {currentAquarium.species.length > 0
+                          ? currentAquarium.species
+                              .map((fish) => `${fish.name} (x${fish.count})`)
+                              .join(', ')  // List species with their counts
+                          : 'No fish added yet.'}
                       </Typography>
                     </CardContent>
                     {/* Plus Icon */}
@@ -200,7 +221,13 @@ const Aquariums: React.FC = () => {
                   >
                     <CardContent>
                       <Typography variant="h6">Plants</Typography>
-                      <Typography variant="body1">No plants added yet.</Typography>
+                      <Typography variant="body1">
+                        {currentAquarium.plants.length > 0 
+                          ? currentAquarium.plants
+                              .map((plant) => `${plant.name} (x${plant.count})`)  // Display plant names and counts
+                              .join(', ') 
+                          : 'No plants added yet.'}
+                      </Typography>
                     </CardContent>
                     {/* Plus Icon */}
                     <IconButton 

@@ -13,13 +13,15 @@ import EditIcon from '@mui/icons-material/Edit';
 import { useTheme } from '@mui/material/styles';
 
 interface Aquarium {
-  id: string;             
-  name: string;
-  type: string;
-  size: string;
-  species: string[];
-  equipment: string[];
+  id: string;   // UUID
+  name: string; // Aquarium name
+  type: string; // Freshwater, Saltwater, etc.
+  size: string; // Size in gallons
+  species: { name: string; count: number }[];  // Species with name and count
+  plants: { name: string; count: number }[];   // Plants with name and count
+  equipment: string[]; // List of equipment as strings
 }
+
 
 
 interface AquariumSidebarProps {

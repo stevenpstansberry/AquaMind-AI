@@ -3,7 +3,7 @@ import {  Typography, Grid, Box, Card, CardContent } from '@mui/material';
 
 interface EquipmentStepProps { 
   setAquariumData: React.Dispatch<React.SetStateAction<any>>;
-  aquariumData: { type: string; size: string; species: string[]; equipment: string[] };
+  aquariumData: { name: string; id: string; type: string; size: string;  species: { name: string; count: number }[]; equipment: string[] };
   setIsStepValid: React.Dispatch<React.SetStateAction<boolean>>;
 }
 

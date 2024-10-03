@@ -4,7 +4,7 @@ import { Button, Typography, Grid, Box } from '@mui/material';
 interface AquariumTypeStepProps {
   setAquariumData: React.Dispatch<React.SetStateAction<any>>;
   setIsStepValid: React.Dispatch<React.SetStateAction<boolean>>;
-  aquariumData: { type: string; size: string; species: string[]; equipment: string[] };
+  aquariumData: { name: string; id: string; type: string; size: string;  species: { name: string; count: number }[]; equipment: string[] };
 }
 
 const AquariumTypeStep: React.FC<AquariumTypeStepProps> = ({ setAquariumData, setIsStepValid, aquariumData }) => {

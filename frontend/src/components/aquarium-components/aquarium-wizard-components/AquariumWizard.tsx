@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 import AquariumTypeStep from './AquariumTypeStep';
 import TankSizeStep from './TankSizeStep';
 import SpeciesSelectionStep from './SpeciesSelectionStep';
+import PlantSelectionStep from './PlantSelectionStep'; 
 import EquipmentStep from './EquipmentStep';
 import SummaryStep from './SummaryStep';
 import AquariumWizardProgress from './AquariumWizardProgress';
@@ -16,40 +17,41 @@ interface AquariumWizardProps {
 const AquariumWizard: React.FC<AquariumWizardProps> = ({ onClose }) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [aquariumData, setAquariumData] = useState({
-    id: '',         
+    id: '',
     name: '',
     type: '',
     size: '',
-    species: [],
+    species: [],  
+    plants: [],   // New array to store selected plants
     equipment: [],
   });
 
-  const [isStepValid, setIsStepValid] = useState(false); // State to track step completion
-  const [showChat, setShowChat] = useState(false); // Toggle between wizard and chat interface
+  const [isStepValid, setIsStepValid] = useState(false); 
+  const [showChat, setShowChat] = useState(false);
 
   const handleNext = () => {
     console.log("next", aquariumData);
     setCurrentStep((prevStep) => prevStep + 1);
-    setIsStepValid(false); // Reset the validity check for the next step
+    setIsStepValid(false); 
   };
 
   const handlePrev = () => {
     console.log("back", aquariumData);
     setCurrentStep((prevStep) => prevStep - 1);
-    setIsStepValid(true); // Assume previous steps are valid
+    setIsStepValid(true); 
   };
 
   // Function to handle "Finish" step
   const handleFinish = () => {
-    // Generate a uuid if it doesn't exist yet
     const id = aquariumData.id || uuidv4();
     const finalAquariumData = { ...aquariumData, id };
 
-    console.log("Saving Aquarium:", finalAquariumData); // Simulate saving to backend
-    onClose(); // Close the wizard after logging
+    console.log("Saving Aquarium:", finalAquariumData); 
+    onClose(); 
   };
 
-  const steps = ['Aquarium Type', 'Tank Size', 'Species', 'Equipment', 'Summary'];
+  // Update steps to include Plant Selection
+  const steps = ['Aquarium Type', 'Tank Size', 'Species', 'Plants (Optional)', 'Equipment', 'Summary'];
 
   return (
     <Backdrop open={true} sx={{ zIndex: 1000 }}>
@@ -73,8 +75,9 @@ const AquariumWizard: React.FC<AquariumWizardProps> = ({ onClose }) => {
           {currentStep === 0 && <AquariumTypeStep setAquariumData={setAquariumData} setIsStepValid={setIsStepValid} aquariumData={aquariumData} />}
           {currentStep === 1 && <TankSizeStep setAquariumData={setAquariumData} setIsStepValid={setIsStepValid} aquariumData={aquariumData} />}
           {currentStep === 2 && <SpeciesSelectionStep setAquariumData={setAquariumData} aquariumData={aquariumData} setIsStepValid={setIsStepValid}/>}
-          {currentStep === 3 && <EquipmentStep setAquariumData={setAquariumData} setIsStepValid={setIsStepValid} aquariumData={aquariumData}/>}
-          {currentStep === 4 && <SummaryStep aquariumData={aquariumData} setAquariumData={setAquariumData} />}
+          {currentStep === 3 && <PlantSelectionStep setAquariumData={setAquariumData} aquariumData={aquariumData} setIsStepValid={setIsStepValid}/>} {/* Plant step */}
+          {currentStep === 4 && <EquipmentStep setAquariumData={setAquariumData} setIsStepValid={setIsStepValid} aquariumData={aquariumData}/>}
+          {currentStep === 5 && <SummaryStep aquariumData={aquariumData} setAquariumData={setAquariumData} />}
         </CardContent>
 
         {/* Button container */}
@@ -86,12 +89,10 @@ const AquariumWizard: React.FC<AquariumWizardProps> = ({ onClose }) => {
           )}
 
           <Box display="flex" gap={2}>
-            {/* Button to expand the card and show the AI chat interface below */}
             <Button variant="outlined" onClick={() => setShowChat((prev) => !prev)}>
               {showChat ? "Hide AI" : "Ask AI"}
             </Button>
 
-            {/* Always align the Next/Finish button to the right */}
             {currentStep < steps.length - 1 ? (
              <Button variant="contained" onClick={handleNext} disabled={!isStepValid}>Next</Button>
             ) : (
@@ -100,7 +101,6 @@ const AquariumWizard: React.FC<AquariumWizardProps> = ({ onClose }) => {
           </Box>
         </Box>
 
-        {/* Use the AIChatInterface component here */}
         <AIChatInterface showChat={showChat} onClose={() => setShowChat(false)} />
       </Card>
     </Backdrop>
