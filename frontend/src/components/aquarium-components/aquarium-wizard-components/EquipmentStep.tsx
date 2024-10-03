@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Typography, Grid, Box, TextField, Checkbox, FormControlLabel, Collapse } from '@mui/material';
+import { Typography, Grid, Box, TextField, Checkbox, FormControlLabel, Collapse, IconButton } from '@mui/material';
+import { ExpandMore } from '@mui/icons-material'; // Import expand/collapse icon
 
 interface EquipmentStepProps {
   setAquariumData: React.Dispatch<React.SetStateAction<any>>;
@@ -67,19 +68,14 @@ const EquipmentStep: React.FC<EquipmentStepProps> = ({
   setAquariumData,
   setIsStepValid,
 }) => {
-  const [selectedEquipment, setSelectedEquipment] = useState<{ name: string; details: any }[]>(
-    aquariumData.equipment || []
-  );
+  const [selectedEquipment, setSelectedEquipment] = useState<{ name: string; details: any }[]>(aquariumData.equipment || []);
+  const [expandedCategories, setExpandedCategories] = useState<boolean[]>(Array(equipmentCategories.length).fill(false));
 
   // Function to toggle equipment selection
   const handleEquipmentToggle = (equipmentName: string) => {
     if (selectedEquipment.some(e => e.name === equipmentName)) {
-      // Remove equipment if already selected
-      setSelectedEquipment(prev =>
-        prev.filter(item => item.name !== equipmentName)
-      );
+      setSelectedEquipment(prev => prev.filter(item => item.name !== equipmentName));
     } else {
-      // Add new equipment with empty details
       setSelectedEquipment(prev => [...prev, { name: equipmentName, details: {} }]);
     }
   };
@@ -87,8 +83,17 @@ const EquipmentStep: React.FC<EquipmentStepProps> = ({
   // Handle updating specific equipment details
   const handleDetailChange = (equipmentName: string, field: string, value: string) => {
     setSelectedEquipment(prev =>
-      prev.map(e => e.name === equipmentName ? { ...e, details: { ...e.details, [field]: value } } : e)
+      prev.map(e => (e.name === equipmentName ? { ...e, details: { ...e.details, [field]: value } } : e))
     );
+  };
+
+  // Toggle category collapse
+  const handleCategoryToggle = (index: number) => {
+    setExpandedCategories(prev => {
+      const updated = [...prev];
+      updated[index] = !updated[index];
+      return updated;
+    });
   };
 
   useEffect(() => {
@@ -108,46 +113,64 @@ const EquipmentStep: React.FC<EquipmentStepProps> = ({
       <Grid container spacing={2}>
         {equipmentCategories.map((category, catIndex) => (
           <Grid item xs={12} key={catIndex}>
-            <Typography variant="h6">{category.category}</Typography>
+            {/* Clickable header to toggle category collapse */}
+            <Box
+              display="flex"
+              alignItems="center"
+              onClick={() => handleCategoryToggle(catIndex)}
+              sx={{ cursor: 'pointer' }}
+            >
+              <IconButton
+                sx={{
+                  transform: expandedCategories[catIndex] ? 'rotate(180deg)' : 'rotate(0deg)',
+                  transition: 'transform 0.3s ease',
+                }}
+              >
+                <ExpandMore />
+              </IconButton>
+              <Typography variant="h6" sx={{ ml: 1 }}>
+                {category.category}
+              </Typography>
+            </Box>
 
-            {/* Iterate through the equipment items in each category */}
-            {category.items.map((equipment, index) => {
-              const isSelected = selectedEquipment.some(e => e.name === equipment.name);
-              const equipmentDetails = selectedEquipment.find(e => e.name === equipment.name)?.details || {};
+            {/* Collapse category content */}
+            <Collapse in={expandedCategories[catIndex]} timeout="auto" unmountOnExit>
+              {category.items.map((equipment, index) => {
+                const isSelected = selectedEquipment.some(e => e.name === equipment.name);
+                const equipmentDetails = selectedEquipment.find(e => e.name === equipment.name)?.details || {};
 
-              return (
-                <Grid item xs={12} key={index}>
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        checked={isSelected}
-                        onChange={() => handleEquipmentToggle(equipment.name)}
-                        color="primary"
-                      />
-                    }
-                    label={equipment.name}
-                  />
+                return (
+                  <Grid item xs={12} key={index}>
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={isSelected}
+                          onChange={() => handleEquipmentToggle(equipment.name)}
+                          color="primary"
+                        />
+                      }
+                      label={equipment.name}
+                    />
 
-                  {/* Optional fields for equipment details */}
-                  <Collapse in={isSelected} timeout="auto" unmountOnExit>
-                    <Grid container spacing={2} sx={{ pl: 4, mt: 1 }}>
-                      {equipment.fields.map(field => (
-                        <Grid item xs={12} sm={6} md={4} key={field}>
-                          <TextField
-                            label={field}
-                            fullWidth
-                            value={equipmentDetails[field] || ''}
-                            onChange={(e) =>
-                              handleDetailChange(equipment.name, field, e.target.value)
-                            }
-                          />
-                        </Grid>
-                      ))}
-                    </Grid>
-                  </Collapse>
-                </Grid>
-              );
-            })}
+                    {/* Optional fields for equipment details */}
+                    <Collapse in={isSelected} timeout="auto" unmountOnExit>
+                      <Grid container spacing={2} sx={{ pl: 4, mt: 1 }}>
+                        {equipment.fields.map(field => (
+                          <Grid item xs={12} sm={6} md={4} key={field}>
+                            <TextField
+                              label={field}
+                              fullWidth
+                              value={equipmentDetails[field] || ''}
+                              onChange={e => handleDetailChange(equipment.name, field, e.target.value)}
+                            />
+                          </Grid>
+                        ))}
+                      </Grid>
+                    </Collapse>
+                  </Grid>
+                );
+              })}
+            </Collapse>
           </Grid>
         ))}
       </Grid>
