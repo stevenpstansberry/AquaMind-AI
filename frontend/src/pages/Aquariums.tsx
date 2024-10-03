@@ -12,7 +12,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../util/AuthContext';
 import AquariumSidebar from '../components/aquarium-components/AquariumSidebar';
 import AquariumWizard from '../components/aquarium-components/aquarium-wizard-components/AquariumWizard';
-import { Button } from '@mui/material';
+import { Button, Box } from '@mui/material';
 
 interface Aquarium {
   id: number;
@@ -23,7 +23,7 @@ const Aquariums: React.FC = () => {
   const [userName, setUserName] = useState<string | null>(null);
   const [aquariums, setAquariums] = useState<Aquarium[]>([]);
   const [showWizard, setShowWizard] = useState(false);
-  const [currentAquarium, setCurrentAquarium] = useState<Aquarium | null>(null); // Track the selected aquarium
+  const [currentAquarium, setCurrentAquarium] = useState<Aquarium | null>(null);
 
   const { isLoggedIn, user, logout } = useAuth();
 
@@ -45,27 +45,45 @@ const Aquariums: React.FC = () => {
   }, []);
 
   return (
-    <div style={{ display: 'flex' }}>
-      {/* Pass the current aquarium to the sidebar */}
-      <AquariumSidebar
-        aquariums={aquariums}
-        onOpenWizard={handleOpenWizard}
-        setCurrentAquarium={setCurrentAquarium}
-        currentAquarium={currentAquarium} // Pass selected aquarium
-      />
+    <div style={{ display: 'flex', height: '100vh' }}>
+      {/* Sidebar for displaying aquariums */}
+      {aquariums.length > 0 && (
+        <AquariumSidebar
+          aquariums={aquariums}
+          onOpenWizard={handleOpenWizard}
+          setCurrentAquarium={setCurrentAquarium}
+          currentAquarium={currentAquarium}
+        />
+      )}
 
-      <div style={{ marginLeft: '250px', padding: '20px', width: '100%' }}>
+      {/* Main content */}
+      <div style={{ marginLeft: aquariums.length > 0 ? '250px' : '0', padding: '20px', width: '100%' }}>
         <h1>{user ? `${user}'s Aquariums` : 'Your Aquariums'}</h1>
-        <Button 
-          variant="contained" 
-          color="primary" 
-          onClick={() => setShowWizard(true)}
-        >
-          + Create New Aquarium
-        </Button>
 
+        {/* Render Aquarium Wizard modal */}
         {showWizard && (
           <AquariumWizard onClose={() => setShowWizard(false)} />
+        )}
+
+        {/* Show "Create New Aquarium" button only when there are no aquariums */}
+        {aquariums.length === 0 && (
+          <Box
+            sx={{
+              position: 'absolute',  // Absolute positioning to place the button at the bottom center
+              bottom: '20px',
+              left: '50%',
+              transform: 'translateX(-50%)',  // Center horizontally
+              textAlign: 'center',
+            }}
+          >
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => setShowWizard(true)}
+            >
+              + Create New Aquarium
+            </Button>
+          </Box>
         )}
 
         {currentAquarium && (
