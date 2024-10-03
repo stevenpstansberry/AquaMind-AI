@@ -12,39 +12,25 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../util/AuthContext';
 import AquariumSidebar from '../components/aquarium-components/AquariumSidebar';
 import AquariumWizard from '../components/aquarium-components/aquarium-wizard-components/AquariumWizard';
-import { Button, Typography, Box } from '@mui/material';
+import { Button } from '@mui/material';
 
-/**
- * Interface representing an aquarium object.
- */
 interface Aquarium {
   id: number;
   name: string;
 }
 
-/**
- * Aquariums component renders the user's aquarium management page, including a sidebar for viewing existing aquariums
- * and a button to create new ones using the AquariumWizard component.
- */
 const Aquariums: React.FC = () => {
   const [userName, setUserName] = useState<string | null>(null);
   const [aquariums, setAquariums] = useState<Aquarium[]>([]);
   const [showWizard, setShowWizard] = useState(false);
   const [currentAquarium, setCurrentAquarium] = useState<Aquarium | null>(null); // Track the selected aquarium
 
-  const { user } = useAuth(); // Access user data
+  const { isLoggedIn, user, logout } = useAuth();
 
-  /**
-   * Function to trigger the aquarium creation wizard.
-   */
   const handleOpenWizard = () => {
     setShowWizard(true);
   };
 
-  /**
-   * useEffect hook to simulate fetching aquarium data from an API.
-   * On mount, it sets mock aquarium data for demonstration purposes.
-   */
   useEffect(() => {
     const fetchAquariums = async () => {
       const mockAquariums = [
@@ -60,28 +46,16 @@ const Aquariums: React.FC = () => {
 
   return (
     <div style={{ display: 'flex' }}>
-      {/* Sidebar for displaying aquariums */}
-      <AquariumSidebar 
-        aquariums={aquariums} 
-        onOpenWizard={handleOpenWizard} 
-        setCurrentAquarium={setCurrentAquarium}  // Pass the setter for current aquarium
+      {/* Pass the current aquarium to the sidebar */}
+      <AquariumSidebar
+        aquariums={aquariums}
+        onOpenWizard={handleOpenWizard}
+        setCurrentAquarium={setCurrentAquarium}
+        currentAquarium={currentAquarium} // Pass selected aquarium
       />
 
-      {/* Main content */}
       <div style={{ marginLeft: '250px', padding: '20px', width: '100%' }}>
         <h1>{user ? `${user}'s Aquariums` : 'Your Aquariums'}</h1>
-
-        {/* Display details of the selected aquarium */}
-        {currentAquarium ? (
-          <Box>
-            <Typography variant="h5">Selected Aquarium: {currentAquarium.name}</Typography>
-            <Typography variant="body1">Aquarium ID: {currentAquarium.id}</Typography>
-          </Box>
-        ) : (
-          <Typography variant="body1">Select an aquarium from the sidebar to view details.</Typography>
-        )}
-
-        {/* Button to trigger the aquarium creation wizard */}
         <Button 
           variant="contained" 
           color="primary" 
@@ -90,9 +64,15 @@ const Aquariums: React.FC = () => {
           + Create New Aquarium
         </Button>
 
-        {/* Render the Aquarium Wizard modal */}
         {showWizard && (
           <AquariumWizard onClose={() => setShowWizard(false)} />
+        )}
+
+        {currentAquarium && (
+          <div>
+            <h2>Current Aquarium: {currentAquarium.name}</h2>
+            {/* Display additional information about the selected aquarium */}
+          </div>
         )}
       </div>
     </div>
