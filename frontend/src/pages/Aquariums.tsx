@@ -12,7 +12,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../util/AuthContext';
 import AquariumSidebar from '../components/aquarium-components/AquariumSidebar';
 import AquariumWizard from '../components/aquarium-components/aquarium-wizard-components/AquariumWizard';
-import { Button, Box } from '@mui/material';
+import { Button, Box, AppBar, Toolbar, Typography, Grid, Card, CardContent } from '@mui/material';
 
 interface Aquarium {
   id: string;  // Changed to string for UUID support
@@ -24,12 +24,11 @@ interface Aquarium {
 }
 
 const Aquariums: React.FC = () => {
-  const [userName, setUserName] = useState<string | null>(null);
   const [aquariums, setAquariums] = useState<Aquarium[]>([]);
   const [showWizard, setShowWizard] = useState(false);
   const [currentAquarium, setCurrentAquarium] = useState<Aquarium | null>(null);
 
-  const { isLoggedIn, user, logout } = useAuth();
+  const { user } = useAuth();
 
   const handleOpenWizard = () => {
     setShowWizard(true);
@@ -80,42 +79,126 @@ const Aquariums: React.FC = () => {
         />
       )}
 
-      <div style={{ marginLeft: aquariums.length > 0 ? '250px' : '0', padding: '20px', width: '100%' }}>
-        <h1>{user ? `${user}'s Aquariums` : 'Your Aquariums'}</h1>
+      <div style={{ marginLeft: aquariums.length > 0 ? '250px' : '0', padding: '20px', width: '100%', display: 'flex', flexDirection: 'column' }}>
+        {/* Main Content: Fish, Plants, Equipment, Parameters */}
+        <Box sx={{ flexGrow: 1 }}>
+          {showWizard && (
+            <AquariumWizard onClose={() => setShowWizard(false)} />
+          )}
 
-        {showWizard && (
-          <AquariumWizard onClose={() => setShowWizard(false)} />
-        )}
-
-        {aquariums.length === 0 && (
-          <Box
-            sx={{
-              position: 'absolute',
-              bottom: '20px',
-              left: '50%',
-              transform: 'translateX(-50%)',
-              textAlign: 'center',
-            }}
-          >
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={() => setShowWizard(true)}
+          {aquariums.length === 0 && (
+            <Box
+              sx={{
+                position: 'absolute',
+                bottom: '20px',
+                left: '50%',
+                transform: 'translateX(-50%)',
+                textAlign: 'center',
+              }}
             >
-              + Create New Aquarium
-            </Button>
-          </Box>
-        )}
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={() => setShowWizard(true)}
+              >
+                + Create New Aquarium
+              </Button>
+            </Box>
+          )}
 
-        {currentAquarium && (
-          <div>
-            <h2>Current Aquarium: {currentAquarium.name}</h2>
-            <p>Type: {currentAquarium.type}</p>
-            <p>Size: {currentAquarium.size} gallons</p>
-            <p>Species: {currentAquarium.species.join(', ')}</p>
-            <p>Equipment: {currentAquarium.equipment.join(', ')}</p>
-          </div>
-        )}
+          {currentAquarium && (
+            <>
+              {/* Static Navbar for Current Aquarium Details */}
+              <AppBar
+                position="static"
+                color="default"
+                sx={{
+                  boxShadow: 'none',
+                  borderBottom: '2px solid #333', // Dark underline
+                  paddingBottom: '10px', // Space under text
+                }}
+              >
+                <Toolbar sx={{ justifyContent: 'space-between' }}>
+                  <Typography variant="h6" sx={{ marginRight: '20px' }}>
+                    Aquarium Name: {currentAquarium.name}
+                  </Typography>
+                  <Typography variant="subtitle1" sx={{ marginRight: '20px' }}>
+                    Type: {currentAquarium.type}
+                  </Typography>
+                  <Typography variant="subtitle1">
+                    Size: {currentAquarium.size} gallons
+                  </Typography>
+                </Toolbar>
+              </AppBar>
+
+              {/* Grid of Cards */}
+              <Grid container spacing={3} sx={{ marginTop: '20px' }}>
+                {/* Fish Card (larger) */}
+                <Grid item xs={12} md={6} lg={6}>
+                  <Card sx={{ height: '100%' }}>
+                    <CardContent>
+                      <Typography variant="h6">Fish</Typography>
+                      <Typography variant="body1">
+                        {currentAquarium.species.join(', ')}
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </Grid>
+
+                {/* Plant Card (larger) */}
+                <Grid item xs={12} md={6} lg={6}>
+                  <Card sx={{ height: '100%' }}>
+                    <CardContent>
+                      <Typography variant="h6">Plants</Typography>
+                      <Typography variant="body1">No plants added yet.</Typography>
+                    </CardContent>
+                  </Card>
+                </Grid>
+
+                {/* Equipment Card */}
+                <Grid item xs={12} md={6} lg={4}>
+                  <Card sx={{ height: '100%' }}>
+                    <CardContent>
+                      <Typography variant="h6">Equipment</Typography>
+                      <Typography variant="body1">
+                        {currentAquarium.equipment.join(', ')}
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </Grid>
+
+                {/* Aquarium Parameters Card */}
+                <Grid item xs={12} md={6} lg={8}>
+                  <Card sx={{ height: '100%' }}>
+                    <CardContent>
+                      <Typography variant="h6">Aquarium Parameters</Typography>
+                      <Typography variant="body1">
+                        {/* Placeholder for parameters like temperature, pH, etc. */}
+                        Temperature: 78°F<br />
+                        pH Level: 7.2<br />
+                        Ammonia: 0 ppm
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </Grid>
+              </Grid>
+            </>
+          )}
+        </Box>
+
+        {/* Bottom Section for Aquarium Insights and Add New Aquarium */}
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 'auto' }}>
+          {/* Aquarium Insights (at the bottom) */}
+          <Card sx={{ width: '100%', height: '150px' }}> {/* Increased width and set height */}
+            <CardContent>
+              <Typography variant="h6">Aquarium Insights (AI-Powered)</Typography>
+              <Typography variant="body1">
+                {/* Placeholder for GPT-based insights */}
+                Your tank's water temperature is optimal for Tetra species. Make sure to monitor pH levels regularly.
+              </Typography>
+            </CardContent>
+          </Card>
+        </Box>
       </div>
     </div>
   );
