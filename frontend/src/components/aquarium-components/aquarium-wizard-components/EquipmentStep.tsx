@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Typography, Grid, Box, TextField, Checkbox, FormControlLabel, Collapse, IconButton, Dialog, DialogTitle, DialogContent, DialogActions, Button } from '@mui/material';
-import { ExpandMore, Add as AddIcon } from '@mui/icons-material'; // Import add icon
+import { ExpandMore, Add as AddIcon } from '@mui/icons-material'; 
 
 interface EquipmentStepProps {
   setAquariumData: React.Dispatch<React.SetStateAction<any>>;
