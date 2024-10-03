@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Typography, Grid, Box, TextField, Checkbox, FormControlLabel, Collapse, IconButton } from '@mui/material';
+import { Typography, Grid, Box, TextField, Checkbox, FormControlLabel, Collapse, IconButton, Dialog, DialogTitle, DialogContent, DialogActions, Button } from '@mui/material';
 import { ExpandMore, Add as AddIcon } from '@mui/icons-material'; // Import add icon
 
 interface EquipmentStepProps {
@@ -68,10 +68,15 @@ const EquipmentStep: React.FC<EquipmentStepProps> = ({
   setAquariumData,
   setIsStepValid,
 }) => {
-  const [equipmentCategories, setEquipmentCategories] = useState(initialCategories); // We now modify this dynamically
+  const [equipmentCategories, setEquipmentCategories] = useState(initialCategories);
   const [selectedEquipment, setSelectedEquipment] = useState<{ name: string; details: any }[]>(aquariumData.equipment || []);
   const [expandedCategories, setExpandedCategories] = useState<boolean[]>(Array(initialCategories.length).fill(false));
-  const [customEquipmentName, setCustomEquipmentName] = useState<{ [key: number]: string }>({}); // Custom name state
+  const [customEquipmentName, setCustomEquipmentName] = useState<{ [key: number]: string }>({});
+  
+  // State for Modal
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [currentCategory, setCurrentCategory] = useState<number | null>(null);
+  const [customFields, setCustomFields] = useState<string[]>([]); // Stores the fields for the custom equipment
 
   // Function to toggle equipment selection
   const handleEquipmentToggle = (equipmentName: string) => {
@@ -98,24 +103,45 @@ const EquipmentStep: React.FC<EquipmentStepProps> = ({
     });
   };
 
-  // Add custom equipment and dynamically inject it into the list of items in a category
-  const handleAddCustomEquipment = (catIndex: number) => {
-    const customName = customEquipmentName[catIndex]?.trim();
-    if (customName && !selectedEquipment.some(e => e.name === customName)) {
-      // Update selected equipment with custom equipment
-      setSelectedEquipment(prev => [...prev, { name: customName, details: {} }]);
+  // Open modal for adding custom equipment
+  const openCustomEquipmentModal = (catIndex: number) => {
+    setCurrentCategory(catIndex); // Set the current category for the modal
+    setIsModalOpen(true);
+  };
 
-      // Add the custom equipment to the current category's items
-      setEquipmentCategories(prevCategories => {
-        const updatedCategories = [...prevCategories];
-        updatedCategories[catIndex].items.push({
-          name: customName,
-          fields: ['Brand', 'Model Name', 'Details'], // Add fields for the custom equipment
+  // Handle custom fields input in the modal
+  const handleFieldChange = (index: number, value: string) => {
+    const updatedFields = [...customFields];
+    updatedFields[index] = value;
+    setCustomFields(updatedFields);
+  };
+
+  // Add new field input in modal
+  const addCustomField = () => {
+    setCustomFields([...customFields, '']);
+  };
+
+  // Submit custom equipment with custom fields
+  const handleAddCustomEquipment = () => {
+    if (currentCategory !== null) {
+      const customName = customEquipmentName[currentCategory]?.trim();
+      if (customName && !selectedEquipment.some(e => e.name === customName)) {
+        setSelectedEquipment(prev => [...prev, { name: customName, details: {} }]);
+
+        // Add the custom equipment to the current category with dynamic fields
+        setEquipmentCategories(prevCategories => {
+          const updatedCategories = [...prevCategories];
+          updatedCategories[currentCategory].items.push({
+            name: customName,
+            fields: customFields, // Add custom fields
+          });
+          return updatedCategories;
         });
-        return updatedCategories;
-      });
 
-      setCustomEquipmentName(prev => ({ ...prev, [catIndex]: '' })); // Clear input after adding
+        setCustomEquipmentName(prev => ({ ...prev, [currentCategory]: '' }));
+        setCustomFields([]); // Reset the custom fields
+        setIsModalOpen(false); // Close modal after submission
+      }
     }
   };
 
@@ -203,7 +229,7 @@ const EquipmentStep: React.FC<EquipmentStepProps> = ({
                   size="small"
                 />
                 <IconButton
-                  onClick={() => handleAddCustomEquipment(catIndex)}
+                  onClick={() => openCustomEquipmentModal(catIndex)}
                   color="primary"
                   disabled={!customEquipmentName[catIndex]?.trim()} // Disable if empty
                   sx={{ ml: 2 }}
@@ -215,6 +241,34 @@ const EquipmentStep: React.FC<EquipmentStepProps> = ({
           </Grid>
         ))}
       </Grid>
+
+      {/* Modal for Adding Custom Fields */}
+      <Dialog open={isModalOpen} onClose={() => setIsModalOpen(false)}>
+        <DialogTitle>Add Custom Fields for Equipment</DialogTitle>
+        <DialogContent>
+          {customFields.map((field, index) => (
+            <TextField
+              key={index}
+              label={`Field ${index + 1}`}
+              value={field}
+              onChange={(e) => handleFieldChange(index, e.target.value)}
+              fullWidth
+              margin="normal"
+            />
+          ))}
+          <Button onClick={addCustomField} variant="outlined" color="primary">
+            Add Field
+          </Button>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setIsModalOpen(false)} color="secondary">
+            Cancel
+          </Button>
+          <Button onClick={handleAddCustomEquipment} color="primary">
+            Add Equipment
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };
