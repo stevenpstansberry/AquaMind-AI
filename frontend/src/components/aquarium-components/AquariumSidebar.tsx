@@ -14,9 +14,6 @@ import { useTheme } from '@mui/material/styles';
 
 /**
  * Interface representing an aquarium object.
- * @typedef {Object} Aquarium
- * @property {number} id - The unique identifier of the aquarium.
- * @property {string} name - The name of the aquarium.
  */
 interface Aquarium {
   id: number;
@@ -25,23 +22,18 @@ interface Aquarium {
 
 /**
  * Props for the AquariumSidebar component.
- * @typedef {Object} AquariumSidebarProps
- * @property {Aquarium[]} aquariums - Array of aquarium objects to be displayed in the sidebar.
- * @property {function} onOpenWizard - Callback function to open the aquarium creation wizard.
  */
 interface AquariumSidebarProps {
   aquariums: Aquarium[];
   onOpenWizard: () => void;
+  setCurrentAquarium: (aquarium: Aquarium) => void;  // Function to set the current aquarium
 }
 
 /**
  * AquariumSidebar component renders a sidebar that displays the user's aquariums and provides 
  * an option to add a new aquarium. Each aquarium can be edited by clicking the edit icon.
- * 
- * @param {AquariumSidebarProps} props - The properties passed to the component.
- * @returns {JSX.Element} The rendered AquariumSidebar component.
  */
-const AquariumSidebar: React.FC<AquariumSidebarProps> = ({ aquariums, onOpenWizard }) => {
+const AquariumSidebar: React.FC<AquariumSidebarProps> = ({ aquariums, onOpenWizard, setCurrentAquarium }) => {
   const theme = useTheme();
 
   return (
@@ -79,7 +71,9 @@ const AquariumSidebar: React.FC<AquariumSidebarProps> = ({ aquariums, onOpenWiza
                   justifyContent: 'space-between',
                   alignItems: 'center',
                   paddingRight: 0,
+                  cursor: 'pointer',
                 }}
+                onClick={() => setCurrentAquarium(aquarium)}  // Set the selected aquarium
               >
                 <Typography>{aquarium.name}</Typography>
                 {/* Edit Icon */}
@@ -105,7 +99,7 @@ const AquariumSidebar: React.FC<AquariumSidebarProps> = ({ aquariums, onOpenWiza
       <Button
         variant="contained"
         color="primary"
-        onClick={onOpenWizard} // Trigger the wizard from the sidebar
+        onClick={onOpenWizard}
         sx={{
           width: '100%',
           marginTop: 'auto',

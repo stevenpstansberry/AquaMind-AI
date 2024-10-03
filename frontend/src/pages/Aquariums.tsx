@@ -12,13 +12,10 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../util/AuthContext';
 import AquariumSidebar from '../components/aquarium-components/AquariumSidebar';
 import AquariumWizard from '../components/aquarium-components/aquarium-wizard-components/AquariumWizard';
-import { Button } from '@mui/material';
+import { Button, Typography, Box } from '@mui/material';
 
 /**
  * Interface representing an aquarium object.
- * @typedef {Object} Aquarium
- * @property {number} id - The unique identifier of the aquarium.
- * @property {string} name - The name of the aquarium.
  */
 interface Aquarium {
   id: number;
@@ -28,20 +25,17 @@ interface Aquarium {
 /**
  * Aquariums component renders the user's aquarium management page, including a sidebar for viewing existing aquariums
  * and a button to create new ones using the AquariumWizard component.
- * 
- * @returns {JSX.Element} The rendered aquariums page component.
  */
 const Aquariums: React.FC = () => {
   const [userName, setUserName] = useState<string | null>(null);
-  const [aquariums, setAquariums] = useState<Aquarium[]>([]); // State to store aquarium data
-  const [showWizard, setShowWizard] = useState(false); // State to control the wizard visibility
+  const [aquariums, setAquariums] = useState<Aquarium[]>([]);
+  const [showWizard, setShowWizard] = useState(false);
+  const [currentAquarium, setCurrentAquarium] = useState<Aquarium | null>(null); // Track the selected aquarium
 
-  const { isLoggedIn, user, logout } = useAuth(); // Access isLoggedIn and logout function
+  const { user } = useAuth(); // Access user data
 
   /**
    * Function to trigger the aquarium creation wizard.
-   * 
-   * @function handleOpenWizard
    */
   const handleOpenWizard = () => {
     setShowWizard(true);
@@ -67,11 +61,25 @@ const Aquariums: React.FC = () => {
   return (
     <div style={{ display: 'flex' }}>
       {/* Sidebar for displaying aquariums */}
-      <AquariumSidebar aquariums={aquariums} onOpenWizard={handleOpenWizard} />
+      <AquariumSidebar 
+        aquariums={aquariums} 
+        onOpenWizard={handleOpenWizard} 
+        setCurrentAquarium={setCurrentAquarium}  // Pass the setter for current aquarium
+      />
 
       {/* Main content */}
       <div style={{ marginLeft: '250px', padding: '20px', width: '100%' }}>
         <h1>{user ? `${user}'s Aquariums` : 'Your Aquariums'}</h1>
+
+        {/* Display details of the selected aquarium */}
+        {currentAquarium ? (
+          <Box>
+            <Typography variant="h5">Selected Aquarium: {currentAquarium.name}</Typography>
+            <Typography variant="body1">Aquarium ID: {currentAquarium.id}</Typography>
+          </Box>
+        ) : (
+          <Typography variant="body1">Select an aquarium from the sidebar to view details.</Typography>
+        )}
 
         {/* Button to trigger the aquarium creation wizard */}
         <Button 

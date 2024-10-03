@@ -16,7 +16,7 @@ interface AquariumWizardProps {
 const AquariumWizard: React.FC<AquariumWizardProps> = ({ onClose }) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [aquariumData, setAquariumData] = useState({
-    id: '',         // New field for uuidv4 ID
+    id: '',         
     name: '',
     type: '',
     size: '',
