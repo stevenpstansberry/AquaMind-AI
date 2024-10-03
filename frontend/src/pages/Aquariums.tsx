@@ -15,14 +15,13 @@ import AquariumWizard from '../components/aquarium-components/aquarium-wizard-co
 import { Button, Box } from '@mui/material';
 
 interface Aquarium {
-  id: string;             
+  id: string;  // Changed to string for UUID support
   name: string;
   type: string;
   size: string;
   species: string[];
   equipment: string[];
 }
-
 
 const Aquariums: React.FC = () => {
   const [userName, setUserName] = useState<string | null>(null);
@@ -66,14 +65,12 @@ const Aquariums: React.FC = () => {
       ];
       setAquariums(mockAquariums);
     };
-  
+
     fetchAquariums();
   }, []);
-  
 
   return (
     <div style={{ display: 'flex', height: '100vh' }}>
-      {/* Sidebar for displaying aquariums */}
       {aquariums.length > 0 && (
         <AquariumSidebar
           aquariums={aquariums}
@@ -83,23 +80,20 @@ const Aquariums: React.FC = () => {
         />
       )}
 
-      {/* Main content */}
       <div style={{ marginLeft: aquariums.length > 0 ? '250px' : '0', padding: '20px', width: '100%' }}>
         <h1>{user ? `${user}'s Aquariums` : 'Your Aquariums'}</h1>
 
-        {/* Render Aquarium Wizard modal */}
         {showWizard && (
           <AquariumWizard onClose={() => setShowWizard(false)} />
         )}
 
-        {/* Show "Create New Aquarium" button only when there are no aquariums */}
         {aquariums.length === 0 && (
           <Box
             sx={{
-              position: 'absolute',  // Absolute positioning to place the button at the bottom center
+              position: 'absolute',
               bottom: '20px',
               left: '50%',
-              transform: 'translateX(-50%)',  // Center horizontally
+              transform: 'translateX(-50%)',
               textAlign: 'center',
             }}
           >
@@ -116,7 +110,10 @@ const Aquariums: React.FC = () => {
         {currentAquarium && (
           <div>
             <h2>Current Aquarium: {currentAquarium.name}</h2>
-            {/* Display additional information about the selected aquarium */}
+            <p>Type: {currentAquarium.type}</p>
+            <p>Size: {currentAquarium.size} gallons</p>
+            <p>Species: {currentAquarium.species.join(', ')}</p>
+            <p>Equipment: {currentAquarium.equipment.join(', ')}</p>
           </div>
         )}
       </div>

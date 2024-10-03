@@ -71,7 +71,7 @@ const AquariumSidebar: React.FC<AquariumSidebarProps> = ({ aquariums, onOpenWiza
                   borderRadius: '4px', // Add border-radius to look neat
                   padding: '8px',
                 }}
-                onClick={() => setCurrentAquarium(aquarium)} // Select aquarium on click
+                onClick={() => setCurrentAquarium(aquarium) } // Select aquarium on click
               >
                 <Typography>{aquarium.name}</Typography>
                 <IconButton
