@@ -18,6 +18,7 @@ interface Aquarium {
   type: string;
   size: string;
   species: string[];
+  plants: string[];
   equipment: string[];
 }
 

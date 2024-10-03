@@ -21,6 +21,7 @@ interface Aquarium {
   type: string;
   size: string;
   species: string[];
+  plants: string[];
   equipment: string[];
 }
 
@@ -44,6 +45,7 @@ const Aquariums: React.FC = () => {
           type: "Freshwater",
           size: "55",
           species: ["Tetra"],
+          plants: ["Anubias"],
           equipment: ["Air Pump"]
         },
         {
@@ -52,6 +54,7 @@ const Aquariums: React.FC = () => {
           type: "Saltwater",
           size: "75",
           species: ["Clownfish", "Blue Tang"],
+          plants: [],
           equipment: ["Protein Skimmer", "Wave Maker"]
         },
         {
@@ -60,6 +63,7 @@ const Aquariums: React.FC = () => {
           type: "Freshwater",
           size: "40",
           species: ["Angelfish"],
+          plants: ["Anubias"],
           equipment: ["CO2 System", "Heater"]
         }
       ];
@@ -200,7 +204,12 @@ const Aquariums: React.FC = () => {
                   >
                     <CardContent>
                       <Typography variant="h6">Plants</Typography>
-                      <Typography variant="body1">No plants added yet.</Typography>
+                      {/* Display the plants or a message if no plants are added */}
+                      <Typography variant="body1">
+                        {currentAquarium.plants.length > 0 
+                          ? currentAquarium.plants.join(', ')  // List plants if available
+                          : 'No plants added yet.'}  
+                      </Typography>
                     </CardContent>
                     {/* Plus Icon */}
                     <IconButton 
@@ -218,7 +227,6 @@ const Aquariums: React.FC = () => {
                     </IconButton>
                   </Card>
                 </Grid>
-
                 {/* Equipment Card */}
                 <Grid item xs={12} md={6} lg={4}>
                   <Card 
