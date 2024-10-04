@@ -86,9 +86,8 @@ const Aquariums: React.FC = () => {
         parameters: newParams,  // Update parameters
       });
     }
-    setShowParametersOverlay(false);  // Close the modal after saving
   };
-
+  
   return (
     <div style={{ display: 'flex', height: '100vh' }}>
       {aquariums.length > 0 && (
@@ -157,7 +156,7 @@ const Aquariums: React.FC = () => {
                 <Grid item xs={12} md={6} lg={8}>
                   <ParametersCard
                     parameters={currentAquarium.parameters || { temperature: 0, ph: 0, ammonia: 0 }}
-                    onEdit={() => setShowParametersOverlay(true)}
+                    onUpdateParameters={handleUpdateParameters}
                   />
                 </Grid>
               </Grid>
