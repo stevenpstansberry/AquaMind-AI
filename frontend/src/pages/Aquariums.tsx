@@ -2,9 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../util/AuthContext';
 import AquariumSidebar from '../components/aquarium-components/AquariumSidebar';
 import AquariumWizard from '../components/aquarium-components/aquarium-wizard-components/AquariumWizard';
-import { Button, Box, AppBar, Toolbar, Typography, Grid, Card, CardContent, IconButton } from '@mui/material';
-import EditIcon from '@mui/icons-material/Edit'; // Change to Edit icon
-import AquariumParameters from '../components/aquarium-components/AquariumParameters';  
+import { Box, AppBar, Toolbar, Typography, Grid, IconButton, CardContent, Card } from '@mui/material';
+import EditIcon from '@mui/icons-material/Edit';
+import AquariumParameters from '../components/aquarium-components/AquariumParameters';
+
+// Import the refactored card components
+import FishCard from '../components/aquarium-components/FishCard';
+import PlantCard from '../components/aquarium-components/PlantCard';
+import EquipmentCard from '../components/aquarium-components/EquipmentCard';
+import ParametersCard from '../components/aquarium-components/ParametersCard';
 
 interface Aquarium {
   id: string;   // UUID
@@ -21,12 +27,7 @@ const Aquariums: React.FC = () => {
   const [aquariums, setAquariums] = useState<Aquarium[]>([]);
   const [showWizard, setShowWizard] = useState(false);
   const [currentAquarium, setCurrentAquarium] = useState<Aquarium | null>(null);
-
-
-  // State for toggling modal
-  const [showParametersOverlay, setShowParametersOverlay] = useState(false);  // Modal visibility state
-
-
+  const [showParametersOverlay, setShowParametersOverlay] = useState(false);
 
   const { user } = useAuth();
 
@@ -43,12 +44,8 @@ const Aquariums: React.FC = () => {
           name: "Test Tank",
           type: "Freshwater",
           size: "55",
-          species: [
-            { name: "Tetra", count: 5 },
-          ],
-          plants: [
-            { name: "Anubias", count: 3 },
-          ],
+          species: [{ name: "Tetra", count: 5 }],
+          plants: [{ name: "Anubias", count: 3 }],
           equipment: ["Air Pump"],
           parameters: { temperature: 78, ph: 7.2, ammonia: 0 }
         },
@@ -59,7 +56,7 @@ const Aquariums: React.FC = () => {
           size: "75",
           species: [
             { name: "Clownfish", count: 2 },
-            { name: "Blue Tang", count: 1 },
+            { name: "Blue Tang", count: 1 }
           ],
           plants: [],
           equipment: ["Protein Skimmer", "Wave Maker"],
@@ -70,12 +67,8 @@ const Aquariums: React.FC = () => {
           name: "Planted Tank",
           type: "Freshwater",
           size: "40",
-          species: [
-            { name: "Angelfish", count: 1 },
-          ],
-          plants: [
-            { name: "Anubias", count: 5 },
-          ],
+          species: [{ name: "Angelfish", count: 1 }],
+          plants: [{ name: "Anubias", count: 5 }],
           equipment: ["CO2 System", "Heater"],
           parameters: { temperature: 80, ph: 6.8, ammonia: 0 }
         }
@@ -108,11 +101,8 @@ const Aquariums: React.FC = () => {
       )}
 
       <div style={{ marginLeft: aquariums.length > 0 ? '250px' : '0', padding: '20px', width: '100%', display: 'flex', flexDirection: 'column' }}>
-        {/* Main Content: Fish, Plants, Equipment, Parameters */}
         <Box sx={{ flexGrow: 1 }}>
-          {showWizard && (
-            <AquariumWizard onClose={() => setShowWizard(false)} />
-          )}
+          {showWizard && <AquariumWizard onClose={() => setShowWizard(false)} />}
 
           {currentAquarium && (
             <>
@@ -146,167 +136,29 @@ const Aquariums: React.FC = () => {
                 </Toolbar>
               </AppBar>
 
-              {/* Grid of Cards with Subtle Hover Effect and Edit Icon */}
+              {/* Grid of Cards */}
               <Grid container spacing={3} sx={{ marginTop: '20px' }}>
                 {/* Fish Card */}
                 <Grid item xs={12} md={6} lg={6}>
-                  <Card 
-                    sx={{ 
-                      height: '100%',
-                      position: 'relative',
-                      transition: 'transform 0.15s ease-in-out, box-shadow 0.15s ease-in-out',
-                      border: '1px solid #e0e0e0',
-                      boxShadow: '0px 2px 5px rgba(0, 0, 0, 0.05)',
-                      borderRadius: '8px',
-                      backgroundColor: '#fafafa',
-                      '&:hover': {
-                        transform: 'scale(1.01)',
-                        boxShadow: '0px 2px 10px rgba(0, 0, 0, 0.12)',
-                      }
-                    }}
-                  >
-                    <CardContent>
-                      <Typography variant="h6">Fish</Typography>
-                      <Typography variant="body1">
-                        {currentAquarium.species.length > 0
-                          ? currentAquarium.species
-                              .map((fish) => `${fish.name} (x${fish.count})`)
-                              .join(', ')
-                          : 'No fish added yet.'}
-                      </Typography>
-                    </CardContent>
-                    {/* Edit Icon */}
-                    <IconButton 
-                      color="primary" 
-                      sx={{ 
-                        position: 'absolute', 
-                        top: '10px', 
-                        right: '10px', 
-                        color: '#B0BEC5',
-                        fontSize: '20px'  
-                      }}
-                      aria-label="edit fish"
-                    >
-                      <EditIcon />
-                    </IconButton>
-                  </Card>
+                  <FishCard species={currentAquarium.species} />
                 </Grid>
 
                 {/* Plant Card */}
                 <Grid item xs={12} md={6} lg={6}>
-                  <Card 
-                    sx={{ 
-                      height: '100%',
-                      position: 'relative',
-                      transition: 'transform 0.15s ease-in-out, box-shadow 0.15s ease-in-out',
-                      border: '1px solid #e0e0e0',
-                      boxShadow: '0px 2px 5px rgba(0, 0, 0, 0.05)',
-                      borderRadius: '8px',
-                      backgroundColor: '#fafafa',
-                      '&:hover': {
-                        transform: 'scale(1.01)',
-                        boxShadow: '0px 2px 10px rgba(0, 0, 0, 0.12)',
-                      }
-                    }}
-                  >
-                    <CardContent>
-                      <Typography variant="h6">Plants</Typography>
-                      <Typography variant="body1">
-                        {currentAquarium.plants.length > 0 
-                          ? currentAquarium.plants
-                              .map((plant) => `${plant.name} (x${plant.count})`)
-                              .join(', ')
-                          : 'No plants added yet.'}
-                      </Typography>
-                    </CardContent>
-                    {/* Edit Icon */}
-                    <IconButton 
-                      color="primary" 
-                      sx={{ 
-                        position: 'absolute', 
-                        top: '10px', 
-                        right: '10px', 
-                        color: '#B0BEC5',
-                        fontSize: '20px'  
-                      }}
-                      aria-label="edit plant"
-                    >
-                      <EditIcon />
-                    </IconButton>
-                  </Card>
+                  <PlantCard plants={currentAquarium.plants} />
                 </Grid>
 
                 {/* Equipment Card */}
                 <Grid item xs={12} md={6} lg={4}>
-                  <Card 
-                    sx={{ 
-                      height: '100%',
-                      position: 'relative',
-                      transition: 'transform 0.15s ease-in-out, box-shadow 0.15s ease-in-out',
-                      border: '1px solid #e0e0e0',
-                      boxShadow: '0px 2px 5px rgba(0, 0, 0, 0.05)',
-                      borderRadius: '8px',
-                      backgroundColor: '#fafafa',
-                      '&:hover': {
-                        transform: 'scale(1.01)',
-                        boxShadow: '0px 2px 10px rgba(0, 0, 0, 0.12)',
-                      }
-                    }}
-                  >
-                    <CardContent>
-                      <Typography variant="h6">Equipment</Typography>
-                      <Typography variant="body1">
-                        {currentAquarium.equipment.join(', ')}
-                      </Typography>
-                    </CardContent>
-                    {/* Edit Icon */}
-                    <IconButton 
-                      color="primary" 
-                      sx={{ 
-                        position: 'absolute', 
-                        top: '10px', 
-                        right: '10px', 
-                        color: '#B0BEC5',
-                        fontSize: '20px'  
-                      }}
-                      aria-label="edit equipment"
-                    >
-                      <EditIcon />
-                    </IconButton>
-                  </Card>
+                  <EquipmentCard equipment={currentAquarium.equipment} />
                 </Grid>
 
                 {/* Aquarium Parameters Card */}
                 <Grid item xs={12} md={6} lg={8}>
-                  <Card
-                    sx={{
-                      height: '100%',
-                      position: 'relative',
-                      border: '1px solid #e0e0e0',
-                      boxShadow: '0px 2px 5px rgba(0, 0, 0, 0.05)',
-                      borderRadius: '8px',
-                      backgroundColor: '#fafafa',
-                    }}
-                  >
-                    <CardContent>
-                      <Typography variant="h6">Aquarium Parameters</Typography>
-                      <Typography variant="body1">
-                        Temperature: {currentAquarium.parameters?.temperature}°F<br />
-                        pH Level: {currentAquarium.parameters?.ph}<br />
-                        Ammonia: {currentAquarium.parameters?.ammonia} ppm
-                      </Typography>
-                    </CardContent>
-
-                    {/* Edit Icon */}
-                    <IconButton
-                      color="primary"
-                      sx={{ position: 'absolute', top: '10px', right: '10px', color: '#B0BEC5' }}
-                      aria-label="edit parameters"
-                      onClick={() => setShowParametersOverlay(true)}
-                    >
-                      <EditIcon />
-                    </IconButton>
-                  </Card>
+                  <ParametersCard
+                    parameters={currentAquarium.parameters || { temperature: 0, ph: 0, ammonia: 0 }}
+                    onEdit={() => setShowParametersOverlay(true)}
+                  />
                 </Grid>
               </Grid>
             </>
@@ -315,24 +167,20 @@ const Aquariums: React.FC = () => {
 
         {/* Modal for Editing Parameters */}
         {showParametersOverlay && currentAquarium && (
-        <AquariumParameters
-          parameters={currentAquarium.parameters || { temperature: 0, ph: 0, ammonia: 0 }}
-          onUpdateParameters={handleUpdateParameters}
-          onClose={() => setShowParametersOverlay(false)}  // Close the overlay on cancel or save
-        />
-      )}
+          <AquariumParameters
+            parameters={currentAquarium.parameters || { temperature: 0, ph: 0, ammonia: 0 }}
+            onUpdateParameters={handleUpdateParameters}
+            onClose={() => setShowParametersOverlay(false)}  // Close the overlay on cancel or save
+          />
+        )}
 
-
-        
-
-        {/* Bottom Section for Aquarium Insights and Add New Aquarium */}
+        {/* Bottom Section for Aquarium Insights */}
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 'auto' }}>
-          {/* Aquarium Insights (at the bottom, no plus icon) */}
-          <Card 
-            sx={{ 
-              width: '100%', 
+          <Card
+            sx={{
+              width: '100%',
               height: '150px',
-              transition: 'transform 0.15s ease-in-out, box-shadow 0.15s ease-in-out',
+              transition: 'transform 0.15s ease-in-out, boxShadow 0.15s ease-in-out',
               border: '1px solid #e0e0e0',
               boxShadow: '0px 2px 5px rgba(0, 0, 0, 0.05)',
               borderRadius: '8px',
