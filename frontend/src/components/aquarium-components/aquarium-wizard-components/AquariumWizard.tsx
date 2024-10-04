@@ -29,6 +29,21 @@ const AquariumWizard: React.FC<AquariumWizardProps> = ({ onClose }) => {
   const [isStepValid, setIsStepValid] = useState(false); 
   const [showChat, setShowChat] = useState(false);
 
+  // Reset state when closing the wizard
+  const resetWizard = () => {
+    setCurrentStep(0);
+    setAquariumData({
+      id: '',
+      name: '',
+      type: '',
+      size: '',
+      species: [],  
+      plants: [],
+      equipment: [],
+    });
+    setIsStepValid(false);
+  };
+
   const handleNext = () => {
     console.log("next", aquariumData);
     setCurrentStep((prevStep) => prevStep + 1);
@@ -48,6 +63,7 @@ const AquariumWizard: React.FC<AquariumWizardProps> = ({ onClose }) => {
 
     console.log("Saving Aquarium:", finalAquariumData); 
     onClose(); 
+    resetWizard(); // Reset the wizard state after closing
   };
 
   // Update steps to include Plant Selection
@@ -65,7 +81,15 @@ const AquariumWizard: React.FC<AquariumWizardProps> = ({ onClose }) => {
       }}>
         <Box display="flex" justifyContent="space-between">
           <Typography variant="h5">Aquarium Setup Wizard</Typography>
-          <Button onClick={onClose} sx={{ fontSize: '1.5rem' }}>×</Button>
+          <Button
+            onClick={() => {
+              onClose(); // Close the wizard
+              resetWizard(); // Reset the wizard state
+            }}
+            sx={{ fontSize: '1.5rem' }}
+          >
+            ×
+          </Button>
         </Box>
 
         {/* Aquarium Wizard Steps */}
@@ -76,7 +100,17 @@ const AquariumWizard: React.FC<AquariumWizardProps> = ({ onClose }) => {
           {currentStep === 1 && <TankSizeStep setAquariumData={setAquariumData} setIsStepValid={setIsStepValid} aquariumData={aquariumData} />}
           {currentStep === 2 && <SpeciesSelectionStep setAquariumData={setAquariumData} aquariumData={aquariumData} setIsStepValid={setIsStepValid}/>}
           {currentStep === 3 && <PlantSelectionStep setAquariumData={setAquariumData} aquariumData={aquariumData} setIsStepValid={setIsStepValid}/>} {/* Plant step */}
-          {currentStep === 4 && <EquipmentStep setAquariumData={setAquariumData} setIsStepValid={setIsStepValid} aquariumData={aquariumData}/>}
+          
+          {/* EquipmentStep with a unique key */}
+          {currentStep === 4 && (
+            <EquipmentStep
+              key={currentStep} // Add a key to reset state when remounted
+              setAquariumData={setAquariumData}
+              setIsStepValid={setIsStepValid}
+              aquariumData={aquariumData}
+            />
+          )}
+          
           {currentStep === 5 && <SummaryStep aquariumData={aquariumData} setAquariumData={setAquariumData} />}
         </CardContent>
 
