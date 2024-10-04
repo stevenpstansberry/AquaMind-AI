@@ -1,3 +1,4 @@
+// components/aquarium-components/AquariumParameters.tsx
 import React, { useState, useRef, useEffect } from 'react';
 import { Card, CardContent, Typography, IconButton, Box, TextField, Button } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
@@ -12,27 +13,24 @@ const AquariumParameters: React.FC<AquariumParametersProps> = ({ parameters, onU
   const [tempParams, setTempParams] = useState(parameters); // Track temp params before saving
   const modalRef = useRef<HTMLDivElement>(null); // Ref for the modal content
 
-  // Function to handle clicks outside the modal content
+  const handleSave = () => {
+    onUpdateParameters(tempParams); // Save the parameters
+    onClose(); // Close the modal
+  };
+
+  // Close the modal when clicking outside of it
   const handleClickOutside = (event: MouseEvent) => {
     if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
-      onClose();  // Close the modal when clicking outside
+      onClose();
     }
   };
 
-  // Add event listener for detecting clicks outside
   useEffect(() => {
     document.addEventListener('mousedown', handleClickOutside);
-
     return () => {
-      // Cleanup the event listener when component unmounts
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
-
-  const handleSave = () => {
-    onUpdateParameters(tempParams); // Save the parameters
-    onClose(); // Close the overlay card
-  };
 
   return (
     <Box
@@ -42,15 +40,15 @@ const AquariumParameters: React.FC<AquariumParametersProps> = ({ parameters, onU
         left: 0,
         width: '100vw',
         height: '100vh',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent background
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        zIndex: 1300, // Ensure it overlays the entire page
+        zIndex: 1300,
       }}
     >
       <Card
-        ref={modalRef}  // Attach the ref to the modal content
+        ref={modalRef}
         sx={{
           width: '500px',
           padding: '20px',
@@ -94,7 +92,6 @@ const AquariumParameters: React.FC<AquariumParametersProps> = ({ parameters, onU
             Save
           </Button>
         </Box>
-        {/* Close Icon */}
         <IconButton
           onClick={onClose}
           sx={{ position: 'absolute', top: '10px', right: '10px' }}
