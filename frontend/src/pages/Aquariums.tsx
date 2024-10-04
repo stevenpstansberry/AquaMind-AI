@@ -27,9 +27,6 @@ const Aquariums: React.FC = () => {
   const [aquariums, setAquariums] = useState<Aquarium[]>([]);
   const [showWizard, setShowWizard] = useState(false);
   const [currentAquarium, setCurrentAquarium] = useState<Aquarium | null>(null);
-  const [showParametersOverlay, setShowParametersOverlay] = useState(false);
-
-  const { user } = useAuth();
 
   const handleOpenWizard = () => {
     setShowWizard(true);
@@ -164,15 +161,6 @@ const Aquariums: React.FC = () => {
             </>
           )}
         </Box>
-
-        {/* Modal for Editing Parameters */}
-        {showParametersOverlay && currentAquarium && (
-          <AquariumParameters
-            parameters={currentAquarium.parameters || { temperature: 0, ph: 0, ammonia: 0 }}
-            onUpdateParameters={handleUpdateParameters}
-            onClose={() => setShowParametersOverlay(false)}  // Close the overlay on cancel or save
-          />
-        )}
 
         {/* Bottom Section for Aquarium Insights */}
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 'auto' }}>
