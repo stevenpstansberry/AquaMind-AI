@@ -154,10 +154,11 @@ const Aquariums: React.FC = () => {
 
                 {/* Aquarium Parameters Card */}
                 <Grid item xs={12} md={6} lg={8}>
-                  <ParametersCard
-                    parameters={currentAquarium.parameters || { temperature: 0, ph: 0, ammonia: 0 }}
-                    onUpdateParameters={handleUpdateParameters}
-                  />
+                <ParametersCard
+                parameters={currentAquarium.parameters || { temperature: 0, ph: 0, ammonia: 0 }}
+                onUpdateParameters={handleUpdateParameters}
+                aquariumData={currentAquarium}  // Pass the whole aquarium data for suggested parameters
+                />
                 </Grid>
               </Grid>
             </>
