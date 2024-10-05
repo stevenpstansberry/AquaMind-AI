@@ -195,9 +195,10 @@ const ParametersCard: React.FC<ParametersCardProps> = ({ parameters, onUpdatePar
       {/* Modal for logging new parameters */}
       {showParametersModal && (
         <AquariumParameters
-          parameters={parameters}
-          onUpdateParameters={handleSave}
-          onClose={() => setShowParametersModal(false)}
+            parameters={parameters}
+            onUpdateParameters={handleSave}
+            onClose={() => setShowParametersModal(false)}
+            aquariumType={aquariumData.type}  // Pass the type of aquarium (Freshwater or Saltwater)
         />
       )}
     </>
