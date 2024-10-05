@@ -13,39 +13,38 @@ enum DisplayMode {
 }
 
 interface ParametersCardProps {
-    parameters: {
-      temperature: number;
-      ph: number;
-      ammonia: number;
-      nitrite?: number;  // Add optional nitrite
-      nitrate?: number;  // Add optional nitrate
-      gh?: number;       // Add optional general hardness
-      kh?: number;       // Add optional carbonate hardness
-      co2?: number;      // Add optional CO2 (for planted tanks)
-      salinity?: number; // Add optional salinity (for saltwater)
-      calcium?: number;  // Add optional calcium (for saltwater)
-      magnesium?: number;// Add optional magnesium (for saltwater)
-      alkalinity?: number;// Add optional alkalinity (for saltwater)
-      phosphate?: number; // Add optional phosphate (for saltwater)
-    };
-    onUpdateParameters: (newParams: {
-      temperature: number;
-      ph: number;
-      ammonia: number;
-      nitrite?: number;
-      nitrate?: number;
-      gh?: number;
-      kh?: number;
-      co2?: number;
-      salinity?: number;
-      calcium?: number;
-      magnesium?: number;
-      alkalinity?: number;
-      phosphate?: number;
-    }) => void;
-    aquariumData: { type: string; species: { name: string; count: number }[] };
-  }
-  
+  parameters: {
+    temperature: number;
+    ph: number;
+    ammonia: number;
+    nitrite?: number;
+    nitrate?: number;
+    gh?: number;
+    kh?: number;
+    co2?: number;
+    salinity?: number;
+    calcium?: number;
+    magnesium?: number;
+    alkalinity?: number;
+    phosphate?: number;
+  };
+  onUpdateParameters: (newParams: {
+    temperature: number;
+    ph: number;
+    ammonia: number;
+    nitrite?: number;
+    nitrate?: number;
+    gh?: number;
+    kh?: number;
+    co2?: number;
+    salinity?: number;
+    calcium?: number;
+    magnesium?: number;
+    alkalinity?: number;
+    phosphate?: number;
+  }) => void;
+  aquariumData: { type: string; species: { name: string; count: number }[] };
+}
 
 const ParametersCard: React.FC<ParametersCardProps> = ({ parameters, onUpdateParameters, aquariumData }) => {
   const [displayMode, setDisplayMode] = useState<DisplayMode>(DisplayMode.CURRENT_PARAMETERS);  // Track current display mode
@@ -119,17 +118,36 @@ const ParametersCard: React.FC<ParametersCardProps> = ({ parameters, onUpdatePar
             {displayModeText[displayMode] || 'Unknown display mode'}
           </Typography>
 
-          {/* Display parameters based on aquarium type */}
-          <Typography variant="body2">
-            Temperature: {parameters.temperature}°F
-            <br />
-            pH: {parameters.ph}
-            <br />
-            Ammonia: {parameters.ammonia} ppm
-            <br />
-            {/* Conditionally show salinity for saltwater tanks */}
-            {aquariumType === 'saltwater' && `Salinity: ${parameters.salinity || 'N/A'} ppt`}
-          </Typography>
+          {/* Only display parameters if the current mode is CURRENT_PARAMETERS */}
+          {displayMode === DisplayMode.CURRENT_PARAMETERS && (
+            <Typography variant="body2">
+              Temperature: {parameters.temperature}°F
+              <br />
+              pH: {parameters.ph}
+              <br />
+              Ammonia: {parameters.ammonia} ppm
+              <br />
+              {parameters.nitrite !== undefined && `Nitrite: ${parameters.nitrite} ppm`}
+              <br />
+              {parameters.nitrate !== undefined && `Nitrate: ${parameters.nitrate} ppm`}
+              <br />
+              {aquariumType === 'freshwater' && parameters.gh !== undefined && `General Hardness (GH): ${parameters.gh} dGH`}
+              <br />
+              {aquariumType === 'freshwater' && parameters.kh !== undefined && `Carbonate Hardness (KH): ${parameters.kh} dKH`}
+              <br />
+              {aquariumType === 'freshwater' && parameters.co2 !== undefined && `CO2: ${parameters.co2} ppm`}
+              <br />
+              {aquariumType === 'saltwater' && parameters.salinity !== undefined && `Salinity: ${parameters.salinity} ppt`}
+              <br />
+              {aquariumType === 'saltwater' && parameters.calcium !== undefined && `Calcium: ${parameters.calcium} ppm`}
+              <br />
+              {aquariumType === 'saltwater' && parameters.magnesium !== undefined && `Magnesium: ${parameters.magnesium} ppm`}
+              <br />
+              {aquariumType === 'saltwater' && parameters.alkalinity !== undefined && `Alkalinity: ${parameters.alkalinity} dKH`}
+              <br />
+              {aquariumType === 'saltwater' && parameters.phosphate !== undefined && `Phosphate: ${parameters.phosphate} ppm`}
+            </Typography>
+          )}
         </CardContent>
 
         {/* Vertical three-dot (kebab) menu icon */}
