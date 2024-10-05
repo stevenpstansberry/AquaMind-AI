@@ -5,6 +5,7 @@ import AquariumWizard from '../components/aquarium-components/aquarium-wizard-co
 import { Box, AppBar, Toolbar, Typography, Grid, IconButton, CardContent, Card } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import AquariumParameters from '../components/aquarium-components/AquariumParameters';
+import { Aquarium } from '../interfaces/Aquarium';
 
 // Import the refactored card components
 import FishCard from '../components/aquarium-components/FishCard';
@@ -12,16 +13,6 @@ import PlantCard from '../components/aquarium-components/PlantCard';
 import EquipmentCard from '../components/aquarium-components/EquipmentCard';
 import ParametersCard from '../components/aquarium-components/ParametersCard';
 
-interface Aquarium {
-  id: string;   // UUID
-  name: string; // Aquarium name
-  type: string; // Freshwater, Saltwater, etc.
-  size: string; // Size in gallons
-  species: { name: string; count: number }[];  // Species with name and count
-  plants: { name: string; count: number }[];   // Plants with name and count
-  equipment: string[]; // List of equipment as strings
-  parameters?: { temperature: number; ph: number; ammonia: number };  // Add parameters to the aquarium interface
-}
 
 const Aquariums: React.FC = () => {
   const [aquariums, setAquariums] = useState<Aquarium[]>([]);
@@ -32,49 +23,78 @@ const Aquariums: React.FC = () => {
     setShowWizard(true);
   };
 
-  // Fetch aquarium data (mock)
-  useEffect(() => {
-    const fetchAquariums = async () => {
-      const mockAquariums: Aquarium[] = [
-        {
-          id: "51f8ee76-4f84-44ac-b29e-04db8f90cb2e",
-          name: "Test Tank",
-          type: "Freshwater",
-          size: "55",
-          species: [{ name: "Tetra", count: 5 }],
-          plants: [{ name: "Anubias", count: 3 }],
-          equipment: ["Air Pump"],
-          parameters: { temperature: 78, ph: 7.2, ammonia: 0 }
-        },
-        {
-          id: "bfa7d8f1-8d8e-477d-b8b7-43dfec6760a9",
-          name: "Saltwater Reef",
-          type: "Saltwater",
-          size: "75",
-          species: [
-            { name: "Clownfish", count: 2 },
-            { name: "Blue Tang", count: 1 }
-          ],
-          plants: [],
-          equipment: ["Protein Skimmer", "Wave Maker"],
-          parameters: { temperature: 77, ph: 8.2, ammonia: 0.2 }
-        },
-        {
-          id: "e4ad3b5f-74eb-4b19-97f9-d2f53f58741a",
-          name: "Planted Tank",
-          type: "Freshwater",
-          size: "40",
-          species: [{ name: "Angelfish", count: 1 }],
-          plants: [{ name: "Anubias", count: 5 }],
-          equipment: ["CO2 System", "Heater"],
-          parameters: { temperature: 80, ph: 6.8, ammonia: 0 }
+// Fetch aquarium data (mock)
+useEffect(() => {
+  const fetchAquariums = async () => {
+    const mockAquariums: Aquarium[] = [
+      {
+        id: "51f8ee76-4f84-44ac-b29e-04db8f90cb2e",
+        name: "Test Tank",
+        type: "Freshwater",
+        size: "55",
+        species: [{ name: "Tetra", count: 5 }],
+        plants: [{ name: "Anubias", count: 3 }],
+        equipment: ["Air Pump", "Heater"],
+        parameters: {
+          temperature: 78,
+          ph: 7.2,
+          ammonia: 0,
+          nitrite: 0,
+          nitrate: 20,  // Nitrate level in ppm
+          gh: 8,        // General hardness (in dGH)
+          kh: 5,        // Carbonate hardness (in dKH)
         }
-      ];
-      setAquariums(mockAquariums);
-    };
-  
-    fetchAquariums();
-  }, []);
+      },
+      {
+        id: "bfa7d8f1-8d8e-477d-b8b7-43dfec6760a9",
+        name: "Saltwater Reef",
+        type: "Saltwater",
+        size: "75",
+        species: [
+          { name: "Clownfish", count: 2 },
+          { name: "Blue Tang", count: 1 }
+        ],
+        plants: [],  // No plants in a saltwater reef
+        equipment: ["Protein Skimmer", "Wave Maker", "Heater"],
+        parameters: {
+          temperature: 77,
+          ph: 8.2,
+          ammonia: 0.2,
+          nitrite: 0.05,  // Nitrite level
+          nitrate: 5,     // Nitrate level in ppm
+          salinity: 35,   // Salinity in ppt (parts per thousand)
+          calcium: 420,   // Calcium level for coral growth (in ppm)
+          magnesium: 1300,  // Magnesium level in ppm
+          alkalinity: 8,   // Alkalinity in dKH
+          phosphate: 0.02,  // Phosphate level in ppm
+        }
+      },
+      {
+        id: "e4ad3b5f-74eb-4b19-97f9-d2f53f58741a",
+        name: "Planted Tank",
+        type: "Freshwater",
+        size: "40",
+        species: [{ name: "Angelfish", count: 1 }],
+        plants: [{ name: "Anubias", count: 5 }, { name: "Java Fern", count: 2 }],
+        equipment: ["CO2 System", "Heater", "Filter"],
+        parameters: {
+          temperature: 80,
+          ph: 6.8,
+          ammonia: 0,
+          nitrite: 0,
+          nitrate: 15,  // Slightly lower nitrate for a planted tank
+          gh: 7,        // General hardness (in dGH)
+          kh: 4,        // Carbonate hardness (in dKH)
+          co2: 20,      // CO2 level for plant growth (in ppm)
+        }
+      }
+    ];
+    setAquariums(mockAquariums);
+  };
+
+  fetchAquariums();
+}, []);
+
 
   const handleUpdateParameters = (newParams: { temperature: number; ph: number; ammonia: number }) => {
     if (currentAquarium) {
@@ -151,11 +171,25 @@ const Aquariums: React.FC = () => {
 
                 {/* Aquarium Parameters Card */}
                 <Grid item xs={12} md={6} lg={8}>
-                <ParametersCard
-                parameters={currentAquarium.parameters || { temperature: 0, ph: 0, ammonia: 0 }}
-                onUpdateParameters={handleUpdateParameters}
-                aquariumData={currentAquarium}  // Pass the whole aquarium data for suggested parameters
-                />
+                  <ParametersCard
+                    parameters={{
+                      temperature: currentAquarium.parameters?.temperature ?? 0,  // Fallback to 0 if undefined
+                      ph: currentAquarium.parameters?.ph ?? 0,                   // Fallback to 0 if undefined
+                      ammonia: currentAquarium.parameters?.ammonia ?? 0,          // Fallback to 0 if undefined
+                      nitrite: currentAquarium.parameters?.nitrite,               // Leave undefined if not present
+                      nitrate: currentAquarium.parameters?.nitrate,               // Leave undefined if not present
+                      gh: currentAquarium.parameters?.gh,
+                      kh: currentAquarium.parameters?.kh,
+                      co2: currentAquarium.parameters?.co2,
+                      salinity: currentAquarium.parameters?.salinity,
+                      calcium: currentAquarium.parameters?.calcium,
+                      magnesium: currentAquarium.parameters?.magnesium,
+                      alkalinity: currentAquarium.parameters?.alkalinity,
+                      phosphate: currentAquarium.parameters?.phosphate
+                    }}
+                    onUpdateParameters={handleUpdateParameters}
+                    aquariumData={currentAquarium}  // Pass the whole aquarium data for suggested parameters
+                  />
                 </Grid>
               </Grid>
             </>

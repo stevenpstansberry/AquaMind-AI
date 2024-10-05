@@ -13,19 +13,49 @@ enum DisplayMode {
 }
 
 interface ParametersCardProps {
-  parameters: { temperature: number; ph: number; ammonia: number };
-  onUpdateParameters: (newParams: { temperature: number; ph: number; ammonia: number }) => void;
-  aquariumData: { type: string; species: { name: string; count: number }[] };
-}
+    parameters: {
+      temperature: number;
+      ph: number;
+      ammonia: number;
+      nitrite?: number;  // Add optional nitrite
+      nitrate?: number;  // Add optional nitrate
+      gh?: number;       // Add optional general hardness
+      kh?: number;       // Add optional carbonate hardness
+      co2?: number;      // Add optional CO2 (for planted tanks)
+      salinity?: number; // Add optional salinity (for saltwater)
+      calcium?: number;  // Add optional calcium (for saltwater)
+      magnesium?: number;// Add optional magnesium (for saltwater)
+      alkalinity?: number;// Add optional alkalinity (for saltwater)
+      phosphate?: number; // Add optional phosphate (for saltwater)
+    };
+    onUpdateParameters: (newParams: {
+      temperature: number;
+      ph: number;
+      ammonia: number;
+      nitrite?: number;
+      nitrate?: number;
+      gh?: number;
+      kh?: number;
+      co2?: number;
+      salinity?: number;
+      calcium?: number;
+      magnesium?: number;
+      alkalinity?: number;
+      phosphate?: number;
+    }) => void;
+    aquariumData: { type: string; species: { name: string; count: number }[] };
+  }
+  
 
 const ParametersCard: React.FC<ParametersCardProps> = ({ parameters, onUpdateParameters, aquariumData }) => {
-  const [displayMode, setDisplayMode] = useState<DisplayMode>(DisplayMode.CURRENT_PARAMETERS); // Track current display mode
+  const [displayMode, setDisplayMode] = useState<DisplayMode>(DisplayMode.CURRENT_PARAMETERS);  // Track current display mode
   const [showParametersModal, setShowParametersModal] = useState(false);  // For editing modal
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);  // For menu anchor
 
   // Handle saving parameters
-  const handleSave = (newParams: { temperature: number; ph: number; ammonia: number }) => {
+  const handleSave = (newParams: { temperature: number; ph: number; ammonia: number; salinity?: number }) => {
     console.log("Saving parameters:", newParams);  
+    onUpdateParameters(newParams);
     setShowParametersModal(false);
   };
 
@@ -59,7 +89,8 @@ const ParametersCard: React.FC<ParametersCardProps> = ({ parameters, onUpdatePar
     [DisplayMode.SUGGESTED_PARAMETERS]: 'Current Display: Suggested Parameters'
   };
 
-  console.log("Current display mode:", displayMode);  // Debugging statement
+  // Dynamically include parameters based on aquarium type
+  const aquariumType = aquariumData.type.toLowerCase();
 
   return (
     <>
@@ -86,6 +117,18 @@ const ParametersCard: React.FC<ParametersCardProps> = ({ parameters, onUpdatePar
           <Typography variant="h6">Aquarium Parameters</Typography>
           <Typography variant="body1">
             {displayModeText[displayMode] || 'Unknown display mode'}
+          </Typography>
+
+          {/* Display parameters based on aquarium type */}
+          <Typography variant="body2">
+            Temperature: {parameters.temperature}°F
+            <br />
+            pH: {parameters.ph}
+            <br />
+            Ammonia: {parameters.ammonia} ppm
+            <br />
+            {/* Conditionally show salinity for saltwater tanks */}
+            {aquariumType === 'saltwater' && `Salinity: ${parameters.salinity || 'N/A'} ppt`}
           </Typography>
         </CardContent>
 
