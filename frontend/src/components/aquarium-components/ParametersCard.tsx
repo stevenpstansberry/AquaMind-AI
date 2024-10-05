@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
-import { Card, CardContent, Typography, IconButton } from '@mui/material';
-import EditIcon from '@mui/icons-material/Edit';
+import { Card, CardContent, Typography, IconButton, Menu, MenuItem } from '@mui/material';
+import MoreVertIcon from '@mui/icons-material/MoreVert';  // Vertical three-dot icon (kebab menu)
 import AquariumParameters from './AquariumParameters';
 
 // Define possible display modes
 enum DisplayMode {
   CURRENT_PARAMETERS,
-  GRAPH_VIEW,
+  WATER_QUALITY_GRAPH,
+  PLANT_PARAMETER_GRAPH,
+  FISH_HEALTH_GRAPH,
   SUGGESTED_PARAMETERS
 }
 
@@ -19,6 +21,7 @@ interface ParametersCardProps {
 const ParametersCard: React.FC<ParametersCardProps> = ({ parameters, onUpdateParameters, aquariumData }) => {
   const [displayMode, setDisplayMode] = useState<DisplayMode>(DisplayMode.CURRENT_PARAMETERS); // Track current display mode
   const [showParametersModal, setShowParametersModal] = useState(false);  // For editing modal
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);  // For menu anchor
 
   // Handle saving parameters
   const handleSave = (newParams: { temperature: number; ph: number; ammonia: number }) => {
@@ -38,10 +41,21 @@ const ParametersCard: React.FC<ParametersCardProps> = ({ parameters, onUpdatePar
     });
   };
 
+  // Handle menu opening and closing
+  const handleMenuOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation();  // Prevent the card's click handler from being triggered
+    setAnchorEl(event.currentTarget);
+  };
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
+
   // Text for each display mode
   const displayModeText = {
     [DisplayMode.CURRENT_PARAMETERS]: 'Current Display: Aquarium Parameters',
-    [DisplayMode.GRAPH_VIEW]: 'Current Display: Graph View',
+    [DisplayMode.WATER_QUALITY_GRAPH]: 'Current Display: Water Quality Graphs',
+    [DisplayMode.PLANT_PARAMETER_GRAPH]: 'Current Display: Plant Growth Parameters',
+    [DisplayMode.FISH_HEALTH_GRAPH]: 'Current Display: Fish Health and Stability',
     [DisplayMode.SUGGESTED_PARAMETERS]: 'Current Display: Suggested Parameters'
   };
 
@@ -58,6 +72,7 @@ const ParametersCard: React.FC<ParametersCardProps> = ({ parameters, onUpdatePar
           borderRadius: '8px',
           backgroundColor: '#fafafa',
           transition: 'transform 0.15s ease-in-out, boxShadow 0.15s ease-in-out',
+          userSelect: 'none',  // Prevent text selection
           '&:hover': {
             cursor: 'pointer',
             transform: 'scale(1.01)',
@@ -74,18 +89,49 @@ const ParametersCard: React.FC<ParametersCardProps> = ({ parameters, onUpdatePar
           </Typography>
         </CardContent>
 
-        {/* Edit Icon */}
+        {/* Vertical three-dot (kebab) menu icon */}
         <IconButton
           color="primary"
           sx={{ position: 'absolute', top: '10px', right: '10px', color: '#B0BEC5' }}
-          aria-label="edit parameters"
-          onClick={(e) => { e.stopPropagation(); setShowParametersModal(true); }}  
+          aria-label="menu options"
+          onClick={handleMenuOpen}  // Open the menu
         >
-          <EditIcon />
+          <MoreVertIcon />
         </IconButton>
+
+        {/* Menu Options */}
+        <Menu
+          anchorEl={anchorEl}
+          open={Boolean(anchorEl)}
+          onClose={handleMenuClose}
+        >
+          {/* Log new parameters */}
+          <MenuItem onClick={() => {
+            setShowParametersModal(true);  // Open the modal for logging new parameters
+            handleMenuClose();  // Close the menu
+          }}>
+            Log new parameters
+          </MenuItem>
+
+          {/* Edit Graph TimeFrame */}
+          <MenuItem onClick={() => {
+            console.log("Edit Graph TimeFrame clicked");  // Placeholder action
+            handleMenuClose();
+          }}>
+            Edit Graph TimeFrame
+          </MenuItem>
+
+          {/* Aquarium Parameters Settings */}
+          <MenuItem onClick={() => {
+            console.log("Aquarium Parameters Settings clicked");  // Placeholder action
+            handleMenuClose();
+          }}>
+            Aquarium Parameters Settings
+          </MenuItem>
+        </Menu>
       </Card>
 
-      {/* Modal for editing parameters */}
+      {/* Modal for logging new parameters */}
       {showParametersModal && (
         <AquariumParameters
           parameters={parameters}
