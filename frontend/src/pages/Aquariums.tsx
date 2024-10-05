@@ -153,7 +153,7 @@ useEffect(() => {
               </AppBar>
 
               {/* Grid of Cards */}
-              <Grid container spacing={3} sx={{ marginTop: '20px' }}>
+              <Grid container spacing={3} sx={{ marginTop: '20px' }} alignItems="flex-start">
                 {/* Fish Card */}
                 <Grid item xs={12} md={6} lg={6}>
                   <FishCard species={currentAquarium.species} />
