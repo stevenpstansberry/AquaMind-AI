@@ -1,24 +1,40 @@
-// components/aquarium-components/AquariumParameters.tsx
 import React, { useState, useRef, useEffect } from 'react';
 import { Card, CardContent, Typography, IconButton, Box, TextField, Button } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
+import Datetime from 'react-datetime';
+import 'react-datetime/css/react-datetime.css';  // Import datetime picker styles
 
 interface AquariumParametersProps {
-  parameters: { temperature: number; ph: number; ammonia: number }; // Initial parameters
-  onUpdateParameters: (newParams: { temperature: number; ph: number; ammonia: number }) => void;
-  onClose: () => void; // Close the overlay card
+  parameters: {
+    temperature: number;
+    ph: number;
+    ammonia: number;
+    nitrite?: number;
+    nitrate?: number;
+    gh?: number;
+    kh?: number;
+    co2?: number;
+    salinity?: number;
+    calcium?: number;
+    magnesium?: number;
+    alkalinity?: number;
+    phosphate?: number;
+  };
+  onUpdateParameters: (newParams: any) => void;
+  onClose: () => void;
+  aquariumType: string;  // "Freshwater" or "Saltwater"
 }
 
-const AquariumParameters: React.FC<AquariumParametersProps> = ({ parameters, onUpdateParameters, onClose }) => {
-  const [tempParams, setTempParams] = useState(parameters); // Track temp params before saving
-  const modalRef = useRef<HTMLDivElement>(null); // Ref for the modal content
+const AquariumParameters: React.FC<AquariumParametersProps> = ({ parameters, onUpdateParameters, onClose, aquariumType }) => {
+  const [tempParams, setTempParams] = useState(parameters);
+  const [logDate, setLogDate] = useState<Date | undefined>(new Date());
+  const modalRef = useRef<HTMLDivElement>(null);
 
   const handleSave = () => {
-    onUpdateParameters(tempParams); // Save the parameters
-    onClose(); // Close the modal
+    onUpdateParameters({ ...tempParams, logDate });
+    onClose();
   };
 
-  // Close the modal when clicking outside of it
   const handleClickOutside = (event: MouseEvent) => {
     if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
       onClose();
@@ -50,7 +66,7 @@ const AquariumParameters: React.FC<AquariumParametersProps> = ({ parameters, onU
       <Card
         ref={modalRef}
         sx={{
-          width: '500px',
+          width: '600px',
           padding: '20px',
           position: 'relative',
           borderRadius: '8px',
@@ -58,7 +74,18 @@ const AquariumParameters: React.FC<AquariumParametersProps> = ({ parameters, onU
         }}
       >
         <CardContent>
-          <Typography variant="h6">Edit Aquarium Parameters</Typography>
+          <Typography variant="h6" gutterBottom>Log New Aquarium Parameters</Typography>
+
+          {/* Date-Time Picker for the log */}
+          <Typography variant="body2" gutterBottom>Log Date and Time:</Typography>
+          <Datetime
+            value={logDate || new Date()}
+            onChange={(newValue: any) => setLogDate(newValue.toDate())}
+            dateFormat="YYYY-MM-DD"
+            timeFormat="HH:mm"
+          />
+
+          {/* Temperature */}
           <TextField
             label="Temperature (°F)"
             fullWidth
@@ -67,6 +94,8 @@ const AquariumParameters: React.FC<AquariumParametersProps> = ({ parameters, onU
             value={tempParams.temperature}
             onChange={(e) => setTempParams({ ...tempParams, temperature: Number(e.target.value) })}
           />
+
+          {/* pH */}
           <TextField
             label="pH Level"
             fullWidth
@@ -75,6 +104,8 @@ const AquariumParameters: React.FC<AquariumParametersProps> = ({ parameters, onU
             value={tempParams.ph}
             onChange={(e) => setTempParams({ ...tempParams, ph: Number(e.target.value) })}
           />
+
+          {/* Ammonia */}
           <TextField
             label="Ammonia (ppm)"
             fullWidth
@@ -83,7 +114,131 @@ const AquariumParameters: React.FC<AquariumParametersProps> = ({ parameters, onU
             value={tempParams.ammonia}
             onChange={(e) => setTempParams({ ...tempParams, ammonia: Number(e.target.value) })}
           />
+
+          {/* Nitrite */}
+          {tempParams.nitrite !== undefined && (
+            <TextField
+              label="Nitrite (ppm)"
+              fullWidth
+              margin="normal"
+              type="number"
+              value={tempParams.nitrite}
+              onChange={(e) => setTempParams({ ...tempParams, nitrite: Number(e.target.value) })}
+            />
+          )}
+
+          {/* Nitrate */}
+          {tempParams.nitrate !== undefined && (
+            <TextField
+              label="Nitrate (ppm)"
+              fullWidth
+              margin="normal"
+              type="number"
+              value={tempParams.nitrate}
+              onChange={(e) => setTempParams({ ...tempParams, nitrate: Number(e.target.value) })}
+            />
+          )}
+
+          {/* Freshwater-specific parameters */}
+          {aquariumType === 'Freshwater' && (
+            <>
+              {tempParams.gh !== undefined && (
+                <TextField
+                  label="General Hardness (GH)"
+                  fullWidth
+                  margin="normal"
+                  type="number"
+                  value={tempParams.gh}
+                  onChange={(e) => setTempParams({ ...tempParams, gh: Number(e.target.value) })}
+                />
+              )}
+
+              {tempParams.kh !== undefined && (
+                <TextField
+                  label="Carbonate Hardness (KH)"
+                  fullWidth
+                  margin="normal"
+                  type="number"
+                  value={tempParams.kh}
+                  onChange={(e) => setTempParams({ ...tempParams, kh: Number(e.target.value) })}
+                />
+              )}
+
+              {tempParams.co2 !== undefined && (
+                <TextField
+                  label="CO2 (ppm)"
+                  fullWidth
+                  margin="normal"
+                  type="number"
+                  value={tempParams.co2}
+                  onChange={(e) => setTempParams({ ...tempParams, co2: Number(e.target.value) })}
+                />
+              )}
+            </>
+          )}
+
+          {/* Saltwater-specific parameters */}
+          {aquariumType === 'Saltwater' && (
+            <>
+              {tempParams.salinity !== undefined && (
+                <TextField
+                  label="Salinity (ppt)"
+                  fullWidth
+                  margin="normal"
+                  type="number"
+                  value={tempParams.salinity}
+                  onChange={(e) => setTempParams({ ...tempParams, salinity: Number(e.target.value) })}
+                />
+              )}
+
+              {tempParams.calcium !== undefined && (
+                <TextField
+                  label="Calcium (ppm)"
+                  fullWidth
+                  margin="normal"
+                  type="number"
+                  value={tempParams.calcium}
+                  onChange={(e) => setTempParams({ ...tempParams, calcium: Number(e.target.value) })}
+                />
+              )}
+
+              {tempParams.magnesium !== undefined && (
+                <TextField
+                  label="Magnesium (ppm)"
+                  fullWidth
+                  margin="normal"
+                  type="number"
+                  value={tempParams.magnesium}
+                  onChange={(e) => setTempParams({ ...tempParams, magnesium: Number(e.target.value) })}
+                />
+              )}
+
+              {tempParams.alkalinity !== undefined && (
+                <TextField
+                  label="Alkalinity (dKH)"
+                  fullWidth
+                  margin="normal"
+                  type="number"
+                  value={tempParams.alkalinity}
+                  onChange={(e) => setTempParams({ ...tempParams, alkalinity: Number(e.target.value) })}
+                />
+              )}
+
+              {tempParams.phosphate !== undefined && (
+                <TextField
+                  label="Phosphate (ppm)"
+                  fullWidth
+                  margin="normal"
+                  type="number"
+                  value={tempParams.phosphate}
+                  onChange={(e) => setTempParams({ ...tempParams, phosphate: Number(e.target.value) })}
+                />
+              )}
+            </>
+          )}
         </CardContent>
+
+        {/* Action Buttons */}
         <Box display="flex" justifyContent="space-between" mt={2}>
           <Button onClick={onClose} color="secondary" variant="outlined">
             Cancel
@@ -92,6 +247,8 @@ const AquariumParameters: React.FC<AquariumParametersProps> = ({ parameters, onU
             Save
           </Button>
         </Box>
+
+        {/* Close Icon */}
         <IconButton
           onClick={onClose}
           sx={{ position: 'absolute', top: '10px', right: '10px' }}
