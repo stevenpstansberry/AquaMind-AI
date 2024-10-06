@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, Typography, IconButton, Box, Tooltip } from '@mui/material';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
-import MoreVertIcon from '@mui/icons-material/MoreVert';  // Replacing edit icon with MoreVertIcon
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';  // Import Info Icon
 
 interface EquipmentCardProps {
   equipment: { name: string; type: string }[]; // Equipment has both 'name' and 'type' fields
@@ -18,7 +19,6 @@ enum DisplayMode {
 const EquipmentCard: React.FC<EquipmentCardProps> = ({ equipment }) => {
   const [displayMode, setDisplayMode] = useState<DisplayMode>(DisplayMode.ALL_EQUIPMENT);
   const [equipmentList, setEquipmentList] = useState(equipment);
-  const [changesSaved, setChangesSaved] = useState(true);
 
   // Update equipmentList when new equipment props are passed
   useEffect(() => {
@@ -56,6 +56,10 @@ const EquipmentCard: React.FC<EquipmentCardProps> = ({ equipment }) => {
     console.log('Add new equipment clicked');
   };
 
+  const handleShowEquipmentInfo = (item: { name: string; type: string }) => {
+    console.log('Equipment details:', item);
+  };
+
   const displayModeText = {
     [DisplayMode.ALL_EQUIPMENT]: 'All Equipment',
     [DisplayMode.LIGHTING]: 'Lighting',
@@ -73,9 +77,29 @@ const EquipmentCard: React.FC<EquipmentCardProps> = ({ equipment }) => {
         <Box sx={{ marginTop: 2 }}>
           {filteredEquipment.length > 0 ? (
             filteredEquipment.map((item, index) => (
-              <Typography key={index} variant="body2">
-                {item.name}
-              </Typography>
+              <Box
+                key={index}
+                sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 1 }}
+              >
+                {/* Equipment Name with Info Icon */}
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <Typography variant="body2">{item.name}</Typography>
+                  
+                  {/* Info Icon */}
+                  <Tooltip title="View Equipment Info">
+                    <IconButton
+                      size="small"
+                      color="info"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleShowEquipmentInfo(item);
+                      }}
+                    >
+                      <InfoOutlinedIcon />
+                    </IconButton>
+                  </Tooltip>
+                </Box>
+              </Box>
             ))
           ) : (
             <Typography variant="body2">No equipment in this category.</Typography>
@@ -84,8 +108,8 @@ const EquipmentCard: React.FC<EquipmentCardProps> = ({ equipment }) => {
       </CardContent>
 
       {/* Add New Equipment Row */}
-      <Box sx={{ display: 'flex', alignItems: 'center', marginTop: 2, paddingLeft: '4px', paddingBottom: '16px' }}> {/* Added paddingBottom */}
-        <Typography variant="body2" sx={{ flexGrow: 1, paddingLeft: '12px' }}> {/* Adjust paddingLeft */}
+      <Box sx={{ display: 'flex', alignItems: 'center', marginTop: 2, paddingLeft: '4px', paddingBottom: '16px' }}>
+        <Typography variant="body2" sx={{ flexGrow: 1, paddingLeft: '12px' }}>
           Add New Equipment
         </Typography>
 
