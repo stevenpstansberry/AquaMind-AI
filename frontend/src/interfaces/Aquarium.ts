@@ -4,8 +4,8 @@ export interface Aquarium {
     name: string;
     type: "Freshwater" | "Saltwater";
     size: string;
-    species: { name: string; count: number }[];
-    plants: { name: string; count: number }[];
+    species: { name: string; count: number; role: string }[]; 
+    plants: { name: string; count: number; role: string }[]; 
     equipment: string[];
     parameters?: {
       temperature?: number;
@@ -22,5 +22,6 @@ export interface Aquarium {
       alkalinity?: number;
       phosphate?: number;
     };
-  };
+  }
+  
   
