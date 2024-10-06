@@ -1,15 +1,16 @@
 import React, { useState } from 'react';
-import { Card, CardContent, Typography, IconButton, Menu, MenuItem, Box } from '@mui/material';
+import { Card, CardContent, Typography, IconButton, Menu, MenuItem, Box, Button, Tooltip } from '@mui/material';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import AddIcon from '@mui/icons-material/Add';  // Plus icon for incrementing
-import RemoveIcon from '@mui/icons-material/Remove';  // Minus icon for decrementing
+import AddIcon from '@mui/icons-material/Add';  
+import RemoveIcon from '@mui/icons-material/Remove';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'; // Import the Add New Fish Icon
 
 interface FishCardProps {
-  species: { name: string; count: number; role: string }[]; // Add "role" to categorize fish
+  species: { name: string; count: number; role: string }[]; 
 }
 
 enum DisplayMode {
-  ALL_FISH,            // New mode for displaying all fish
+  ALL_FISH,
   SCHOOLING_FISH,
   SCAVENGERS,
   PREDATORS,
@@ -21,12 +22,14 @@ const FishCard: React.FC<FishCardProps> = ({ species }) => {
   const [displayMode, setDisplayMode] = useState<DisplayMode>(DisplayMode.ALL_FISH);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [fishList, setFishList] = useState(species); // Track fish count updates
+  const [originalFishList] = useState(species); // Track original state of fish list
+  const [changesSaved, setChangesSaved] = useState(true); // Track unsaved changes
 
   // Handle filtering species based on the current display mode
   const filteredSpecies = fishList.filter((fish) => {
     switch (displayMode) {
       case DisplayMode.ALL_FISH:
-        return true;  // Show all fish
+        return true;
       case DisplayMode.SCHOOLING_FISH:
         return fish.role === 'schooling';
       case DisplayMode.SCAVENGERS:
@@ -43,7 +46,7 @@ const FishCard: React.FC<FishCardProps> = ({ species }) => {
   });
 
   // Function to cycle through display modes
-  const cycleDisplayMode = () => {
+  const cycleDisplayMode = (e: React.MouseEvent<HTMLDivElement>) => {
     const validModes = Object.values(DisplayMode).filter((value) => typeof value === 'number');
     setDisplayMode((prevMode) => {
       const nextMode = (prevMode + 1) % validModes.length;
@@ -52,9 +55,8 @@ const FishCard: React.FC<FishCardProps> = ({ species }) => {
     });
   };
 
-  // Handle menu opening and closing
   const handleMenuOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
-    event.stopPropagation();  // Prevent triggering the card's click handler
+    event.stopPropagation();
     setAnchorEl(event.currentTarget);
   };
 
@@ -69,6 +71,7 @@ const FishCard: React.FC<FishCardProps> = ({ species }) => {
         fish.name === name ? { ...fish, count: fish.count + 1 } : fish
       )
     );
+    setChangesSaved(false);
   };
 
   const handleDecrement = (name: string) => {
@@ -77,6 +80,27 @@ const FishCard: React.FC<FishCardProps> = ({ species }) => {
         fish.name === name && fish.count > 0 ? { ...fish, count: fish.count - 1 } : fish
       )
     );
+    setChangesSaved(false);
+  };
+
+  const handleSaveChanges = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation(); // Prevent cycling mode when saving
+    console.log('Saving changes to fish list:', fishList);
+    setChangesSaved(true);
+  };
+
+  // Handle discarding changes
+  const handleDiscardChanges = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation(); // Prevent cycling mode when discarding
+    setFishList(originalFishList); // Revert to the original fish list
+    setChangesSaved(true);
+  };
+
+  // Placeholder function to handle adding new fish
+  const handleAddNewFish = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation(); // Prevent cycling mode when adding new fish
+    console.log('Add new fish clicked');
+    // Logic to bring up a component to select new fish goes here.
   };
 
   // Mapping of display modes to user-friendly text
@@ -90,15 +114,11 @@ const FishCard: React.FC<FishCardProps> = ({ species }) => {
   };
 
   return (
-    <Card
-      sx={cardStyle}
-      onClick={cycleDisplayMode}  // Cycle view on card click
-    >
+    <Card sx={cardStyle} onClick={cycleDisplayMode}>
       <CardContent>
         <Typography variant="h6">Fish</Typography>
         <Typography variant="body1">{displayModeText[displayMode]}</Typography>
         
-        {/* Box component to vertically list the fish with increment/decrement buttons */}
         <Box sx={{ marginTop: 2 }}>
           {filteredSpecies.length > 0
             ? filteredSpecies.map((fish) => (
@@ -107,42 +127,67 @@ const FishCard: React.FC<FishCardProps> = ({ species }) => {
                     {fish.name} (x{fish.count})
                   </Typography>
 
-                  {/* Decrement Button */}
-                  <IconButton
-                    size="small"
-                    color="primary"
-                    onClick={(e) => {
-                      e.stopPropagation();  // Prevent card click cycle
-                      handleDecrement(fish.name);
-                    }}
-                  >
-                    <RemoveIcon />
-                  </IconButton>
+                  <Tooltip title="Decrease count">
+                    <IconButton
+                      size="small"
+                      color="primary"
+                      onClick={(e) => {
+                        e.stopPropagation(); // Prevent card click from cycling modes
+                        handleDecrement(fish.name);
+                      }}
+                    >
+                      <RemoveIcon />
+                    </IconButton>
+                  </Tooltip>
 
-                  {/* Increment Button */}
-                  <IconButton
-                    size="small"
-                    color="primary"
-                    onClick={(e) => {
-                      e.stopPropagation();  // Prevent card click cycle
-                      handleIncrement(fish.name);
-                    }}
-                  >
-                    <AddIcon />
-                  </IconButton>
+                  <Tooltip title="Increase count">
+                    <IconButton
+                      size="small"
+                      color="primary"
+                      onClick={(e) => {
+                        e.stopPropagation(); // Prevent card click from cycling modes
+                        handleIncrement(fish.name);
+                      }}
+                    >
+                      <AddIcon />
+                    </IconButton>
+                  </Tooltip>
                 </Box>
               ))
             : <Typography variant="body2">No fish in this category.</Typography>
           }
         </Box>
+
+        {/* Add New Fish Row - aligned with fish entries */}
+        <Box sx={{ display: 'flex', alignItems: 'center', marginTop: 2 }}>
+          <Typography variant="body2" sx={{ flexGrow: 1 }}>
+            Add New Fish
+          </Typography>
+
+          <Tooltip title="Add New Fish">
+            <IconButton
+              color="primary"
+              onClick={handleAddNewFish}
+            >
+              <AddCircleOutlineIcon />
+            </IconButton>
+          </Tooltip>
+        </Box>
+
+        {/* Only show Save and Discard buttons if changes have been made */}
+        {!changesSaved && (
+          <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, marginTop: 2 }}>
+            <Button onClick={handleDiscardChanges} color="secondary" variant="outlined">
+              Discard Changes
+            </Button>
+            <Button onClick={handleSaveChanges} color="primary" variant="contained">
+              Save Changes
+            </Button>
+          </Box>
+        )}
       </CardContent>
 
-      {/* Vertical Kebab Icon for opening the menu */}
-      <IconButton
-        color="primary"
-        sx={iconStyle}
-        onClick={handleMenuOpen}  // Open the menu
-      >
+      <IconButton color="primary" sx={iconStyle} onClick={handleMenuOpen}>
         <MoreVertIcon />
       </IconButton>
 
@@ -167,9 +212,9 @@ const cardStyle = {
   boxShadow: '0px 2px 5px rgba(0, 0, 0, 0.05)',
   borderRadius: '8px',
   backgroundColor: '#fafafa',
-  userSelect: 'none',  // Disable text selection on the card
+  userSelect: 'none', 
   '&:hover': {
-    cursor: 'pointer',  // Add hover effect for the card
+    cursor: 'pointer',
     transform: 'scale(1.01)',
     boxShadow: '0px 2px 10px rgba(0, 0, 0, 0.12)',
   },
