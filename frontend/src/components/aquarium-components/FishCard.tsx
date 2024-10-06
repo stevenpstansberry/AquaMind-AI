@@ -23,8 +23,15 @@ const FishCard: React.FC<FishCardProps> = ({ species }) => {
   const [displayMode, setDisplayMode] = useState<DisplayMode>(DisplayMode.ALL_FISH);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [fishList, setFishList] = useState(species); // Track fish count updates
-  const [originalFishList] = useState(species); // Track original state of fish list
+  const [originalFishList, setOriginalFishList] = useState(species); // Track original state of fish list
   const [changesSaved, setChangesSaved] = useState(true); // Track unsaved changes
+
+  // Update fish list and original list when new species props are passed
+  useEffect(() => {
+    setFishList(species);
+    setOriginalFishList(species);
+    setChangesSaved(true); // Reset changes saved status when species updates
+  }, [species]);
 
   // Function to compare current fish list with the original
   const checkChangesSaved = () => {
@@ -91,7 +98,8 @@ const FishCard: React.FC<FishCardProps> = ({ species }) => {
 
   const handleSaveChanges = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
-    setChangesSaved(true);
+    setOriginalFishList(fishList); // Save current state as the original
+    setChangesSaved(true); // Mark changes as saved
   };
 
   const handleDiscardChanges = (e: React.MouseEvent<HTMLButtonElement>) => {

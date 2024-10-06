@@ -20,8 +20,15 @@ enum DisplayMode {
 const PlantCard: React.FC<PlantCardProps> = ({ plants }) => {
   const [displayMode, setDisplayMode] = useState<DisplayMode>(DisplayMode.ALL_PLANTS);
   const [plantList, setPlantList] = useState(plants); // Track plant count updates
-  const [originalPlantList] = useState(plants); // Track original state of plant list
+  const [originalPlantList, setOriginalPlantList] = useState(plants); // Track original state of plant list
   const [changesSaved, setChangesSaved] = useState(true); // Track unsaved changes
+
+  // Update plantList and originalPlantList when new plants props are passed
+  useEffect(() => {
+    setPlantList(plants);
+    setOriginalPlantList(plants);
+    setChangesSaved(true); // Reset changes saved status when plants update
+  }, [plants]);
 
   // Function to compare current plant list with the original list
   const checkChangesSaved = () => {
@@ -78,7 +85,8 @@ const PlantCard: React.FC<PlantCardProps> = ({ plants }) => {
 
   const handleSaveChanges = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation(); // Prevent cycling mode when saving
-    setChangesSaved(true);
+    setOriginalPlantList(plantList); // Save current state as the original
+    setChangesSaved(true); // Mark changes as saved
   };
 
   const handleDiscardChanges = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -186,6 +194,7 @@ const PlantCard: React.FC<PlantCardProps> = ({ plants }) => {
           </Tooltip>
         </Box>
 
+        {/* Save/Discard Buttons */}
         {!changesSaved && (
           <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, marginTop: 2 }}>
             <Button onClick={handleDiscardChanges} color="secondary" variant="outlined">
