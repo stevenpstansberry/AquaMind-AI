@@ -6,7 +6,7 @@ export interface Aquarium {
     size: string;
     species: { name: string; count: number; role: string }[]; 
     plants: { name: string; count: number; role: string }[]; 
-    equipment: string[];
+    equipment: { name: string; type: string }[];
     parameters?: {
       temperature?: number;
       ph?: number;

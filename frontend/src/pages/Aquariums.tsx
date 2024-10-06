@@ -36,10 +36,11 @@ useEffect(() => {
           { name: "Tetra", count: 5, role: "schooling" },
           { name: "Corydoras", count: 3, role: "scavenger" }
         ],
-        plants: [
-          { name: "Anubias", count: 3, role: "slow-growing" },  // Added role for plants
+        plants: [{ name: "Anubias", count: 3, role: "slow-growing" }],
+        equipment: [
+          { name: "Air Pump", type: "filtration" },  // Equipment now has both 'name' and 'type'
+          { name: "Heater", type: "heating" }
         ],
-        equipment: ["Air Pump", "Heater"],
         parameters: {
           temperature: 78,
           ph: 7.2,
@@ -59,8 +60,12 @@ useEffect(() => {
           { name: "Clownfish", count: 2, role: "community" },
           { name: "Blue Tang", count: 1, role: "schooling" }
         ],
-        plants: [], // No plants in saltwater reef
-        equipment: ["Protein Skimmer", "Wave Maker", "Heater"],
+        plants: [],
+        equipment: [
+          { name: "Protein Skimmer", type: "filtration" },
+          { name: "Wave Maker", type: "filtration" },
+          { name: "Heater", type: "heating" }
+        ],
         parameters: {
           temperature: 77,
           ph: 8.2,
@@ -84,10 +89,14 @@ useEffect(() => {
           { name: "Neon Tetra", count: 10, role: "schooling" }
         ],
         plants: [
-          { name: "Anubias", count: 5, role: "slow-growing" },  // Added plant role
-          { name: "Java Fern", count: 2, role: "slow-growing" }  // Added plant role
+          { name: "Anubias", count: 5, role: "slow-growing" },
+          { name: "Java Fern", count: 2, role: "slow-growing" }
         ],
-        equipment: ["CO2 System", "Heater", "Filter"],
+        equipment: [
+          { name: "CO2 System", type: "other" },
+          { name: "Heater", type: "heating" },
+          { name: "Filter", type: "filtration" }
+        ],
         parameters: {
           temperature: 80,
           ph: 6.8,
@@ -99,7 +108,7 @@ useEffect(() => {
           co2: 20,
         }
       }
-    ];
+    ];    
     setAquariums(mockAquariums);
   };
 
