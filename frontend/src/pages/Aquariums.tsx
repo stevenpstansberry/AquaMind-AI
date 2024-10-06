@@ -33,19 +33,21 @@ useEffect(() => {
         type: "Freshwater",
         size: "55",
         species: [
-          { name: "Tetra", count: 5, role: "schooling" }, // Tetras are schooling fish
-          { name: "Corydoras", count: 3, role: "scavenger" } // Corydoras are scavengers (bottom dwellers)
+          { name: "Tetra", count: 5, role: "schooling" },
+          { name: "Corydoras", count: 3, role: "scavenger" }
         ],
-        plants: [{ name: "Anubias", count: 3 }],
+        plants: [
+          { name: "Anubias", count: 3, role: "slow-growing" },  // Added role for plants
+        ],
         equipment: ["Air Pump", "Heater"],
         parameters: {
           temperature: 78,
           ph: 7.2,
           ammonia: 0,
           nitrite: 0,
-          nitrate: 20,  // Nitrate level in ppm
-          gh: 8,        // General hardness (in dGH)
-          kh: 5,        // Carbonate hardness (in dKH)
+          nitrate: 20,
+          gh: 8,
+          kh: 5,
         }
       },
       {
@@ -54,22 +56,22 @@ useEffect(() => {
         type: "Saltwater",
         size: "75",
         species: [
-          { name: "Clownfish", count: 2, role: "community" }, // Clownfish are peaceful community fish
-          { name: "Blue Tang", count: 1, role: "schooling" } // Blue Tangs typically school
+          { name: "Clownfish", count: 2, role: "community" },
+          { name: "Blue Tang", count: 1, role: "schooling" }
         ],
-        plants: [],  // No plants in a saltwater reef
+        plants: [], // No plants in saltwater reef
         equipment: ["Protein Skimmer", "Wave Maker", "Heater"],
         parameters: {
           temperature: 77,
           ph: 8.2,
           ammonia: 0.2,
-          nitrite: 0.05,  // Nitrite level
-          nitrate: 5,     // Nitrate level in ppm
-          salinity: 35,   // Salinity in ppt (parts per thousand)
-          calcium: 420,   // Calcium level for coral growth (in ppm)
-          magnesium: 1300,  // Magnesium level in ppm
-          alkalinity: 8,   // Alkalinity in dKH
-          phosphate: 0.02,  // Phosphate level in ppm
+          nitrite: 0.05,
+          nitrate: 5,
+          salinity: 35,
+          calcium: 420,
+          magnesium: 1300,
+          alkalinity: 8,
+          phosphate: 0.02,
         }
       },
       {
@@ -78,12 +80,12 @@ useEffect(() => {
         type: "Freshwater",
         size: "40",
         species: [
-          { name: "Angelfish", count: 1, role: "predator" },  // Angelfish can be semi-aggressive or predatory
-          { name: "Neon Tetra", count: 10, role: "schooling" }  // Neon Tetras are schooling fish
+          { name: "Angelfish", count: 1, role: "predator" },
+          { name: "Neon Tetra", count: 10, role: "schooling" }
         ],
         plants: [
-          { name: "Anubias", count: 5 },
-          { name: "Java Fern", count: 2 }
+          { name: "Anubias", count: 5, role: "slow-growing" },  // Added plant role
+          { name: "Java Fern", count: 2, role: "slow-growing" }  // Added plant role
         ],
         equipment: ["CO2 System", "Heater", "Filter"],
         parameters: {
@@ -91,10 +93,10 @@ useEffect(() => {
           ph: 6.8,
           ammonia: 0,
           nitrite: 0,
-          nitrate: 15,  // Slightly lower nitrate for a planted tank
-          gh: 7,        // General hardness (in dGH)
-          kh: 4,        // Carbonate hardness (in dKH)
-          co2: 20,      // CO2 level for plant growth (in ppm)
+          nitrate: 15,
+          gh: 7,
+          kh: 4,
+          co2: 20,
         }
       }
     ];
@@ -103,6 +105,7 @@ useEffect(() => {
 
   fetchAquariums();
 }, []);
+
 
 
 
