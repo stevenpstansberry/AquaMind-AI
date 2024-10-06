@@ -7,6 +7,7 @@ interface FishCardProps {
 }
 
 enum DisplayMode {
+  ALL_FISH,            // New mode for displaying all fish
   SCHOOLING_FISH,
   SCAVENGERS,
   PREDATORS,
@@ -15,12 +16,14 @@ enum DisplayMode {
 }
 
 const FishCard: React.FC<FishCardProps> = ({ species }) => {
-  const [displayMode, setDisplayMode] = useState<DisplayMode>(DisplayMode.SCHOOLING_FISH);
+  const [displayMode, setDisplayMode] = useState<DisplayMode>(DisplayMode.ALL_FISH);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
   // Handle filtering species based on the current display mode
   const filteredSpecies = species.filter((fish) => {
     switch (displayMode) {
+      case DisplayMode.ALL_FISH:
+        return true;  // Show all fish
       case DisplayMode.SCHOOLING_FISH:
         return fish.role === 'schooling';
       case DisplayMode.SCAVENGERS:
@@ -32,14 +35,16 @@ const FishCard: React.FC<FishCardProps> = ({ species }) => {
       case DisplayMode.BREEDERS:
         return fish.role === 'breeder';
       default:
-        return true;
+        return false;
     }
   });
 
   // Function to cycle through display modes
   const cycleDisplayMode = () => {
+    const validModes = Object.values(DisplayMode).filter((value) => typeof value === 'number');
     setDisplayMode((prevMode) => {
-      const nextMode = (prevMode + 1) % Object.keys(DisplayMode).length;
+      const nextMode = (prevMode + 1) % validModes.length;
+      console.log(`Cycling mode: From ${DisplayMode[prevMode]} to ${DisplayMode[nextMode]}`);
       return nextMode;
     });
   };
@@ -56,6 +61,7 @@ const FishCard: React.FC<FishCardProps> = ({ species }) => {
 
   // Mapping of display modes to user-friendly text
   const displayModeText = {
+    [DisplayMode.ALL_FISH]: 'All Fish',
     [DisplayMode.SCHOOLING_FISH]: 'Schooling Fish',
     [DisplayMode.SCAVENGERS]: 'Scavengers',
     [DisplayMode.PREDATORS]: 'Predators',
@@ -92,6 +98,7 @@ const FishCard: React.FC<FishCardProps> = ({ species }) => {
       </IconButton>
 
       <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
+        <MenuItem onClick={() => setDisplayMode(DisplayMode.ALL_FISH)}>All Fish</MenuItem>
         <MenuItem onClick={() => setDisplayMode(DisplayMode.SCHOOLING_FISH)}>Schooling Fish</MenuItem>
         <MenuItem onClick={() => setDisplayMode(DisplayMode.SCAVENGERS)}>Scavengers</MenuItem>
         <MenuItem onClick={() => setDisplayMode(DisplayMode.PREDATORS)}>Predators</MenuItem>
@@ -111,6 +118,7 @@ const cardStyle = {
   boxShadow: '0px 2px 5px rgba(0, 0, 0, 0.05)',
   borderRadius: '8px',
   backgroundColor: '#fafafa',
+  userSelect: 'none',  // Disable text selection on the card
   '&:hover': {
     cursor: 'pointer',  // Add hover effect for the card
     transform: 'scale(1.01)',

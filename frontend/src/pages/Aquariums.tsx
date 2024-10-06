@@ -33,8 +33,8 @@ useEffect(() => {
         type: "Freshwater",
         size: "55",
         species: [
-          { name: "Tetra", count: 5, role: "Schooling" }, // Tetras are schooling fish
-          { name: "Corydoras", count: 3, role: "Bottom Dweller" } // Corydoras are bottom dwellers
+          { name: "Tetra", count: 5, role: "schooling" }, // Tetras are schooling fish
+          { name: "Corydoras", count: 3, role: "scavenger" } // Corydoras are scavengers (bottom dwellers)
         ],
         plants: [{ name: "Anubias", count: 3 }],
         equipment: ["Air Pump", "Heater"],
@@ -54,8 +54,8 @@ useEffect(() => {
         type: "Saltwater",
         size: "75",
         species: [
-          { name: "Clownfish", count: 2, role: "Community" }, // Clownfish are peaceful community fish
-          { name: "Blue Tang", count: 1, role: "Schooling" } // Blue Tangs typically school
+          { name: "Clownfish", count: 2, role: "community" }, // Clownfish are peaceful community fish
+          { name: "Blue Tang", count: 1, role: "schooling" } // Blue Tangs typically school
         ],
         plants: [],  // No plants in a saltwater reef
         equipment: ["Protein Skimmer", "Wave Maker", "Heater"],
@@ -78,8 +78,8 @@ useEffect(() => {
         type: "Freshwater",
         size: "40",
         species: [
-          { name: "Angelfish", count: 1, role: "Predator" },  // Angelfish can be semi-aggressive or predatory
-          { name: "Neon Tetra", count: 10, role: "Schooling" }  // Neon Tetras are schooling fish
+          { name: "Angelfish", count: 1, role: "predator" },  // Angelfish can be semi-aggressive or predatory
+          { name: "Neon Tetra", count: 10, role: "schooling" }  // Neon Tetras are schooling fish
         ],
         plants: [
           { name: "Anubias", count: 5 },
@@ -103,6 +103,7 @@ useEffect(() => {
 
   fetchAquariums();
 }, []);
+
 
 
   const handleUpdateParameters = (newParams: { temperature: number; ph: number; ammonia: number }) => {
