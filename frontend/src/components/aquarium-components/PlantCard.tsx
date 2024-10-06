@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Card, CardContent, Typography, IconButton, Menu, MenuItem, Box, Button, Tooltip } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import { Card, CardContent, Typography, IconButton, Box, Button, Tooltip } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';  
 import RemoveIcon from '@mui/icons-material/Remove';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'; 
@@ -19,10 +19,20 @@ enum DisplayMode {
 
 const PlantCard: React.FC<PlantCardProps> = ({ plants }) => {
   const [displayMode, setDisplayMode] = useState<DisplayMode>(DisplayMode.ALL_PLANTS);
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [plantList, setPlantList] = useState(plants); // Track plant count updates
   const [originalPlantList] = useState(plants); // Track original state of plant list
   const [changesSaved, setChangesSaved] = useState(true); // Track unsaved changes
+
+  // Function to compare current plant list with the original list
+  const checkChangesSaved = () => {
+    const isSame = plantList.every((plant, idx) => plant.count === originalPlantList[idx].count);
+    setChangesSaved(isSame);
+  };
+
+  // Update to check for changes every time plantList is updated
+  useEffect(() => {
+    checkChangesSaved();
+  }, [plantList]);
 
   // Handle filtering plants based on the current display mode
   const filteredPlants = plantList.filter((plant) => {
@@ -50,22 +60,12 @@ const PlantCard: React.FC<PlantCardProps> = ({ plants }) => {
     });
   };
 
-  const handleMenuOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
-    event.stopPropagation();
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-  };
-
   const handleIncrement = (name: string) => {
     setPlantList((prevList) =>
       prevList.map((plant) =>
         plant.name === name ? { ...plant, count: plant.count + 1 } : plant
       )
     );
-    setChangesSaved(false);
   };
 
   const handleDecrement = (name: string) => {
@@ -74,7 +74,6 @@ const PlantCard: React.FC<PlantCardProps> = ({ plants }) => {
         plant.name === name && plant.count > 0 ? { ...plant, count: plant.count - 1 } : plant
       )
     );
-    setChangesSaved(false);
   };
 
   const handleSaveChanges = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -202,7 +201,7 @@ const PlantCard: React.FC<PlantCardProps> = ({ plants }) => {
   );
 };
 
-// Styles for the card and kebab icon
+// Styles for the card
 const cardStyle = {
   height: '100%',
   position: 'relative',

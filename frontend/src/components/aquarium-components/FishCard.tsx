@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, Typography, IconButton, Menu, MenuItem, Box, Button, Tooltip } from '@mui/material';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import AddIcon from '@mui/icons-material/Add';  
@@ -25,6 +25,17 @@ const FishCard: React.FC<FishCardProps> = ({ species }) => {
   const [fishList, setFishList] = useState(species); // Track fish count updates
   const [originalFishList] = useState(species); // Track original state of fish list
   const [changesSaved, setChangesSaved] = useState(true); // Track unsaved changes
+
+  // Function to compare current fish list with the original
+  const checkChangesSaved = () => {
+    const isSame = fishList.every((fish, idx) => fish.count === originalFishList[idx].count);
+    setChangesSaved(isSame);
+  };
+
+  // Update to check for changes every time fishList is updated
+  useEffect(() => {
+    checkChangesSaved();
+  }, [fishList]);
 
   const filteredSpecies = fishList.filter((fish) => {
     switch (displayMode) {
@@ -68,7 +79,6 @@ const FishCard: React.FC<FishCardProps> = ({ species }) => {
         fish.name === name ? { ...fish, count: fish.count + 1 } : fish
       )
     );
-    setChangesSaved(false);
   };
 
   const handleDecrement = (name: string) => {
@@ -77,7 +87,6 @@ const FishCard: React.FC<FishCardProps> = ({ species }) => {
         fish.name === name && fish.count > 0 ? { ...fish, count: fish.count - 1 } : fish
       )
     );
-    setChangesSaved(false);
   };
 
   const handleSaveChanges = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -87,7 +96,7 @@ const FishCard: React.FC<FishCardProps> = ({ species }) => {
 
   const handleDiscardChanges = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
-    setFishList(originalFishList);
+    setFishList(originalFishList); // Revert to the original fish list
     setChangesSaved(true);
   };
 
@@ -191,6 +200,7 @@ const FishCard: React.FC<FishCardProps> = ({ species }) => {
           </Tooltip>
         </Box>
 
+        {/* Save/Discard Buttons */}
         {!changesSaved && (
           <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, marginTop: 2 }}>
             <Button onClick={handleDiscardChanges} color="secondary" variant="outlined">
