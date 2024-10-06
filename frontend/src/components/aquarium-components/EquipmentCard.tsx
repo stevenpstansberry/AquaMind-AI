@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, Typography, IconButton, Box, Tooltip } from '@mui/material';
-import EditIcon from '@mui/icons-material/Edit';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import MoreVertIcon from '@mui/icons-material/MoreVert';  // Replacing edit icon with MoreVertIcon
 
 interface EquipmentCardProps {
   equipment: { name: string; type: string }[]; // Equipment has both 'name' and 'type' fields
@@ -17,12 +18,11 @@ enum DisplayMode {
 const EquipmentCard: React.FC<EquipmentCardProps> = ({ equipment }) => {
   const [displayMode, setDisplayMode] = useState<DisplayMode>(DisplayMode.ALL_EQUIPMENT);
   const [equipmentList, setEquipmentList] = useState(equipment);
-  const [originalEquipmentList, setOriginalEquipmentList] = useState(equipment);
+  const [changesSaved, setChangesSaved] = useState(true);
 
-  // Update equipmentList and originalEquipmentList when new equipment props are passed
+  // Update equipmentList when new equipment props are passed
   useEffect(() => {
     setEquipmentList(equipment);
-    setOriginalEquipmentList(equipment);
   }, [equipment]);
 
   // Filter the equipment based on the current display mode
@@ -51,7 +51,11 @@ const EquipmentCard: React.FC<EquipmentCardProps> = ({ equipment }) => {
     });
   };
 
-  // Mapping of display modes to user-friendly text
+  const handleAddNewEquipment = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation(); // Prevent cycling mode when adding new equipment
+    console.log('Add new equipment clicked');
+  };
+
   const displayModeText = {
     [DisplayMode.ALL_EQUIPMENT]: 'All Equipment',
     [DisplayMode.LIGHTING]: 'Lighting',
@@ -79,16 +83,33 @@ const EquipmentCard: React.FC<EquipmentCardProps> = ({ equipment }) => {
         </Box>
       </CardContent>
 
-      <Tooltip title="Edit Equipment">
-        <IconButton color="primary" sx={editIconStyle}>
-          <EditIcon />
+      {/* Add New Equipment Row */}
+      <Box sx={{ display: 'flex', alignItems: 'center', marginTop: 2, paddingLeft: '4px', paddingBottom: '16px' }}> {/* Added paddingBottom */}
+        <Typography variant="body2" sx={{ flexGrow: 1, paddingLeft: '12px' }}> {/* Adjust paddingLeft */}
+          Add New Equipment
+        </Typography>
+
+        <Tooltip title="Add New Equipment">
+          <IconButton
+            color="primary"
+            onClick={handleAddNewEquipment}
+          >
+            <AddCircleOutlineIcon />
+          </IconButton>
+        </Tooltip>
+      </Box>
+
+      {/* More Options Button */}
+      <Tooltip title="More options">
+        <IconButton color="primary" sx={iconStyle}>
+          <MoreVertIcon />
         </IconButton>
       </Tooltip>
     </Card>
   );
 };
 
-// Styles for the card and edit icon
+// Styles for the card and icons
 const cardStyle = {
   height: '100%',
   position: 'relative',
@@ -97,8 +118,8 @@ const cardStyle = {
   boxShadow: '0px 2px 5px rgba(0, 0, 0, 0.05)',
   borderRadius: '8px',
   backgroundColor: '#fafafa',
-  userSelect: 'none',  // Prevent text selection on click
-  outline: 'none',     // Remove focus outline on click
+  userSelect: 'none',
+  outline: 'none', // Remove focus outline on click
   '&:hover': {
     cursor: 'pointer',
     transform: 'scale(1.01)',
@@ -106,7 +127,7 @@ const cardStyle = {
   },
 };
 
-const editIconStyle = {
+const iconStyle = {
   position: 'absolute',
   top: '10px',
   right: '10px',
