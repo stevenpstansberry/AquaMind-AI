@@ -5,6 +5,7 @@ import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'; 
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';  // Import the Outlined Info icon
+import FishInfoCard from './FishInfoCard';  // Import the FishInfoCard modal component
 
 interface FishCardProps {
   species: { name: string; count: number; role: string }[]; 
@@ -25,6 +26,8 @@ const FishCard: React.FC<FishCardProps> = ({ species }) => {
   const [fishList, setFishList] = useState(species); // Track fish count updates
   const [originalFishList, setOriginalFishList] = useState(species); // Track original state of fish list
   const [changesSaved, setChangesSaved] = useState(true); // Track unsaved changes
+  const [selectedFish, setSelectedFish] = useState<{ name: string; count: number; role: string } | null>(null); // Selected fish for info modal
+  const [infoCardOpen, setInfoCardOpen] = useState(false); // Track modal open/close state
 
   // Update fish list and original list when new species props are passed
   useEffect(() => {
@@ -114,7 +117,13 @@ const FishCard: React.FC<FishCardProps> = ({ species }) => {
   };
 
   const handleShowFishInfo = (fish: { name: string; count: number; role: string }) => {
-    console.log('Fish details:', fish);
+    setSelectedFish(fish); // Set selected fish to display in the modal
+    setInfoCardOpen(true);  // Open the modal
+  };
+
+  const handleCloseFishInfo = () => {
+    setInfoCardOpen(false); // Close the modal
+    setSelectedFish(null);  // Reset selected fish
   };
 
   const displayModeText = {
@@ -127,113 +136,118 @@ const FishCard: React.FC<FishCardProps> = ({ species }) => {
   };
 
   return (
-    <Card sx={cardStyle} onClick={cycleDisplayMode}>
-      <CardContent>
-        <Typography variant="h6">Fish</Typography>
-        <Typography variant="body1">{displayModeText[displayMode]}</Typography>
+    <>
+      <Card sx={cardStyle} onClick={cycleDisplayMode}>
+        <CardContent>
+          <Typography variant="h6">Fish</Typography>
+          <Typography variant="body1">{displayModeText[displayMode]}</Typography>
         
-        <Box sx={{ marginTop: 2 }}>
-          {filteredSpecies.length > 0
-            ? filteredSpecies.map((fish) => (
-                <Box key={fish.name} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 1 }}>
-                  
-                  {/* Fish Name, Count and Info Button */}
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <Typography variant="body2">
-                      {fish.name} (x{fish.count})
-                    </Typography>
+          <Box sx={{ marginTop: 2 }}>
+            {filteredSpecies.length > 0
+              ? filteredSpecies.map((fish) => (
+                  <Box key={fish.name} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 1 }}>
                     
-                    {/* Info Button placed directly next to the fish name and count */}
-                    <Tooltip title="View Fish Info">
-                      <IconButton
-                        size="small"
-                        color="info"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleShowFishInfo(fish);
-                        }}
-                      >
-                        <InfoOutlinedIcon />
-                      </IconButton>
-                    </Tooltip>
+                    {/* Fish Name, Count and Info Button */}
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <Typography variant="body2">
+                        {fish.name} (x{fish.count})
+                      </Typography>
+                      
+                      {/* Info Button placed directly next to the fish name and count */}
+                      <Tooltip title="View Fish Info">
+                        <IconButton
+                          size="small"
+                          color="info"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleShowFishInfo(fish);
+                          }}
+                        >
+                          <InfoOutlinedIcon />
+                        </IconButton>
+                      </Tooltip>
+                    </Box>
+
+                    {/* Increment/Decrement Button Group */}
+                    <Box sx={{ display: 'flex', gap: 1 }}>
+                      <Tooltip title="Decrease count">
+                        <IconButton
+                          size="small"
+                          color="primary"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDecrement(fish.name);
+                          }}
+                        >
+                          <RemoveIcon />
+                        </IconButton>
+                      </Tooltip>
+
+                      <Tooltip title="Increase count">
+                        <IconButton
+                          size="small"
+                          color="primary"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleIncrement(fish.name);
+                          }}
+                        >
+                          <AddIcon />
+                        </IconButton>
+                      </Tooltip>
+                    </Box>
                   </Box>
-
-                  {/* Increment/Decrement Button Group */}
-                  <Box sx={{ display: 'flex', gap: 1 }}>
-                    <Tooltip title="Decrease count">
-                      <IconButton
-                        size="small"
-                        color="primary"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDecrement(fish.name);
-                        }}
-                      >
-                        <RemoveIcon />
-                      </IconButton>
-                    </Tooltip>
-
-                    <Tooltip title="Increase count">
-                      <IconButton
-                        size="small"
-                        color="primary"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleIncrement(fish.name);
-                        }}
-                      >
-                        <AddIcon />
-                      </IconButton>
-                    </Tooltip>
-                  </Box>
-                </Box>
-              ))
-            : <Typography variant="body2">No fish in this category.</Typography>
-          }
-        </Box>
-
-        {/* Add New Fish Row */}
-        <Box sx={{ display: 'flex', alignItems: 'center', marginTop: 2 }}>
-          <Typography variant="body2" sx={{ flexGrow: 1 }}>
-            Add New Fish
-          </Typography>
-
-          <Tooltip title="Add New Fish">
-            <IconButton
-              color="primary"
-              onClick={handleAddNewFish}
-            >
-              <AddCircleOutlineIcon />
-            </IconButton>
-          </Tooltip>
-        </Box>
-
-        {/* Save/Discard Buttons */}
-        {!changesSaved && (
-          <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, marginTop: 2 }}>
-            <Button onClick={handleDiscardChanges} color="secondary" variant="outlined">
-              Discard Changes
-            </Button>
-            <Button onClick={handleSaveChanges} color="primary" variant="contained">
-              Save Changes
-            </Button>
+                ))
+              : <Typography variant="body2">No fish in this category.</Typography>
+            }
           </Box>
-        )}
-      </CardContent>
 
-      <IconButton color="primary" sx={iconStyle} onClick={handleMenuOpen}>
-        <MoreVertIcon />
-      </IconButton>
+          {/* Add New Fish Row */}
+          <Box sx={{ display: 'flex', alignItems: 'center', marginTop: 2 }}>
+            <Typography variant="body2" sx={{ flexGrow: 1 }}>
+              Add New Fish
+            </Typography>
 
-      <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
-        <MenuItem onClick={() => setDisplayMode(DisplayMode.ALL_FISH)}>All Fish</MenuItem>
-        <MenuItem onClick={() => setDisplayMode(DisplayMode.SCHOOLING_FISH)}>Schooling Fish</MenuItem>
-        <MenuItem onClick={() => setDisplayMode(DisplayMode.SCAVENGERS)}>Scavengers</MenuItem>
-        <MenuItem onClick={() => setDisplayMode(DisplayMode.PREDATORS)}>Predators</MenuItem>
-        <MenuItem onClick={() => setDisplayMode(DisplayMode.PEACEFUL_COMMUNITY)}>Peaceful Community Fish</MenuItem>
-        <MenuItem onClick={() => setDisplayMode(DisplayMode.BREEDERS)}>Breeders</MenuItem>
-      </Menu>
-    </Card>
+            <Tooltip title="Add New Fish">
+              <IconButton
+                color="primary"
+                onClick={handleAddNewFish}
+              >
+                <AddCircleOutlineIcon />
+              </IconButton>
+            </Tooltip>
+          </Box>
+
+          {/* Save/Discard Buttons */}
+          {!changesSaved && (
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, marginTop: 2 }}>
+              <Button onClick={handleDiscardChanges} color="secondary" variant="outlined">
+                Discard Changes
+              </Button>
+              <Button onClick={handleSaveChanges} color="primary" variant="contained">
+                Save Changes
+              </Button>
+            </Box>
+          )}
+        </CardContent>
+
+        <IconButton color="primary" sx={iconStyle} onClick={handleMenuOpen}>
+          <MoreVertIcon />
+        </IconButton>
+
+        <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
+          <MenuItem onClick={() => setDisplayMode(DisplayMode.ALL_FISH)}>All Fish</MenuItem>
+          <MenuItem onClick={() => setDisplayMode(DisplayMode.SCHOOLING_FISH)}>Schooling Fish</MenuItem>
+          <MenuItem onClick={() => setDisplayMode(DisplayMode.SCAVENGERS)}>Scavengers</MenuItem>
+          <MenuItem onClick={() => setDisplayMode(DisplayMode.PREDATORS)}>Predators</MenuItem>
+          <MenuItem onClick={() => setDisplayMode(DisplayMode.PEACEFUL_COMMUNITY)}>Peaceful Community Fish</MenuItem>
+          <MenuItem onClick={() => setDisplayMode(DisplayMode.BREEDERS)}>Breeders</MenuItem>
+        </Menu>
+      </Card>
+
+      {/* Fish Info Modal */}
+      <FishInfoCard open={infoCardOpen} onClose={handleCloseFishInfo} fish={selectedFish} />
+    </>
   );
 };
 
