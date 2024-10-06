@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
-import { Card, CardContent, Typography, IconButton, Menu, MenuItem } from '@mui/material';
-import MoreVertIcon from '@mui/icons-material/MoreVert';  // Vertical kebab icon for menu
+import { Card, CardContent, Typography, IconButton, Menu, MenuItem, Box } from '@mui/material';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import AddIcon from '@mui/icons-material/Add';  // Plus icon for incrementing
+import RemoveIcon from '@mui/icons-material/Remove';  // Minus icon for decrementing
 
 interface FishCardProps {
   species: { name: string; count: number; role: string }[]; // Add "role" to categorize fish
@@ -18,9 +20,10 @@ enum DisplayMode {
 const FishCard: React.FC<FishCardProps> = ({ species }) => {
   const [displayMode, setDisplayMode] = useState<DisplayMode>(DisplayMode.ALL_FISH);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [fishList, setFishList] = useState(species); // Track fish count updates
 
   // Handle filtering species based on the current display mode
-  const filteredSpecies = species.filter((fish) => {
+  const filteredSpecies = fishList.filter((fish) => {
     switch (displayMode) {
       case DisplayMode.ALL_FISH:
         return true;  // Show all fish
@@ -59,6 +62,23 @@ const FishCard: React.FC<FishCardProps> = ({ species }) => {
     setAnchorEl(null);
   };
 
+  // Handle incrementing and decrementing the fish count
+  const handleIncrement = (name: string) => {
+    setFishList((prevList) =>
+      prevList.map((fish) =>
+        fish.name === name ? { ...fish, count: fish.count + 1 } : fish
+      )
+    );
+  };
+
+  const handleDecrement = (name: string) => {
+    setFishList((prevList) =>
+      prevList.map((fish) =>
+        fish.name === name && fish.count > 0 ? { ...fish, count: fish.count - 1 } : fish
+      )
+    );
+  };
+
   // Mapping of display modes to user-friendly text
   const displayModeText = {
     [DisplayMode.ALL_FISH]: 'All Fish',
@@ -77,15 +97,44 @@ const FishCard: React.FC<FishCardProps> = ({ species }) => {
       <CardContent>
         <Typography variant="h6">Fish</Typography>
         <Typography variant="body1">{displayModeText[displayMode]}</Typography>
-        <Typography variant="body2">
+        
+        {/* Box component to vertically list the fish with increment/decrement buttons */}
+        <Box sx={{ marginTop: 2 }}>
           {filteredSpecies.length > 0
             ? filteredSpecies.map((fish) => (
-                <span key={fish.name}>
-                  {fish.name} (x{fish.count})
-                </span>
+                <Box key={fish.name} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 1 }}>
+                  <Typography variant="body2" sx={{ flexGrow: 1 }}>
+                    {fish.name} (x{fish.count})
+                  </Typography>
+
+                  {/* Decrement Button */}
+                  <IconButton
+                    size="small"
+                    color="primary"
+                    onClick={(e) => {
+                      e.stopPropagation();  // Prevent card click cycle
+                      handleDecrement(fish.name);
+                    }}
+                  >
+                    <RemoveIcon />
+                  </IconButton>
+
+                  {/* Increment Button */}
+                  <IconButton
+                    size="small"
+                    color="primary"
+                    onClick={(e) => {
+                      e.stopPropagation();  // Prevent card click cycle
+                      handleIncrement(fish.name);
+                    }}
+                  >
+                    <AddIcon />
+                  </IconButton>
+                </Box>
               ))
-            : 'No fish in this category.'}
-        </Typography>
+            : <Typography variant="body2">No fish in this category.</Typography>
+          }
+        </Box>
       </CardContent>
 
       {/* Vertical Kebab Icon for opening the menu */}
