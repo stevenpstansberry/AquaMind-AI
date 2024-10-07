@@ -6,6 +6,7 @@ import RemoveIcon from '@mui/icons-material/Remove';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'; 
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';  
 import FishInfoCard from './FishInfoCard';  
+import AddFishCard from './AddFishCard';  // Import AddFishCard
 import { Aquarium } from '../../interfaces/Aquarium';  // Assuming Aquarium interface is here
 
 interface FishCardProps {
@@ -29,6 +30,7 @@ const FishCard: React.FC<FishCardProps> = ({ aquarium }) => {
   const [changesSaved, setChangesSaved] = useState(true);  // Track unsaved changes
   const [selectedFish, setSelectedFish] = useState<{ name: string; count: number; role: string; type: string } | null>(null);  // Selected fish for info modal
   const [infoCardOpen, setInfoCardOpen] = useState(false);  // Track modal open/close state
+  const [addFishOpen, setAddFishOpen] = useState(false);  // Track AddFish modal open/close state
 
   // Update fish list when aquarium species changes
   useEffect(() => {
@@ -108,9 +110,16 @@ const FishCard: React.FC<FishCardProps> = ({ aquarium }) => {
     setChangesSaved(true);
   };
 
+  // Open Add New Fish Modal
   const handleAddNewFish = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.stopPropagation();
-    console.log('Add new fish clicked');
+    e.stopPropagation(); // Prevent cycling the display mode
+    setAddFishOpen(true);
+  };
+
+  // Add a new fish to the list
+  const handleAddFish = (fish: { name: string; count: number; type: string; role: string }) => {
+    setFishList((prevList) => [...prevList, fish]);  // Add the new fish to the list
+    setAddFishOpen(false);  // Close the modal
   };
 
   const handleShowFishInfo = (fish: { name: string; count: number; role: string; type: string }) => {
@@ -121,6 +130,10 @@ const FishCard: React.FC<FishCardProps> = ({ aquarium }) => {
   const handleCloseFishInfo = () => {
     setInfoCardOpen(false);  // Close the modal
     setSelectedFish(null);  // Reset selected fish
+  };
+
+  const handleCloseAddFish = () => {
+    setAddFishOpen(false);  // Close the AddFishCard modal
   };
 
   const displayModeText = {
@@ -208,7 +221,7 @@ const FishCard: React.FC<FishCardProps> = ({ aquarium }) => {
             <Tooltip title="Add New Fish">
               <IconButton
                 color="primary"
-                onClick={handleAddNewFish}
+                onClick={handleAddNewFish} // Add stopPropagation inside this handler
               >
                 <AddCircleOutlineIcon />
               </IconButton>
@@ -244,6 +257,14 @@ const FishCard: React.FC<FishCardProps> = ({ aquarium }) => {
 
       {/* Fish Info Modal */}
       <FishInfoCard open={infoCardOpen} onClose={handleCloseFishInfo} fish={selectedFish} />
+
+      {/* Add Fish Modal */}
+      <AddFishCard
+        open={addFishOpen}
+        onClose={handleCloseAddFish}
+        aquarium={aquarium}  // Pass the entire aquarium object
+        onAddFish={handleAddFish}  // Handle adding a fish to the list
+      />
     </>
   );
 };
