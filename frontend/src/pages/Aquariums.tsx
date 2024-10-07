@@ -178,7 +178,7 @@ useEffect(() => {
               <Grid container spacing={3} sx={{ marginTop: '20px' }} alignItems="flex-start">
                 {/* Fish Card */}
                 <Grid item xs={12} md={6} lg={6}>
-                  <FishCard species={currentAquarium.species} />
+                  {currentAquarium && <FishCard aquarium={currentAquarium} />}
                 </Grid>
 
                 {/* Plant Card */}

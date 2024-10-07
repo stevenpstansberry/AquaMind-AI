@@ -4,11 +4,12 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import AddIcon from '@mui/icons-material/Add';  
 import RemoveIcon from '@mui/icons-material/Remove';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'; 
-import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';  // Import the Outlined Info icon
-import FishInfoCard from './FishInfoCard';  // Import the FishInfoCard modal component
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';  
+import FishInfoCard from './FishInfoCard';  
+import { Aquarium } from '../../interfaces/Aquarium';  // Assuming Aquarium interface is here
 
 interface FishCardProps {
-  species: { name: string; count: number; role: string; type: string }[]; 
+  aquarium: Aquarium; 
 }
 
 enum DisplayMode {
@@ -20,29 +21,28 @@ enum DisplayMode {
   BREEDERS,
 }
 
-const FishCard: React.FC<FishCardProps> = ({ species }) => {
+const FishCard: React.FC<FishCardProps> = ({ aquarium }) => {
   const [displayMode, setDisplayMode] = useState<DisplayMode>(DisplayMode.ALL_FISH);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [fishList, setFishList] = useState(species); // Track fish count updates
-  const [originalFishList, setOriginalFishList] = useState(species); // Track original state of fish list
-  const [changesSaved, setChangesSaved] = useState(true); // Track unsaved changes
-  const [selectedFish, setSelectedFish] = useState<{ name: string; count: number; role: string; type: string } | null>(null); // Selected fish for info modal
-  const [infoCardOpen, setInfoCardOpen] = useState(false); // Track modal open/close state
+  const [fishList, setFishList] = useState(aquarium.species);  // Use species from the passed aquarium
+  const [originalFishList, setOriginalFishList] = useState(aquarium.species);  // Track original state of fish list
+  const [changesSaved, setChangesSaved] = useState(true);  // Track unsaved changes
+  const [selectedFish, setSelectedFish] = useState<{ name: string; count: number; role: string; type: string } | null>(null);  // Selected fish for info modal
+  const [infoCardOpen, setInfoCardOpen] = useState(false);  // Track modal open/close state
 
-  // Update fish list and original list when new species props are passed
+  // Update fish list when aquarium species changes
   useEffect(() => {
-    setFishList(species);
-    setOriginalFishList(species);
-    setChangesSaved(true); // Reset changes saved status when species updates
-  }, [species]);
+    setFishList(aquarium.species);
+    setOriginalFishList(aquarium.species);
+    setChangesSaved(true);  // Reset changes saved status when species updates
+  }, [aquarium]);
 
-  // Function to compare current fish list with the original
+  // Compare current fish list with the original to check for unsaved changes
   const checkChangesSaved = () => {
     const isSame = fishList.every((fish, idx) => fish.count === originalFishList[idx].count);
     setChangesSaved(isSame);
   };
 
-  // Update to check for changes every time fishList is updated
   useEffect(() => {
     checkChangesSaved();
   }, [fishList]);
@@ -66,12 +66,9 @@ const FishCard: React.FC<FishCardProps> = ({ species }) => {
     }
   });
 
-  const cycleDisplayMode = (e: React.MouseEvent<HTMLDivElement>) => {
+  const cycleDisplayMode = () => {
     const validModes = Object.values(DisplayMode).filter((value) => typeof value === 'number');
-    setDisplayMode((prevMode) => {
-      const nextMode = (prevMode + 1) % validModes.length;
-      return nextMode;
-    });
+    setDisplayMode((prevMode) => (prevMode + 1) % validModes.length);
   };
 
   const handleMenuOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -101,13 +98,13 @@ const FishCard: React.FC<FishCardProps> = ({ species }) => {
 
   const handleSaveChanges = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
-    setOriginalFishList(fishList); // Save current state as the original
-    setChangesSaved(true); // Mark changes as saved
+    setOriginalFishList(fishList);  // Save current state as the original
+    setChangesSaved(true);  // Mark changes as saved
   };
 
   const handleDiscardChanges = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
-    setFishList(originalFishList); // Revert to the original fish list
+    setFishList(originalFishList);  // Revert to the original fish list
     setChangesSaved(true);
   };
 
@@ -117,13 +114,12 @@ const FishCard: React.FC<FishCardProps> = ({ species }) => {
   };
 
   const handleShowFishInfo = (fish: { name: string; count: number; role: string; type: string }) => {
-    setSelectedFish(fish); 
+    setSelectedFish(fish);  // Set selected fish to display in the modal
     setInfoCardOpen(true);  // Open the modal
   };
-  
 
   const handleCloseFishInfo = () => {
-    setInfoCardOpen(false); // Close the modal
+    setInfoCardOpen(false);  // Close the modal
     setSelectedFish(null);  // Reset selected fish
   };
 
