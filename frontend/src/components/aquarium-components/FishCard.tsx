@@ -122,10 +122,11 @@ const FishCard: React.FC<FishCardProps> = ({ aquarium }) => {
   };
 
   // Add a new fish to the list
-  const handleAddFish = (fish: { name: string; count: number; type: string; role: string }) => {
-    setFishList((prevList) => [...prevList, fish]);  // Add the new fish to the list
+  const handleAddFish = (fishList: { name: string; count: number; type: string; role: string }[]) => {
+    setFishList((prevList) => [...prevList, ...fishList]); // Add all fish to the list
     setAddFishOpen(false);  // Close the modal
   };
+  
 
   const handleShowFishInfo = (fish: { name: string; count: number; role: string; type: string }) => {
     setSelectedFish(fish);  // Set selected fish to display in the modal

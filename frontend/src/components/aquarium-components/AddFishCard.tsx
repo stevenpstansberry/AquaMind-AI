@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import {
   Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField,
-  Box, MenuItem, Select, InputLabel, FormControl, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TablePagination, Typography, IconButton
+  Box, MenuItem, Select, InputLabel, FormControl, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TablePagination, Typography, IconButton, List, ListItem
 } from '@mui/material';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';  // Icon for add button
 import AIChatInterface from '../AIChatInterface';  // Dummy AI chat component
@@ -11,8 +11,7 @@ interface AddFishCardProps {
   open: boolean;
   onClose: () => void;
   aquarium: Aquarium;  // Pass the entire Aquarium object
-  onAddFish: (fish: Fish) => void;
-}
+  onAddFish: (fish: Fish[]) => void; }
 
 const freshwaterFishList = [
   {
@@ -297,8 +296,7 @@ const AddFishCard: React.FC<AddFishCardProps> = ({ open, onClose, aquarium, onAd
   const [showChat, setShowChat] = useState(false);  // State for AI chat toggle
   const [page, setPage] = useState(0);  // Pagination state
   const [rowsPerPage, setRowsPerPage] = useState(5);  // Pagination rows per page
-  const [selectedFish, setSelectedFish] = useState<Fish | null>(null);  // Selected fish for info card
-  const [infoOpen, setInfoOpen] = useState(false);  // Info card state
+  const [selectedFishList, setSelectedFishList] = useState<Fish[]>([]);  // Selected fish list for batch add
 
   // Get the appropriate fish list based on the aquarium type
   const fishList = aquarium.type === 'Freshwater' ? freshwaterFishList : []; // Add saltwaterFishList if needed
@@ -312,23 +310,27 @@ const AddFishCard: React.FC<AddFishCardProps> = ({ open, onClose, aquarium, onAd
     );
   });
 
-  // Handle showing fish info card
-  const handleFishClick = (fish: Fish) => {
-    setSelectedFish(fish);  // Set the selected fish
-    setInfoOpen(true);      // Open the info dialog
+  // Handle selecting/unselecting fish
+  const handleSelectFish = (fish: Fish) => {
+    const isSelected = selectedFishList.some(f => f.name === fish.name);
+    if (isSelected) {
+      setSelectedFishList(selectedFishList.filter(f => f.name !== fish.name));  // Remove if already selected
+    } else {
+      setSelectedFishList([...selectedFishList, fish]);  // Add if not already selected
+    }
   };
 
-  // Handle closing the info dialog
-  const handleCloseInfo = () => {
-    setInfoOpen(false);
+  // Check if a fish is selected
+  const isFishSelected = (fish: Fish) => {
+    return selectedFishList.some(f => f.name === fish.name);
   };
 
-  // Handle adding the fish to the aquarium
-  const handleAddFish = (fish: Fish, event: React.MouseEvent) => {
-    event.stopPropagation();  // Prevent row click event from firing
-    onAddFish({ ...fish, count: 1 });
-    console.log(`Fish added:`, fish); // For now, log the fish
+  // Handle adding all selected fish to the aquarium
+  const handleAddAllFish = () => {
+    onAddFish(selectedFishList);  // Pass the array of selected fish to parent
+    setSelectedFishList([]);  // Clear the selected fish after adding
   };
+  
 
   // Handle pagination
   const handleChangePage = (event: unknown, newPage: number) => {
@@ -360,7 +362,6 @@ const AddFishCard: React.FC<AddFishCardProps> = ({ open, onClose, aquarium, onAd
                 <MenuItem value="predator">Predator</MenuItem>
                 <MenuItem value="scavenger">Scavenger</MenuItem>
                 <MenuItem value="community">Community</MenuItem>
-                <MenuItem value="breeder">Breeder</MenuItem>
               </Select>
             </FormControl>
 
@@ -393,21 +394,23 @@ const AddFishCard: React.FC<AddFishCardProps> = ({ open, onClose, aquarium, onAd
                     <TableCell sx={{ fontWeight: 'bold' }}>Role</TableCell>
                     <TableCell sx={{ fontWeight: 'bold' }}>Description</TableCell>
                     <TableCell sx={{ fontWeight: 'bold' }}>Tank Min (gallons)</TableCell>
-                    <TableCell sx={{ fontWeight: 'bold' }}>Add</TableCell>  {/* Add column for add icon */}
                   </TableRow>
                 </TableHead>
                 <TableBody>
                   {filteredFishList.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((fish) => (
-                    <TableRow key={fish.name} hover sx={{ cursor: 'pointer' }} onClick={() => handleFishClick(fish)}>
+                    <TableRow
+                      key={fish.name}
+                      hover
+                      sx={{
+                        cursor: 'pointer',
+                        backgroundColor: isFishSelected(fish) ? 'rgba(0, 123, 255, 0.1)' : 'inherit',  // Highlight selected row
+                      }}
+                      onClick={() => handleSelectFish(fish)}
+                    >
                       <TableCell>{fish.name}</TableCell>
                       <TableCell>{fish.role}</TableCell>
                       <TableCell>{fish.description}</TableCell>
                       <TableCell>{fish.minTankSize}</TableCell>
-                      <TableCell>
-                        <IconButton onClick={(event) => handleAddFish(fish, event)} color="primary">
-                          <AddCircleOutlineIcon />
-                        </IconButton>
-                      </TableCell>  {/* Add button in each row */}
                     </TableRow>
                   ))}
                 </TableBody>
@@ -425,6 +428,31 @@ const AddFishCard: React.FC<AddFishCardProps> = ({ open, onClose, aquarium, onAd
               onRowsPerPageChange={handleChangeRowsPerPage}
             />
 
+            {/* Display Selected Fish */}
+            {selectedFishList.length > 0 && (
+              <Box mt={2} mb={2}>
+                <Typography variant="h6">Selected Fish to Add:</Typography>
+                <ul>
+                  {selectedFishList.map(fish => (
+                    <li key={fish.name}>{fish.name}</li>
+                  ))}
+                </ul>
+              </Box>
+            )}
+
+            {/* Add All Fish Button */}
+            {selectedFishList.length > 0 && (
+              <Box mt={2}>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={handleAddAllFish}
+                >
+                  Add Selected Fish to Aquarium
+                </Button>
+              </Box>
+            )}
+
             {/* AI Chat Interface */}
             <Box mt={2}>
               <Button variant="outlined" onClick={() => setShowChat(!showChat)}>
@@ -438,21 +466,6 @@ const AddFishCard: React.FC<AddFishCardProps> = ({ open, onClose, aquarium, onAd
           <Button onClick={onClose} color="secondary">Cancel</Button>
         </DialogActions>
       </Dialog>
-
-      {/* Info Card Dialog */}
-      {selectedFish && (
-        <Dialog open={infoOpen} onClose={handleCloseInfo}>
-          <DialogTitle>{selectedFish.name} Info</DialogTitle>
-          <DialogContent>
-            <Typography variant="body1"><b>Role:</b> {selectedFish.role}</Typography>
-            <Typography variant="body1"><b>Description:</b> {selectedFish.description}</Typography>
-            <Typography variant="body1"><b>Min Tank Size:</b> {selectedFish.minTankSize} gallons</Typography>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={handleCloseInfo} color="primary">Close</Button>
-          </DialogActions>
-        </Dialog>
-      )}
     </>
   );
 };
