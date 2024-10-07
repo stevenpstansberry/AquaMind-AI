@@ -33,8 +33,8 @@ useEffect(() => {
         type: "Freshwater",
         size: "55",
         species: [
-          { name: "Tetra", count: 5, role: "schooling" },
-          { name: "Corydoras", count: 3, role: "scavenger" }
+          { name: "Tetra", count: 5, role: "schooling", type: "Freshwater" },
+          { name: "Corydoras", count: 3, role: "scavenger", type: "Freshwater" }
         ],
         plants: [{ name: "Anubias", count: 3, role: "slow-growing" }],
         equipment: [
@@ -57,8 +57,8 @@ useEffect(() => {
         type: "Saltwater",
         size: "75",
         species: [
-          { name: "Clownfish", count: 2, role: "community" },
-          { name: "Blue Tang", count: 1, role: "schooling" }
+          { name: "Clownfish", count: 2, role: "community",  type: "Saltwater" },
+          { name: "Blue Tang", count: 1, role: "schooling",  type: "Saltwater" }
         ],
         plants: [],
         equipment: [
@@ -85,8 +85,8 @@ useEffect(() => {
         type: "Freshwater",
         size: "40",
         species: [
-          { name: "Angelfish", count: 1, role: "predator" },
-          { name: "Neon Tetra", count: 10, role: "schooling" }
+          { name: "Angelfish", count: 1, role: "predator",  type: "Freshwater" },
+          { name: "Neon Tetra", count: 10, role: "schooling",  type: "Freshwater" }
         ],
         plants: [
           { name: "Anubias", count: 5, role: "slow-growing" },
