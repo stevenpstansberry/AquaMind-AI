@@ -166,6 +166,7 @@ const freshwaterFishList = [
 const saltwaterFishList = [
   {
     name: "Clownfish",
+    count : 1,
     role: "community",
     type: "Saltwater",
     description: "Popular and hardy saltwater fish known for its symbiotic relationship with anemones.",
@@ -186,6 +187,7 @@ const saltwaterFishList = [
   },
   {
     name: "Blue Tang",
+    count : 1,
     role: "schooling",
     type: "Saltwater",
     description: "Bright blue fish with yellow tail, made famous by the movie 'Finding Nemo'.",
@@ -206,6 +208,7 @@ const saltwaterFishList = [
   },
   {
     name: "Royal Gramma",
+    count : 1,
     role: "community",
     type: "Saltwater",
     description: "Colorful fish with purple front half and yellow rear half, ideal for small reef tanks.",
@@ -226,6 +229,7 @@ const saltwaterFishList = [
   },
   {
     name: "Yellow Tang",
+    count : 1,
     role: "herbivore",
     type: "Saltwater",
     description: "Bright yellow fish, popular for algae control in reef tanks.",
@@ -246,6 +250,7 @@ const saltwaterFishList = [
   },
   {
     name: "Mandarin Dragonet",
+    count : 1,
     role: "predator",
     type: "Saltwater",
     description: "Colorful fish known for its intricate pattern and vibrant colors.",
@@ -266,6 +271,7 @@ const saltwaterFishList = [
   },
   {
     name: "Firefish Goby",
+    count : 1,
     role: "community",
     type: "Saltwater",
     description: "Small, slender fish with a brilliant red/orange back half and elongated dorsal fin.",
@@ -297,9 +303,11 @@ const AddFishCard: React.FC<AddFishCardProps> = ({ open, onClose, aquarium, onAd
   const [page, setPage] = useState(0);  // Pagination state
   const [rowsPerPage, setRowsPerPage] = useState(5);  // Pagination rows per page
   const [selectedFishList, setSelectedFishList] = useState<Fish[]>([]);  // Selected fish list for batch add
+  const [selectedFish, setSelectedFish] = useState<Fish | null>(null);  // To track fish for the info modal
+  const [infoOpen, setInfoOpen] = useState(false);  // To manage modal state
 
   // Get the appropriate fish list based on the aquarium type
-  const fishList = aquarium.type === 'Freshwater' ? freshwaterFishList : []; // Add saltwaterFishList if needed
+  const fishList = aquarium.type === 'Freshwater' ? freshwaterFishList : saltwaterFishList;
 
   // Filter fish list based on role, minimum tank size, and search query
   const filteredFishList = fishList.filter(fish => {
@@ -325,12 +333,23 @@ const AddFishCard: React.FC<AddFishCardProps> = ({ open, onClose, aquarium, onAd
     return selectedFishList.some(f => f.name === fish.name);
   };
 
+  // Handle opening the fish info card
+  const handleFishClick = (fish: Fish) => {
+    setSelectedFish(fish);
+    setInfoOpen(true);  // Open the modal
+  };
+
+  // Handle closing the fish info modal
+  const handleCloseInfo = () => {
+    setInfoOpen(false);  // Close the modal
+    setSelectedFish(null);  // Clear the selected fish
+  };
+
   // Handle adding all selected fish to the aquarium
   const handleAddAllFish = () => {
     onAddFish(selectedFishList);  // Pass the array of selected fish to parent
     setSelectedFishList([]);  // Clear the selected fish after adding
   };
-  
 
   // Handle pagination
   const handleChangePage = (event: unknown, newPage: number) => {
@@ -393,7 +412,8 @@ const AddFishCard: React.FC<AddFishCardProps> = ({ open, onClose, aquarium, onAd
                     <TableCell sx={{ fontWeight: 'bold' }}>Fish Name</TableCell>
                     <TableCell sx={{ fontWeight: 'bold' }}>Role</TableCell>
                     <TableCell sx={{ fontWeight: 'bold' }}>Description</TableCell>
-                    <TableCell sx={{ fontWeight: 'bold' }}>Tank Min (gallons)</TableCell>
+                    <TableCell sx={{ fontWeight: 'bold' }}>Min Tank Size</TableCell>
+                    <TableCell sx={{ fontWeight: 'bold' }}>Add</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -405,12 +425,23 @@ const AddFishCard: React.FC<AddFishCardProps> = ({ open, onClose, aquarium, onAd
                         cursor: 'pointer',
                         backgroundColor: isFishSelected(fish) ? 'rgba(0, 123, 255, 0.1)' : 'inherit',  // Highlight selected row
                       }}
-                      onClick={() => handleSelectFish(fish)}
+                      onClick={() => handleFishClick(fish)} // Click row to open info card
                     >
                       <TableCell>{fish.name}</TableCell>
                       <TableCell>{fish.role}</TableCell>
                       <TableCell>{fish.description}</TableCell>
                       <TableCell>{fish.minTankSize}</TableCell>
+                      <TableCell>
+                        <IconButton
+                          onClick={(event) => {
+                            event.stopPropagation();  // Prevent row click event when clicking the button
+                            handleSelectFish(fish);
+                          }}
+                          color={isFishSelected(fish) ? "secondary" : "primary"}
+                        >
+                          <AddCircleOutlineIcon />
+                        </IconButton>
+                      </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -428,43 +459,57 @@ const AddFishCard: React.FC<AddFishCardProps> = ({ open, onClose, aquarium, onAd
               onRowsPerPageChange={handleChangeRowsPerPage}
             />
 
-            {/* Display Selected Fish */}
+            {/* Display Selected Fish and Add Button - Right Aligned Beneath the Table */}
             {selectedFishList.length > 0 && (
-              <Box mt={2} mb={2}>
-                <Typography variant="h6">Selected Fish to Add:</Typography>
-                <ul>
-                  {selectedFishList.map(fish => (
-                    <li key={fish.name}>{fish.name}</li>
-                  ))}
-                </ul>
+              <Box mt={2} display="flex" justifyContent="flex-end" alignItems="flex-end" textAlign="right">
+                <Box>
+                  <Typography variant="h6">Selected Fish to Add:</Typography>
+                  <List>
+                    {selectedFishList.map(fish => (
+                      <ListItem key={fish.name} sx={{ padding: 0 }}>
+                        <Typography variant="body2">• {fish.name}</Typography>
+                      </ListItem>
+                    ))}
+                  </List>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={handleAddAllFish}
+                  >
+                    ADD SELECTED FISH TO AQUARIUM
+                  </Button>
+                </Box>
               </Box>
             )}
+          </Box>
 
-            {/* Add All Fish Button */}
-            {selectedFishList.length > 0 && (
-              <Box mt={2}>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={handleAddAllFish}
-                >
-                  Add Selected Fish to Aquarium
-                </Button>
-              </Box>
-            )}
-
-            {/* AI Chat Interface */}
-            <Box mt={2}>
-              <Button variant="outlined" onClick={() => setShowChat(!showChat)}>
-                {showChat ? 'Hide' : 'Show'} AI Suggestions
-              </Button>
-              <AIChatInterface showChat={showChat} onClose={() => setShowChat(false)} aquarium={aquarium} />
-            </Box>
+          {/* AI Chat Interface */}
+          <Box mt={2}>
+            <Button variant="outlined" onClick={() => setShowChat(!showChat)}>
+              {showChat ? 'Hide' : 'Show'} AI Suggestions
+            </Button>
+            <AIChatInterface showChat={showChat} onClose={() => setShowChat(false)} aquarium={aquarium} />
           </Box>
         </DialogContent>
+
         <DialogActions>
           <Button onClick={onClose} color="secondary">Cancel</Button>
         </DialogActions>
+
+        {/* Fish Info Modal */}
+        {selectedFish && (
+          <Dialog open={infoOpen} onClose={handleCloseInfo}>
+            <DialogTitle>{selectedFish.name} Info</DialogTitle>
+            <DialogContent>
+              <Typography variant="body1"><b>Role:</b> {selectedFish.role}</Typography>
+              <Typography variant="body1"><b>Description:</b> {selectedFish.description}</Typography>
+              <Typography variant="body1"><b>Min Tank Size:</b> {selectedFish.minTankSize} gallons</Typography>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={handleCloseInfo} color="primary">Close</Button>
+            </DialogActions>
+          </Dialog>
+        )}
       </Dialog>
     </>
   );
