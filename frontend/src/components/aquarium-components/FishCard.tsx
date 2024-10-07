@@ -8,7 +8,7 @@ import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';  // Import the 
 import FishInfoCard from './FishInfoCard';  // Import the FishInfoCard modal component
 
 interface FishCardProps {
-  species: { name: string; count: number; role: string }[]; 
+  species: { name: string; count: number; role: string; type: string }[]; 
 }
 
 enum DisplayMode {
@@ -26,7 +26,7 @@ const FishCard: React.FC<FishCardProps> = ({ species }) => {
   const [fishList, setFishList] = useState(species); // Track fish count updates
   const [originalFishList, setOriginalFishList] = useState(species); // Track original state of fish list
   const [changesSaved, setChangesSaved] = useState(true); // Track unsaved changes
-  const [selectedFish, setSelectedFish] = useState<{ name: string; count: number; role: string } | null>(null); // Selected fish for info modal
+  const [selectedFish, setSelectedFish] = useState<{ name: string; count: number; role: string; type: string } | null>(null); // Selected fish for info modal
   const [infoCardOpen, setInfoCardOpen] = useState(false); // Track modal open/close state
 
   // Update fish list and original list when new species props are passed
@@ -116,10 +116,11 @@ const FishCard: React.FC<FishCardProps> = ({ species }) => {
     console.log('Add new fish clicked');
   };
 
-  const handleShowFishInfo = (fish: { name: string; count: number; role: string }) => {
-    setSelectedFish(fish); // Set selected fish to display in the modal
+  const handleShowFishInfo = (fish: { name: string; count: number; role: string; type: string }) => {
+    setSelectedFish(fish); 
     setInfoCardOpen(true);  // Open the modal
   };
+  
 
   const handleCloseFishInfo = () => {
     setInfoCardOpen(false); // Close the modal

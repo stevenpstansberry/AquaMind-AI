@@ -1,4 +1,3 @@
-// FishInfoCard.tsx
 import React from 'react';
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Typography, Box, Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -10,6 +9,7 @@ interface FishInfoCardProps {
     name: string;
     count: number;
     role: string;
+    type: string;  
     description?: string;
     feedingHabits?: string;
     tankRequirements?: string;
@@ -66,6 +66,9 @@ const FishInfoCard: React.FC<FishInfoCardProps> = ({ open, onClose, fish }) => {
               </Typography>
               <Typography variant="body2">
                 <strong>Role:</strong> {fish.role}
+              </Typography>
+              <Typography variant="body2">
+                <strong>Type:</strong> {fish.type}
               </Typography>
               <Typography variant="body2" sx={{ mt: 1 }}>
                 <strong>Description:</strong> {fish.description || 'No description available.'}

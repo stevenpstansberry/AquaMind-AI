@@ -4,7 +4,7 @@ export interface Aquarium {
     name: string;
     type: "Freshwater" | "Saltwater";
     size: string;
-    species: { name: string; count: number; role: string }[]; 
+    species: { name: string; count: number; role: string; type: string, }[]; 
     plants: { name: string; count: number; role: string }[]; 
     equipment: { name: string; type: string }[];
     parameters?: {
