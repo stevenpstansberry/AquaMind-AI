@@ -25,8 +25,8 @@ enum DisplayMode {
 const FishCard: React.FC<FishCardProps> = ({ aquarium }) => {
   const [displayMode, setDisplayMode] = useState<DisplayMode>(DisplayMode.ALL_FISH);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [fishList, setFishList] = useState(aquarium.species);  // Use species from the passed aquarium
-  const [originalFishList, setOriginalFishList] = useState(aquarium.species);  // Track original state of fish list
+  const [fishList, setFishList] = useState(aquarium.species || []);  // Ensure fishList has a default array
+  const [originalFishList, setOriginalFishList] = useState(aquarium.species || []);  // Track original state of fish list
   const [changesSaved, setChangesSaved] = useState(true);  // Track unsaved changes
   const [selectedFish, setSelectedFish] = useState<{ name: string; count: number; role: string; type: string } | null>(null);  // Selected fish for info modal
   const [infoCardOpen, setInfoCardOpen] = useState(false);  // Track modal open/close state
@@ -34,14 +34,19 @@ const FishCard: React.FC<FishCardProps> = ({ aquarium }) => {
 
   // Update fish list when aquarium species changes
   useEffect(() => {
-    setFishList(aquarium.species);
-    setOriginalFishList(aquarium.species);
+    setFishList(aquarium.species || []);
+    setOriginalFishList(aquarium.species || []);
     setChangesSaved(true);  // Reset changes saved status when species updates
   }, [aquarium]);
 
   // Compare current fish list with the original to check for unsaved changes
   const checkChangesSaved = () => {
-    const isSame = fishList.every((fish, idx) => fish.count === originalFishList[idx].count);
+    if (!fishList || !originalFishList) return;  // Safeguard for undefined lists
+
+    const isSame = fishList.every((fish, idx) => {
+      const originalFish = originalFishList[idx];
+      return originalFish && fish.count === originalFish.count;
+    });
     setChangesSaved(isSame);
   };
 
@@ -221,7 +226,7 @@ const FishCard: React.FC<FishCardProps> = ({ aquarium }) => {
             <Tooltip title="Add New Fish">
               <IconButton
                 color="primary"
-                onClick={handleAddNewFish} // Add stopPropagation inside this handler
+                onClick={handleAddNewFish}  // Updated to prevent display mode cycling
               >
                 <AddCircleOutlineIcon />
               </IconButton>
