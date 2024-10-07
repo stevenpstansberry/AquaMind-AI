@@ -299,6 +299,7 @@ const saltwaterFishList = [
 
 const AddFishCard: React.FC<AddFishCardProps> = ({ open, onClose, aquarium, onAddFish }) => {
   const [roleFilter, setRoleFilter] = useState('');  
+  const [careLevelFilter, setCareLevelFilter] = useState('');  // New filter for care level
   const [minTankSizeFilter, setMinTankSizeFilter] = useState<number>(parseInt(aquarium.size));  // Default to aquarium size
   const [searchQuery, setSearchQuery] = useState('');  
   const [showChat, setShowChat] = useState(false);  
@@ -310,10 +311,11 @@ const AddFishCard: React.FC<AddFishCardProps> = ({ open, onClose, aquarium, onAd
 
   const fishList = aquarium.type === 'Freshwater' ? freshwaterFishList : saltwaterFishList;
 
-  // Filter fish list based on role, minimum tank size, and search query
+  // Filter fish list based on role, care level, minimum tank size, and search query
   const filteredFishList = fishList.filter(fish => {
     return (
       (!roleFilter || fish.role === roleFilter) &&
+      (!careLevelFilter || fish.careLevel === careLevelFilter) &&  // Filter by care level
       (!minTankSizeFilter || Number(fish.minTankSize) <= minTankSizeFilter) &&  // Ensure fish tank size <= user's tank size
       (!searchQuery || fish.name.toLowerCase().includes(searchQuery.toLowerCase()))
     );
@@ -380,6 +382,22 @@ const AddFishCard: React.FC<AddFishCardProps> = ({ open, onClose, aquarium, onAd
               </Select>
             </FormControl>
 
+            {/* Filter by Care Level */}
+            <FormControl fullWidth margin="normal">
+              <InputLabel shrink>Filter by Care Level</InputLabel>
+              <Select
+                label="Filter by Care Level"
+                value={careLevelFilter}
+                onChange={(e) => setCareLevelFilter(e.target.value)}  // Handle care level selection
+                displayEmpty
+              >
+                <MenuItem value="">All Care Levels</MenuItem>
+                <MenuItem value="Easy">Easy</MenuItem>
+                <MenuItem value="Moderate">Moderate</MenuItem>
+                <MenuItem value="Difficult">Difficult</MenuItem>
+              </Select>
+            </FormControl>
+
             {/* Filter by Minimum Tank Size */}
             <TextField
               label="Filter by Minimum Tank Size (gallons)"
@@ -407,7 +425,7 @@ const AddFishCard: React.FC<AddFishCardProps> = ({ open, onClose, aquarium, onAd
                   <TableRow>
                     <TableCell sx={{ fontWeight: 'bold' }}>Fish Name</TableCell>
                     <TableCell sx={{ fontWeight: 'bold' }}>Role</TableCell>
-                    <TableCell sx={{ fontWeight: 'bold' }}>Description</TableCell>
+                    <TableCell sx={{ fontWeight: 'bold' }}>Care Level</TableCell>
                     <TableCell sx={{ fontWeight: 'bold' }}>Min Tank Size</TableCell>
                     <TableCell sx={{ fontWeight: 'bold' }}>Add</TableCell>
                   </TableRow>
@@ -425,7 +443,7 @@ const AddFishCard: React.FC<AddFishCardProps> = ({ open, onClose, aquarium, onAd
                     >
                       <TableCell>{fish.name}</TableCell>
                       <TableCell>{fish.role}</TableCell>
-                      <TableCell>{fish.description}</TableCell>
+                      <TableCell>{fish.careLevel}</TableCell>  {/* Display care level */}
                       <TableCell>{fish.minTankSize}</TableCell>
                       <TableCell>
                         <IconButton
