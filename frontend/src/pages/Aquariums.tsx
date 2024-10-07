@@ -33,12 +33,50 @@ useEffect(() => {
         type: "Freshwater",
         size: "55",
         species: [
-          { name: "Tetra", count: 5, role: "schooling", type: "Freshwater" },
-          { name: "Corydoras", count: 3, role: "scavenger", type: "Freshwater" }
+          {
+            name: "Tetra",
+            count: 5,
+            role: "schooling",
+            type: "Freshwater",
+            description: "Small and peaceful fish that swim in schools.",
+            feedingHabits: "Omnivorous, enjoys small flake food or micro-pellets.",
+            tankRequirements: "Well-planted tank with hiding spaces.",
+            compatibility: "Highly compatible with other peaceful fish.",
+            lifespan: "5-7 years",
+            size: "1.5 inches",
+            waterParameters: "pH 6.5-7.5, temperature 72-78°F",
+            breedingInfo: "Egg layers; provide fine-leaved plants for spawning.",
+            behavior: "Peaceful, swims in groups.",
+            careLevel: "Easy",
+            nativeHabitat: "South America (Amazon Basin)",
+            stockingRecommendations: "Should be kept in groups of at least 6.",
+            minTankSize: 20,
+          },
+          {
+            name: "Corydoras",
+            count: 3,
+            role: "scavenger",
+            type: "Freshwater",
+            description: "Bottom-dwelling fish that help keep the tank clean.",
+            feedingHabits: "Eats sinking pellets and leftover food.",
+            tankRequirements: "Soft substrate to protect sensitive barbels.",
+            compatibility: "Peaceful, good with other non-aggressive species.",
+            lifespan: "10-15 years",
+            size: "2-3 inches",
+            waterParameters: "pH 6.5-7.8, temperature 72-78°F",
+            breedingInfo: "Egg layers; breeding can be triggered by cooler water changes.",
+            behavior: "Social, prefers groups.",
+            careLevel: "Easy",
+            nativeHabitat: "South America",
+            stockingRecommendations: "Best kept in groups of 4 or more.",
+            minTankSize: 30,
+          }
         ],
-        plants: [{ name: "Anubias", count: 3, role: "slow-growing" }],
+        plants: [
+          { name: "Anubias", count: 3, role: "slow-growing" }
+        ],
         equipment: [
-          { name: "Air Pump", type: "filtration" },  // Equipment now has both 'name' and 'type'
+          { name: "Air Pump", type: "filtration" },
           { name: "Heater", type: "heating" }
         ],
         parameters: {
@@ -57,8 +95,44 @@ useEffect(() => {
         type: "Saltwater",
         size: "75",
         species: [
-          { name: "Clownfish", count: 2, role: "community",  type: "Saltwater" },
-          { name: "Blue Tang", count: 1, role: "schooling",  type: "Saltwater" }
+          {
+            name: "Clownfish",
+            count: 2,
+            role: "community",
+            type: "Saltwater",
+            description: "Popular, colorful fish known for its symbiotic relationship with anemones.",
+            feedingHabits: "Omnivorous, enjoys flake food, pellets, and frozen foods.",
+            tankRequirements: "Requires live rock for hiding and anemone for hosting.",
+            compatibility: "Compatible with other peaceful fish.",
+            lifespan: "6-10 years",
+            size: "3-4 inches",
+            waterParameters: "pH 8.1-8.4, temperature 74-78°F, salinity 35ppt",
+            breedingInfo: "Pairs can breed in captivity with the right conditions.",
+            behavior: "Territorial but peaceful, especially near an anemone.",
+            careLevel: "Moderate",
+            nativeHabitat: "Indo-Pacific reefs",
+            stockingRecommendations: "Best kept in pairs.",
+            minTankSize: 30,
+          },
+          {
+            name: "Blue Tang",
+            count: 1,
+            role: "schooling",
+            type: "Saltwater",
+            description: "Bright blue, active fish known for its bold coloring.",
+            feedingHabits: "Herbivorous, primarily algae-based diet.",
+            tankRequirements: "Needs a large tank with plenty of swimming room.",
+            compatibility: "Generally peaceful but can be aggressive towards other tangs.",
+            lifespan: "8-12 years",
+            size: "12 inches",
+            waterParameters: "pH 8.1-8.4, temperature 75-80°F, salinity 35ppt",
+            breedingInfo: "Rarely bred in captivity.",
+            behavior: "Active swimmer, needs a lot of space.",
+            careLevel: "Challenging",
+            nativeHabitat: "Indo-Pacific reefs",
+            stockingRecommendations: "Needs at least a 75-gallon tank.",
+            minTankSize: 75,
+          }
         ],
         plants: [],
         equipment: [
@@ -85,8 +159,44 @@ useEffect(() => {
         type: "Freshwater",
         size: "40",
         species: [
-          { name: "Angelfish", count: 1, role: "predator",  type: "Freshwater" },
-          { name: "Neon Tetra", count: 10, role: "schooling",  type: "Freshwater" }
+          {
+            name: "Angelfish",
+            count: 1,
+            role: "predator",
+            type: "Freshwater",
+            description: "Graceful, semi-aggressive cichlid with long fins.",
+            feedingHabits: "Omnivorous, enjoys flakes, pellets, and frozen foods.",
+            tankRequirements: "Tall tank with plants for shelter.",
+            compatibility: "Can be aggressive with smaller fish.",
+            lifespan: "10-12 years",
+            size: "6 inches",
+            waterParameters: "pH 6.5-7.5, temperature 75-82°F",
+            breedingInfo: "Egg layers; form monogamous pairs for breeding.",
+            behavior: "Territorial, especially during breeding.",
+            careLevel: "Moderate",
+            nativeHabitat: "Amazon Basin",
+            stockingRecommendations: "Keep in groups with caution.",
+            minTankSize: 30,
+          },
+          {
+            name: "Neon Tetra",
+            count: 10,
+            role: "schooling",
+            type: "Freshwater",
+            description: "Tiny, vibrant fish with iridescent blue and red stripes.",
+            feedingHabits: "Omnivorous, enjoys micro-pellets and small flake food.",
+            tankRequirements: "Well-planted tank with soft water.",
+            compatibility: "Best kept in large schools, peaceful community fish.",
+            lifespan: "5-8 years",
+            size: "1.5 inches",
+            waterParameters: "pH 6.0-7.0, temperature 70-81°F",
+            breedingInfo: "Egg layers; require very soft, acidic water to breed.",
+            behavior: "Schooling, peaceful.",
+            careLevel: "Easy",
+            nativeHabitat: "Amazon Basin",
+            stockingRecommendations: "Best kept in groups of 6 or more.",
+            minTankSize: 10,
+          }
         ],
         plants: [
           { name: "Anubias", count: 5, role: "slow-growing" },
@@ -114,6 +224,8 @@ useEffect(() => {
 
   fetchAquariums();
 }, []);
+
+
 
 
 
@@ -178,7 +290,7 @@ useEffect(() => {
               <Grid container spacing={3} sx={{ marginTop: '20px' }} alignItems="flex-start">
                 {/* Fish Card */}
                 <Grid item xs={12} md={6} lg={6}>
-                  <FishCard species={currentAquarium.species} />
+                  {currentAquarium && <FishCard aquarium={currentAquarium} />}
                 </Grid>
 
                 {/* Plant Card */}

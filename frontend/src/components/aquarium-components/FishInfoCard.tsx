@@ -1,31 +1,12 @@
 import React from 'react';
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Typography, Box, Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { Fish } from '../../interfaces/Aquarium';
 
 interface FishInfoCardProps {
   open: boolean;
   onClose: () => void;
-  fish: {
-    name: string;
-    count: number;
-    role: string;
-    type: string;  
-    description?: string;
-    feedingHabits?: string;
-    tankRequirements?: string;
-    compatibility?: string;
-    lifespan?: string;
-    size?: string;
-    waterParameters?: string;
-    breedingInfo?: string;
-    behavior?: string;
-    careLevel?: string;
-    dietaryRestrictions?: string;
-    nativeHabitat?: string;
-    stockingRecommendations?: string;
-    specialConsiderations?: string;
-    imageUrl?: string;
-  } | null;
+  fish: Fish | null;
 }
 
 const FishInfoCard: React.FC<FishInfoCardProps> = ({ open, onClose, fish }) => {
@@ -43,7 +24,6 @@ const FishInfoCard: React.FC<FishInfoCardProps> = ({ open, onClose, fish }) => {
               <Typography variant="subtitle1">General Information</Typography>
             </AccordionSummary>
             <AccordionDetails>
-              
               {/* Fish Image Placeholder */}
               <Box sx={{ textAlign: 'center', mb: 2 }}>
                 {fish.imageUrl ? (
@@ -85,6 +65,14 @@ const FishInfoCard: React.FC<FishInfoCardProps> = ({ open, onClose, fish }) => {
               <Typography variant="body2">
                 <strong>Tank Requirements:</strong> {fish.tankRequirements || 'Tank requirements not specified.'}
               </Typography>
+
+              {/* Minimum Tank Size */}
+              {fish.minTankSize && (
+                <Typography variant="body2" sx={{ mt: 1 }}>
+                  <strong>Minimum Tank Size:</strong> {fish.minTankSize} gallons
+                </Typography>
+              )}
+
               <Typography variant="body2" sx={{ mt: 1 }}>
                 <strong>Water Parameters:</strong> {fish.waterParameters || 'Water parameters not specified.'}
               </Typography>

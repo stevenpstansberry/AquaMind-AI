@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent, Typography, IconButton, Menu, MenuItem, Box, Button, Tooltip } from '@mui/material';
+import { Card, CardContent, Typography, IconButton, Menu, MenuItem, Box, Button, Tooltip, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import AddIcon from '@mui/icons-material/Add';  
 import RemoveIcon from '@mui/icons-material/Remove';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'; 
-import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';  // Import the Outlined Info icon
-import FishInfoCard from './FishInfoCard';  // Import the FishInfoCard modal component
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';  
+import FishInfoCard from './FishInfoCard';  
+import AddFishCard from './AddFishCard';  
+import { Aquarium } from '../../interfaces/Aquarium';
 
 interface FishCardProps {
-  species: { name: string; count: number; role: string; type: string }[]; 
+  aquarium: Aquarium; 
 }
 
 enum DisplayMode {
@@ -20,29 +22,36 @@ enum DisplayMode {
   BREEDERS,
 }
 
-const FishCard: React.FC<FishCardProps> = ({ species }) => {
+const FishCard: React.FC<FishCardProps> = ({ aquarium }) => {
   const [displayMode, setDisplayMode] = useState<DisplayMode>(DisplayMode.ALL_FISH);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [fishList, setFishList] = useState(species); // Track fish count updates
-  const [originalFishList, setOriginalFishList] = useState(species); // Track original state of fish list
-  const [changesSaved, setChangesSaved] = useState(true); // Track unsaved changes
-  const [selectedFish, setSelectedFish] = useState<{ name: string; count: number; role: string; type: string } | null>(null); // Selected fish for info modal
-  const [infoCardOpen, setInfoCardOpen] = useState(false); // Track modal open/close state
+  const [fishList, setFishList] = useState(aquarium.species || []);  
+  const [originalFishList, setOriginalFishList] = useState(aquarium.species || []);  
+  const [changesSaved, setChangesSaved] = useState(true);  
+  const [selectedFish, setSelectedFish] = useState<{ name: string; count: number; role: string; type: string } | null>(null);  
+  const [infoCardOpen, setInfoCardOpen] = useState(false);  
+  const [addFishOpen, setAddFishOpen] = useState(false);  
+  const [fishToDelete, setFishToDelete] = useState<{ name: string; count: number; role: string; type: string } | null>(null);  // Track fish to be deleted
+  const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);  // Track delete confirmation dialog state
 
-  // Update fish list and original list when new species props are passed
+  // Update fish list when aquarium species changes
   useEffect(() => {
-    setFishList(species);
-    setOriginalFishList(species);
-    setChangesSaved(true); // Reset changes saved status when species updates
-  }, [species]);
+    setFishList(aquarium.species || []);
+    setOriginalFishList(aquarium.species || []);
+    setChangesSaved(true);  
+  }, [aquarium]);
 
-  // Function to compare current fish list with the original
+  // Compare current fish list with the original to check for unsaved changes
   const checkChangesSaved = () => {
-    const isSame = fishList.every((fish, idx) => fish.count === originalFishList[idx].count);
+    if (!fishList || !originalFishList) return;  
+
+    const isSame = fishList.every((fish, idx) => {
+      const originalFish = originalFishList[idx];
+      return originalFish && fish.count === originalFish.count;
+    });
     setChangesSaved(isSame);
   };
 
-  // Update to check for changes every time fishList is updated
   useEffect(() => {
     checkChangesSaved();
   }, [fishList]);
@@ -66,12 +75,9 @@ const FishCard: React.FC<FishCardProps> = ({ species }) => {
     }
   });
 
-  const cycleDisplayMode = (e: React.MouseEvent<HTMLDivElement>) => {
+  const cycleDisplayMode = () => {
     const validModes = Object.values(DisplayMode).filter((value) => typeof value === 'number');
-    setDisplayMode((prevMode) => {
-      const nextMode = (prevMode + 1) % validModes.length;
-      return nextMode;
-    });
+    setDisplayMode((prevMode) => (prevMode + 1) % validModes.length);
   };
 
   const handleMenuOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -91,40 +97,73 @@ const FishCard: React.FC<FishCardProps> = ({ species }) => {
     );
   };
 
+  // Decrement function with confirmation for deletion
   const handleDecrement = (name: string) => {
-    setFishList((prevList) =>
-      prevList.map((fish) =>
-        fish.name === name && fish.count > 0 ? { ...fish, count: fish.count - 1 } : fish
-      )
-    );
+    const updatedFishList = fishList.map((fish) => {
+      if (fish.name === name) {
+        const newCount = fish.count - 1;
+        if (newCount === 0) {
+          setFishToDelete(fish);  // Store fish to potentially delete
+          setConfirmDeleteOpen(true);  // Open confirmation dialog
+          return fish;  // Return unchanged to keep fish in the list temporarily
+        }
+        return { ...fish, count: newCount };
+      }
+      return fish;
+    });
+    setFishList(updatedFishList);
+  };
+
+  // Remove fish if confirmed and update both fishList and originalFishList
+  const handleConfirmDelete = () => {
+    if (fishToDelete) {
+      // Update both the current fish list and the original fish list
+      setFishList((prevList) => prevList.filter(fish => fish.name !== fishToDelete.name));
+      setOriginalFishList((prevList) => prevList.filter(fish => fish.name !== fishToDelete.name));  // Update original list
+      setFishToDelete(null);  // Clear the fish to delete state
+      setConfirmDeleteOpen(false);  // Close the confirmation dialog
+    }
+  };
+
+  const handleCancelDelete = () => {
+    setFishToDelete(null);  // Reset fish to delete
+    setConfirmDeleteOpen(false);  // Close confirmation dialog
   };
 
   const handleSaveChanges = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
-    setOriginalFishList(fishList); // Save current state as the original
-    setChangesSaved(true); // Mark changes as saved
+    setOriginalFishList(fishList);  
+    setChangesSaved(true);  
   };
 
   const handleDiscardChanges = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
-    setFishList(originalFishList); // Revert to the original fish list
+    setFishList(originalFishList);  
     setChangesSaved(true);
   };
 
   const handleAddNewFish = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.stopPropagation();
-    console.log('Add new fish clicked');
+    e.stopPropagation(); 
+    setAddFishOpen(true);
+  };
+
+  const handleAddFish = (fishList: { name: string; count: number; type: string; role: string }[]) => {
+    setFishList((prevList) => [...prevList, ...fishList]); 
+    setAddFishOpen(false);  
   };
 
   const handleShowFishInfo = (fish: { name: string; count: number; role: string; type: string }) => {
-    setSelectedFish(fish); 
-    setInfoCardOpen(true);  // Open the modal
+    setSelectedFish(fish);  
+    setInfoCardOpen(true);  
   };
-  
 
   const handleCloseFishInfo = () => {
-    setInfoCardOpen(false); // Close the modal
-    setSelectedFish(null);  // Reset selected fish
+    setInfoCardOpen(false);  
+    setSelectedFish(null);  
+  };
+
+  const handleCloseAddFish = () => {
+    setAddFishOpen(false);  
   };
 
   const displayModeText = {
@@ -154,7 +193,6 @@ const FishCard: React.FC<FishCardProps> = ({ species }) => {
                         {fish.name} (x{fish.count})
                       </Typography>
                       
-                      {/* Info Button placed directly next to the fish name and count */}
                       <Tooltip title="View Fish Info">
                         <IconButton
                           size="small"
@@ -212,7 +250,7 @@ const FishCard: React.FC<FishCardProps> = ({ species }) => {
             <Tooltip title="Add New Fish">
               <IconButton
                 color="primary"
-                onClick={handleAddNewFish}
+                onClick={handleAddNewFish}  
               >
                 <AddCircleOutlineIcon />
               </IconButton>
@@ -248,6 +286,35 @@ const FishCard: React.FC<FishCardProps> = ({ species }) => {
 
       {/* Fish Info Modal */}
       <FishInfoCard open={infoCardOpen} onClose={handleCloseFishInfo} fish={selectedFish} />
+
+      {/* Add Fish Modal */}
+      <AddFishCard
+        open={addFishOpen}
+        onClose={handleCloseAddFish}
+        aquarium={aquarium}  
+        onAddFish={handleAddFish}  
+      />
+
+      {/* Confirm Delete Fish Dialog */}
+      <Dialog
+        open={confirmDeleteOpen}
+        onClose={handleCancelDelete}
+      >
+        <DialogTitle>Confirm Fish Removal</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Are you sure you want to remove <strong>{fishToDelete?.name}</strong> from the aquarium?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCancelDelete} color="secondary">
+            Cancel
+          </Button>
+          <Button onClick={handleConfirmDelete} color="primary">
+            Confirm
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 };

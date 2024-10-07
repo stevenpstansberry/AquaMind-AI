@@ -4,7 +4,7 @@ export interface Aquarium {
     name: string;
     type: "Freshwater" | "Saltwater";
     size: string;
-    species: { name: string; count: number; role: string; type: string, }[]; 
+    species: Fish[]; 
     plants: { name: string; count: number; role: string }[]; 
     equipment: { name: string; type: string }[];
     parameters?: {
@@ -23,5 +23,28 @@ export interface Aquarium {
       phosphate?: number;
     };
   }
+
+export interface Fish {
+  name: string;
+  count: number;
+  role: string;
+  type: string;  
+  description?: string;
+  feedingHabits?: string;
+  tankRequirements?: string;
+  minTankSize?: number;  
+  compatibility?: string;
+  lifespan?: string;
+  size?: string;
+  waterParameters?: string;
+  breedingInfo?: string;
+  behavior?: string;
+  careLevel?: string;
+  dietaryRestrictions?: string;
+  nativeHabitat?: string;
+  stockingRecommendations?: string;
+  specialConsiderations?: string;
+  imageUrl?: string;
+}
   
   
