@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import {
   Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField,
-  Box, MenuItem, Select, InputLabel, FormControl, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TablePagination
+  Box, MenuItem, Select, InputLabel, FormControl, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TablePagination, Typography, IconButton
 } from '@mui/material';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';  // Icon for add button
 import AIChatInterface from '../AIChatInterface';  // Dummy AI chat component
 import { Aquarium, Fish } from '../../interfaces/Aquarium';
 
@@ -290,33 +291,43 @@ const saltwaterFishList = [
 
 
 const AddFishCard: React.FC<AddFishCardProps> = ({ open, onClose, aquarium, onAddFish }) => {
-  const [selectedFish, setSelectedFish] = useState<Fish | null>(null);  // Selected fish from the list
   const [roleFilter, setRoleFilter] = useState('');  // Filter for fish role
   const [minTankSizeFilter, setMinTankSizeFilter] = useState(0);  // Filter for minimum tank size
   const [searchQuery, setSearchQuery] = useState('');  // Search filter
   const [showChat, setShowChat] = useState(false);  // State for AI chat toggle
   const [page, setPage] = useState(0);  // Pagination state
   const [rowsPerPage, setRowsPerPage] = useState(5);  // Pagination rows per page
+  const [selectedFish, setSelectedFish] = useState<Fish | null>(null);  // Selected fish for info card
+  const [infoOpen, setInfoOpen] = useState(false);  // Info card state
 
   // Get the appropriate fish list based on the aquarium type
-  const fishList = aquarium.type === 'Freshwater' ? freshwaterFishList : saltwaterFishList;
+  const fishList = aquarium.type === 'Freshwater' ? freshwaterFishList : []; // Add saltwaterFishList if needed
 
   // Filter fish list based on role, minimum tank size, and search query
   const filteredFishList = fishList.filter(fish => {
     return (
       (!roleFilter || fish.role === roleFilter) &&
-      (!minTankSizeFilter || parseInt(aquarium.size) >= minTankSizeFilter) &&
+      (!minTankSizeFilter || Number(aquarium.size) >= minTankSizeFilter) &&
       (!searchQuery || fish.name.toLowerCase().includes(searchQuery.toLowerCase()))
     );
   });
 
-  // Handle adding the selected fish
-  const handleAddFish = () => {
-    if (selectedFish) {
-      onAddFish({ ...selectedFish, count: 1 });
-      setSelectedFish(null);
-      onClose();
-    }
+  // Handle showing fish info card
+  const handleFishClick = (fish: Fish) => {
+    setSelectedFish(fish);  // Set the selected fish
+    setInfoOpen(true);      // Open the info dialog
+  };
+
+  // Handle closing the info dialog
+  const handleCloseInfo = () => {
+    setInfoOpen(false);
+  };
+
+  // Handle adding the fish to the aquarium
+  const handleAddFish = (fish: Fish, event: React.MouseEvent) => {
+    event.stopPropagation();  // Prevent row click event from firing
+    onAddFish({ ...fish, count: 1 });
+    console.log(`Fish added:`, fish); // For now, log the fish
   };
 
   // Handle pagination
@@ -330,107 +341,119 @@ const AddFishCard: React.FC<AddFishCardProps> = ({ open, onClose, aquarium, onAd
   };
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
-      <DialogTitle>Add New Fish</DialogTitle>
-      <DialogContent>
-        <Box>
-          {/* Filter by Role */}
-          <FormControl fullWidth margin="normal">
-          <InputLabel shrink>Filter by Role</InputLabel>
-          <Select
-            label="Filter by Role"
-            value={roleFilter}
-            onChange={(e) => setRoleFilter(e.target.value)}
-            displayEmpty
-          >
-            <MenuItem value="">All Roles</MenuItem>
-            <MenuItem value="schooling">Schooling</MenuItem>
-            <MenuItem value="predator">Predator</MenuItem>
-            <MenuItem value="scavenger">Scavenger</MenuItem>
-            <MenuItem value="community">Community</MenuItem>
-            <MenuItem value="breeder">Breeder</MenuItem>
-          </Select>
-        </FormControl>
+    <>
+      <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
+        <DialogTitle>Add New Fish</DialogTitle>
+        <DialogContent>
+          <Box>
+            {/* Filter by Role */}
+            <FormControl fullWidth margin="normal">
+              <InputLabel shrink>Filter by Role</InputLabel>
+              <Select
+                label="Filter by Role"
+                value={roleFilter}
+                onChange={(e) => setRoleFilter(e.target.value)}
+                displayEmpty
+              >
+                <MenuItem value="">All Roles</MenuItem>
+                <MenuItem value="schooling">Schooling</MenuItem>
+                <MenuItem value="predator">Predator</MenuItem>
+                <MenuItem value="scavenger">Scavenger</MenuItem>
+                <MenuItem value="community">Community</MenuItem>
+                <MenuItem value="breeder">Breeder</MenuItem>
+              </Select>
+            </FormControl>
 
+            {/* Filter by Minimum Tank Size */}
+            <TextField
+              label="Filter by Minimum Tank Size (gallons)"
+              type="number"
+              value={minTankSizeFilter}
+              onChange={(e) => setMinTankSizeFilter(parseInt(e.target.value))}
+              fullWidth
+              margin="normal"
+            />
 
-          {/* Filter by Minimum Tank Size */}
-          <TextField
-            label="Filter by Minimum Tank Size (gallons)"
-            type="number"
-            value={minTankSizeFilter}
-            onChange={(e) => setMinTankSizeFilter(parseInt(e.target.value))}
-            fullWidth
-            margin="normal"
-          />
+            {/* Search by Fish Name */}
+            <TextField
+              label="Search Fish"
+              variant="outlined"
+              fullWidth
+              margin="normal"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
 
-          {/* Search by Fish Name */}
-          <TextField
-            label="Search Fish"
-            variant="outlined"
-            fullWidth
-            margin="normal"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-
-          {/* Table of Fish */}
-          <TableContainer component={Paper}>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell sx={{ fontWeight: 'bold' }}>Fish Name</TableCell>
-                  <TableCell sx={{ fontWeight: 'bold' }}>Role</TableCell>
-                  <TableCell sx={{ fontWeight: 'bold' }}>Description</TableCell>
-                  <TableCell sx={{ fontWeight: 'bold' }}>Tank Min (gallons)</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {filteredFishList.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((fish) => (
-                  <TableRow
-                    key={fish.name}
-                    hover
-                    selected={selectedFish?.name === fish.name}
-                    onClick={() => setSelectedFish({ ...fish, count: 1 })}
-                    sx={{ cursor: 'pointer' }}
-                  >
-                    <TableCell>{fish.name}</TableCell>
-                    <TableCell>{fish.role}</TableCell>
-                    <TableCell>{fish.description}</TableCell>
-                    <TableCell>{fish.minTankSize}</TableCell> 
+            {/* Table of Fish */}
+            <TableContainer component={Paper}>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell sx={{ fontWeight: 'bold' }}>Fish Name</TableCell>
+                    <TableCell sx={{ fontWeight: 'bold' }}>Role</TableCell>
+                    <TableCell sx={{ fontWeight: 'bold' }}>Description</TableCell>
+                    <TableCell sx={{ fontWeight: 'bold' }}>Tank Min (gallons)</TableCell>
+                    <TableCell sx={{ fontWeight: 'bold' }}>Add</TableCell>  {/* Add column for add icon */}
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
+                </TableHead>
+                <TableBody>
+                  {filteredFishList.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((fish) => (
+                    <TableRow key={fish.name} hover sx={{ cursor: 'pointer' }} onClick={() => handleFishClick(fish)}>
+                      <TableCell>{fish.name}</TableCell>
+                      <TableCell>{fish.role}</TableCell>
+                      <TableCell>{fish.description}</TableCell>
+                      <TableCell>{fish.minTankSize}</TableCell>
+                      <TableCell>
+                        <IconButton onClick={(event) => handleAddFish(fish, event)} color="primary">
+                          <AddCircleOutlineIcon />
+                        </IconButton>
+                      </TableCell>  {/* Add button in each row */}
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
 
+            {/* Pagination */}
+            <TablePagination
+              rowsPerPageOptions={[5, 10, 25]}
+              component="div"
+              count={filteredFishList.length}
+              rowsPerPage={rowsPerPage}
+              page={page}
+              onPageChange={handleChangePage}
+              onRowsPerPageChange={handleChangeRowsPerPage}
+            />
 
-          {/* Pagination */}
-          <TablePagination
-            rowsPerPageOptions={[5, 10, 25]}
-            component="div"
-            count={filteredFishList.length}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onPageChange={handleChangePage}
-            onRowsPerPageChange={handleChangeRowsPerPage}
-          />
-
-          {/* AI Chat Interface */}
-          <Box mt={2}>
-            <Button variant="outlined" onClick={() => setShowChat(!showChat)}>
-              {showChat ? 'Hide' : 'Show'} AI Suggestions
-            </Button>
-            <AIChatInterface showChat={showChat} onClose={() => setShowChat(false)} aquarium={aquarium} />
+            {/* AI Chat Interface */}
+            <Box mt={2}>
+              <Button variant="outlined" onClick={() => setShowChat(!showChat)}>
+                {showChat ? 'Hide' : 'Show'} AI Suggestions
+              </Button>
+              <AIChatInterface showChat={showChat} onClose={() => setShowChat(false)} aquarium={aquarium} />
+            </Box>
           </Box>
-        </Box>
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose} color="secondary">Cancel</Button>
-        <Button onClick={handleAddFish} color="primary" variant="contained" disabled={!selectedFish}>
-          Add Fish
-        </Button>
-      </DialogActions>
-    </Dialog>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={onClose} color="secondary">Cancel</Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Info Card Dialog */}
+      {selectedFish && (
+        <Dialog open={infoOpen} onClose={handleCloseInfo}>
+          <DialogTitle>{selectedFish.name} Info</DialogTitle>
+          <DialogContent>
+            <Typography variant="body1"><b>Role:</b> {selectedFish.role}</Typography>
+            <Typography variant="body1"><b>Description:</b> {selectedFish.description}</Typography>
+            <Typography variant="body1"><b>Min Tank Size:</b> {selectedFish.minTankSize} gallons</Typography>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleCloseInfo} color="primary">Close</Button>
+          </DialogActions>
+        </Dialog>
+      )}
+    </>
   );
 };
 
