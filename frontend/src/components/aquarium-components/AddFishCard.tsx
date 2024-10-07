@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, Typography, Box, MenuItem, Select, InputLabel, FormControl } from '@mui/material';
+import {
+  Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField,
+  Box, MenuItem, Select, InputLabel, FormControl, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TablePagination
+} from '@mui/material';
 import AIChatInterface from '../AIChatInterface';  // Dummy AI chat component
-import { Aquarium, Fish } from '../../interfaces/Aquarium'; 
+import { Aquarium, Fish } from '../../interfaces/Aquarium';
 
 interface AddFishCardProps {
   open: boolean;
@@ -30,6 +33,7 @@ const freshwaterFishList = [
     nativeHabitat: "Streams and tributaries of South America.",
     stockingRecommendations: "Keep in schools of at least 6-10 for best behavior.",
     specialConsiderations: "Sensitive to water changes and fluctuations in pH.",
+    minTankSize: 10,
   },
   {
     name: "Betta",
@@ -50,6 +54,7 @@ const freshwaterFishList = [
     nativeHabitat: "Rice paddies and slow-moving streams in Southeast Asia.",
     stockingRecommendations: "Can be kept in community tanks if properly selected tankmates.",
     specialConsiderations: "Needs access to the water surface to breathe air.",
+    minTankSize: 5,
   },
   {
     name: "Corydoras Catfish",
@@ -70,6 +75,7 @@ const freshwaterFishList = [
     nativeHabitat: "Streams and small rivers in South America.",
     stockingRecommendations: "Best kept in groups of at least 5-6.",
     specialConsiderations: "Sensitive to sharp substrate and poor water quality.",
+    minTankSize: 20,
   },
   {
     name: "Angelfish",
@@ -90,6 +96,7 @@ const freshwaterFishList = [
     nativeHabitat: "Slow-moving rivers in the Amazon Basin.",
     stockingRecommendations: "Best kept with fish that are not fin-nippers.",
     specialConsiderations: "Sensitive to water quality; frequent changes required.",
+    minTankSize: 30,
   },
   {
     name: "Guppy",
@@ -110,6 +117,7 @@ const freshwaterFishList = [
     nativeHabitat: "Freshwater streams in Central and South America.",
     stockingRecommendations: "Keep in groups, and males can be quite vibrant in color.",
     specialConsiderations: "Prolific breeders; population control may be needed.",
+    minTankSize: 5,
   },
   {
     name: "Common Pleco",
@@ -130,6 +138,7 @@ const freshwaterFishList = [
     nativeHabitat: "Rivers and streams in South America.",
     stockingRecommendations: "Keep in large tanks of at least 100 gallons.",
     specialConsiderations: "Can grow extremely large; often outgrows home aquariums and may require rehoming to a large tank.",
+    minTankSize: 100,
   },
   {
     name: "Zebra Danio",
@@ -150,6 +159,7 @@ const freshwaterFishList = [
     nativeHabitat: "Streams and rivers in India and Bangladesh.",
     stockingRecommendations: "Keep in schools of 6 or more.",
     specialConsiderations: "Very hardy and good for beginners.",
+    minTankSize: 10,
   }
 ];
 
@@ -172,6 +182,7 @@ const saltwaterFishList = [
     nativeHabitat: "Shallow reefs in the Indo-Pacific.",
     stockingRecommendations: "Best kept in pairs or small groups.",
     specialConsiderations: "May become aggressive towards other clownfish species.",
+    minTankSize: 20,
   },
   {
     name: "Blue Tang",
@@ -191,6 +202,7 @@ const saltwaterFishList = [
     nativeHabitat: "Coral reefs in the Pacific Ocean.",
     stockingRecommendations: "Best kept singly unless in a very large tank.",
     specialConsiderations: "Susceptible to marine ich (Cryptocaryon).",
+    minTankSize: 100,
   },
   {
     name: "Royal Gramma",
@@ -210,6 +222,7 @@ const saltwaterFishList = [
     nativeHabitat: "Coral reefs in the Caribbean Sea.",
     stockingRecommendations: "Can be kept with other peaceful reef fish.",
     specialConsiderations: "May become aggressive towards fish of a similar shape or color.",
+    minTankSize: 30,
   },
   {
     name: "Yellow Tang",
@@ -229,6 +242,7 @@ const saltwaterFishList = [
     nativeHabitat: "Coral reefs in the Pacific Ocean, especially Hawaii.",
     stockingRecommendations: "Best kept singly unless in large tanks.",
     specialConsiderations: "Highly active, requires plenty of swimming room.",
+    minTankSize: 75,
   },
   {
     name: "Mandarin Dragonet",
@@ -248,6 +262,7 @@ const saltwaterFishList = [
     nativeHabitat: "Coral reefs in the Pacific Ocean.",
     stockingRecommendations: "Should only be kept in well-established tanks with abundant live food.",
     specialConsiderations: "Very difficult to feed; needs a large copepod population or frequent supplementation.",
+    minTankSize: 30,
   },
   {
     name: "Firefish Goby",
@@ -267,41 +282,51 @@ const saltwaterFishList = [
     nativeHabitat: "Tropical reefs in the Indo-Pacific.",
     stockingRecommendations: "Best kept singly or in pairs.",
     specialConsiderations: "Can be skittish and may jump out of open tanks.",
+    minTankSize: 20,
   }
 ];
 
 
 
+
 const AddFishCard: React.FC<AddFishCardProps> = ({ open, onClose, aquarium, onAddFish }) => {
-  const [name, setName] = useState('');
-  const [type, setType] = useState('Freshwater');  // Default to Freshwater
-  const [count, setCount] = useState(1);
-  const [role, setRole] = useState('schooling');
-  const [showChat, setShowChat] = useState(false);  // State for toggling AI chat
+  const [selectedFish, setSelectedFish] = useState<Fish | null>(null);  // Selected fish from the list
+  const [roleFilter, setRoleFilter] = useState('');  // Filter for fish role
+  const [minTankSizeFilter, setMinTankSizeFilter] = useState(0);  // Filter for minimum tank size
+  const [searchQuery, setSearchQuery] = useState('');  // Search filter
+  const [showChat, setShowChat] = useState(false);  // State for AI chat toggle
+  const [page, setPage] = useState(0);  // Pagination state
+  const [rowsPerPage, setRowsPerPage] = useState(5);  // Pagination rows per page
 
-  // Handle adding the fish and resetting the form
+  // Get the appropriate fish list based on the aquarium type
+  const fishList = aquarium.type === 'Freshwater' ? freshwaterFishList : saltwaterFishList;
+
+  // Filter fish list based on role, minimum tank size, and search query
+  const filteredFishList = fishList.filter(fish => {
+    return (
+      (!roleFilter || fish.role === roleFilter) &&
+      (!minTankSizeFilter || parseInt(aquarium.size) >= minTankSizeFilter) &&
+      (!searchQuery || fish.name.toLowerCase().includes(searchQuery.toLowerCase()))
+    );
+  });
+
+  // Handle adding the selected fish
   const handleAddFish = () => {
-    if (name && count > 0) {
-      // Find the fish from the list (based on the selected type)
-      const fishList = type === 'Freshwater' ? freshwaterFishList : saltwaterFishList;
-      const selectedFish = fishList.find(fish => fish.name === name);
-
-      if (selectedFish) {
-        // Create a new Fish object with the full details
-        const fish: Fish = {
-          ...selectedFish,  // Use the full details from the predefined list
-          count,            // Override the count with the user input
-          role              // Override the role with the user input
-        };
-
-        onAddFish(fish);  // Add the new fish to the list
-        setName('');      // Reset fields
-        setCount(1);
-        setType('Freshwater');
-        setRole('schooling');
-        onClose();        // Close the modal
-      }
+    if (selectedFish) {
+      onAddFish({ ...selectedFish, count: 1 });
+      setSelectedFish(null);
+      onClose();
     }
+  };
+
+  // Handle pagination
+  const handleChangePage = (event: unknown, newPage: number) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
   };
 
   return (
@@ -309,65 +334,101 @@ const AddFishCard: React.FC<AddFishCardProps> = ({ open, onClose, aquarium, onAd
       <DialogTitle>Add New Fish</DialogTitle>
       <DialogContent>
         <Box>
-          {/* Fish Name */}
-          <TextField
-            label="Fish Name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            fullWidth
-            margin="normal"
-            placeholder="Enter fish species name"
-          />
-
-          {/* Fish Type (Freshwater/Saltwater) */}
+          {/* Filter by Role */}
           <FormControl fullWidth margin="normal">
-            <InputLabel>Type</InputLabel>
-            <Select value={type} onChange={(e) => setType(e.target.value as string)}>
-              <MenuItem value="Freshwater">Freshwater</MenuItem>
-              <MenuItem value="Saltwater">Saltwater</MenuItem>
-            </Select>
-          </FormControl>
+          <InputLabel shrink>Filter by Role</InputLabel>
+          <Select
+            label="Filter by Role"
+            value={roleFilter}
+            onChange={(e) => setRoleFilter(e.target.value)}
+            displayEmpty
+          >
+            <MenuItem value="">All Roles</MenuItem>
+            <MenuItem value="schooling">Schooling</MenuItem>
+            <MenuItem value="predator">Predator</MenuItem>
+            <MenuItem value="scavenger">Scavenger</MenuItem>
+            <MenuItem value="community">Community</MenuItem>
+            <MenuItem value="breeder">Breeder</MenuItem>
+          </Select>
+        </FormControl>
 
-          {/* Fish Count */}
+
+          {/* Filter by Minimum Tank Size */}
           <TextField
-            label="Count"
+            label="Filter by Minimum Tank Size (gallons)"
             type="number"
-            value={count}
-            onChange={(e) => setCount(parseInt(e.target.value, 10))}
+            value={minTankSizeFilter}
+            onChange={(e) => setMinTankSizeFilter(parseInt(e.target.value))}
             fullWidth
             margin="normal"
           />
 
-          {/* Fish Role (Schooling, Predator, etc.) */}
-          <FormControl fullWidth margin="normal">
-            <InputLabel>Role</InputLabel>
-            <Select value={role} onChange={(e) => setRole(e.target.value as string)}>
-              <MenuItem value="schooling">Schooling</MenuItem>
-              <MenuItem value="predator">Predator</MenuItem>
-              <MenuItem value="scavenger">Scavenger</MenuItem>
-              <MenuItem value="community">Community</MenuItem>
-              <MenuItem value="breeder">Breeder</MenuItem>
-            </Select>
-          </FormControl>
+          {/* Search by Fish Name */}
+          <TextField
+            label="Search Fish"
+            variant="outlined"
+            fullWidth
+            margin="normal"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
 
-          {/* Display Tank Size and Type Info */}
-          <Typography variant="body2" color="textSecondary" sx={{ mt: 2 }}>
-            Tank Size: {aquarium.size} gallons ({aquarium.type}) - Helps filter suitable species.
-          </Typography>
+          {/* Table of Fish */}
+          <TableContainer component={Paper}>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell sx={{ fontWeight: 'bold' }}>Fish Name</TableCell>
+                  <TableCell sx={{ fontWeight: 'bold' }}>Role</TableCell>
+                  <TableCell sx={{ fontWeight: 'bold' }}>Description</TableCell>
+                  <TableCell sx={{ fontWeight: 'bold' }}>Tank Min (gallons)</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {filteredFishList.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((fish) => (
+                  <TableRow
+                    key={fish.name}
+                    hover
+                    selected={selectedFish?.name === fish.name}
+                    onClick={() => setSelectedFish({ ...fish, count: 1 })}
+                    sx={{ cursor: 'pointer' }}
+                  >
+                    <TableCell>{fish.name}</TableCell>
+                    <TableCell>{fish.role}</TableCell>
+                    <TableCell>{fish.description}</TableCell>
+                    <TableCell>{fish.minTankSize}</TableCell> 
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+
+
+          {/* Pagination */}
+          <TablePagination
+            rowsPerPageOptions={[5, 10, 25]}
+            component="div"
+            count={filteredFishList.length}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onPageChange={handleChangePage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+          />
 
           {/* AI Chat Interface */}
           <Box mt={2}>
             <Button variant="outlined" onClick={() => setShowChat(!showChat)}>
               {showChat ? 'Hide' : 'Show'} AI Suggestions
             </Button>
-            {/* Pass the entire aquarium data to the AIChatInterface for personalized suggestions */}
             <AIChatInterface showChat={showChat} onClose={() => setShowChat(false)} aquarium={aquarium} />
           </Box>
         </Box>
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose} color="secondary">Cancel</Button>
-        <Button onClick={handleAddFish} color="primary" variant="contained">Add Fish</Button>
+        <Button onClick={handleAddFish} color="primary" variant="contained" disabled={!selectedFish}>
+          Add Fish
+        </Button>
       </DialogActions>
     </Dialog>
   );

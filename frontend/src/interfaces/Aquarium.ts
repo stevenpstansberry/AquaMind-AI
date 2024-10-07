@@ -32,7 +32,7 @@ export interface Fish {
   description?: string;
   feedingHabits?: string;
   tankRequirements?: string;
-  minTankSize?: number;  // Only include minTankSize now
+  minTankSize?: number;  
   compatibility?: string;
   lifespan?: string;
   size?: string;
