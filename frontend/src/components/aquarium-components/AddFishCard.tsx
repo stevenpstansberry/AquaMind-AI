@@ -296,9 +296,10 @@ const saltwaterFishList = [
 
 
 
+
 const AddFishCard: React.FC<AddFishCardProps> = ({ open, onClose, aquarium, onAddFish }) => {
   const [roleFilter, setRoleFilter] = useState('');  
-  const [minTankSizeFilter, setMinTankSizeFilter] = useState(0);  
+  const [minTankSizeFilter, setMinTankSizeFilter] = useState<number>(parseInt(aquarium.size));  // Default to aquarium size
   const [searchQuery, setSearchQuery] = useState('');  
   const [showChat, setShowChat] = useState(false);  
   const [page, setPage] = useState(0);  
@@ -309,10 +310,11 @@ const AddFishCard: React.FC<AddFishCardProps> = ({ open, onClose, aquarium, onAd
 
   const fishList = aquarium.type === 'Freshwater' ? freshwaterFishList : saltwaterFishList;
 
+  // Filter fish list based on role, minimum tank size, and search query
   const filteredFishList = fishList.filter(fish => {
     return (
       (!roleFilter || fish.role === roleFilter) &&
-      (!minTankSizeFilter || Number(aquarium.size) >= minTankSizeFilter) &&
+      (!minTankSizeFilter || Number(fish.minTankSize) <= minTankSizeFilter) &&  // Ensure fish tank size <= user's tank size
       (!searchQuery || fish.name.toLowerCase().includes(searchQuery.toLowerCase()))
     );
   });
@@ -361,7 +363,7 @@ const AddFishCard: React.FC<AddFishCardProps> = ({ open, onClose, aquarium, onAd
         <DialogTitle>Add New Fish</DialogTitle>
         <DialogContent>
           <Box>
-            {/* Filter and Search UI */}
+            {/* Filter by Role */}
             <FormControl fullWidth margin="normal">
               <InputLabel shrink>Filter by Role</InputLabel>
               <Select
@@ -378,15 +380,17 @@ const AddFishCard: React.FC<AddFishCardProps> = ({ open, onClose, aquarium, onAd
               </Select>
             </FormControl>
 
+            {/* Filter by Minimum Tank Size */}
             <TextField
               label="Filter by Minimum Tank Size (gallons)"
               type="number"
               value={minTankSizeFilter}
-              onChange={(e) => setMinTankSizeFilter(parseInt(e.target.value))}
+              onChange={(e) => setMinTankSizeFilter(parseInt(e.target.value))}  // Update based on user input
               fullWidth
               margin="normal"
             />
 
+            {/* Search by Fish Name */}
             <TextField
               label="Search Fish"
               variant="outlined"
