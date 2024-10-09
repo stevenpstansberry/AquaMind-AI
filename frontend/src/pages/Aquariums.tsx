@@ -76,8 +76,49 @@ useEffect(() => {
           { name: "Anubias", count: 3, role: "slow-growing" }
         ],
         equipment: [
-          { name: "Air Pump", type: "filtration" },
-          { name: "Heater", type: "heating" }
+          {
+            name: "Air Pump",
+            description: "Provides oxygen by creating bubbles that increase surface agitation, enhancing gas exchange.",
+            role: "Aeration",
+            importance: "Ensures adequate oxygen levels in the water, especially in densely stocked tanks or tanks with limited surface area.",
+            usage: "Install the air pump with an air stone or diffuser for better oxygen distribution. Adjust the flow rate based on tank size.",
+            specialConsiderations: "Over-aeration can cause excessive water movement, which may stress certain fish species.",
+            fields: {
+              Brand: "Aqueon",
+              "Model Name": "QuietFlow 10",
+              "Flow Rate": "50 L/h",
+            },
+            type: 'filtration',
+          },
+          {
+            name: "Heater",
+            description: "Maintains the aquarium water temperature within the required range for the fish species.",
+            role: "Water Heating",
+            importance: "Keeps water at a stable temperature, crucial for the health and well-being of tropical fish.",
+            usage: "Place near a water flow source for even heat distribution. Set the thermostat to the desired temperature.",
+            specialConsiderations: "Monitor temperature regularly to avoid overheating or underheating, which can stress fish.",
+            fields: {
+              Brand: "Fluval",
+              "Model Name": "E-Series 100W",
+              Wattage: "100W",
+              "Temperature Range": "72-82°F",
+            },
+            type: 'heating',
+          },
+          {
+            name: "Blood Worms",
+            description: "Nutritional food for fish, commonly fed to carnivorous and omnivorous species.",
+            role: "Feeding",
+            importance: "A high-protein food source for stimulating natural hunting behaviors and improving coloration.",
+            usage: "Feed small amounts, ensuring no leftover food remains in the tank.",
+            specialConsiderations: "Overfeeding can cause water pollution. Monitor water quality.",
+            fields: {
+              Brand: "Hikari",
+              "Feeding Frequency": "Once daily",
+              "Quantity": "1 cube",
+            },
+            type: 'feeding',
+          }
         ],
         parameters: {
           temperature: 78,
@@ -136,9 +177,49 @@ useEffect(() => {
         ],
         plants: [],
         equipment: [
-          { name: "Protein Skimmer", type: "filtration" },
-          { name: "Wave Maker", type: "filtration" },
-          { name: "Heater", type: "heating" }
+          {
+            name: "Protein Skimmer",
+            description: "Removes organic waste from water by creating foam that captures debris and dissolved organics.",
+            role: "Advanced Filtration",
+            importance: "Helps maintain clean water by removing dissolved organic compounds before they break down.",
+            usage: "Install in saltwater systems. Adjust foam production to match the tank’s needs and clean the collection cup regularly.",
+            specialConsiderations: "Used mostly in marine systems. Overuse may disrupt beneficial bacteria.",
+            fields: {
+              Brand: "Reef Octopus",
+              "Model Name": "Classic 100",
+              Capacity: "100 gallons",
+            },
+            type: 'filtration',
+          },
+          {
+            name: "Wave Maker",
+            description: "Creates water movement to mimic natural currents, beneficial for some species and plants.",
+            role: "Water Movement",
+            importance: "Ensures even distribution of oxygen and nutrients, reducing dead spots in the tank.",
+            usage: "Place the wave maker strategically to optimize water flow without causing turbulence.",
+            specialConsiderations: "Some fish species prefer calmer water, so adjust the flow rate accordingly.",
+            fields: {
+              Brand: "Hydor",
+              "Model Name": "Koralia 1150",
+              "Flow Rate": "1150 GPH",
+            },
+            type: 'filtration',
+          },
+          {
+            name: "Heater",
+            description: "Maintains water temperature within the required range for the fish species.",
+            role: "Water Heating",
+            importance: "Stable temperature is crucial for fish health.",
+            usage: "Place near a water flow source and set the thermostat to the desired temperature.",
+            specialConsiderations: "Regular monitoring to avoid overheating or underheating.",
+            fields: {
+              Brand: "Eheim",
+              "Model Name": "Jager TruTemp 300W",
+              Wattage: "300W",
+              "Temperature Range": "75-80°F",
+            },
+            type: 'heating',
+          }
         ],
         parameters: {
           temperature: 77,
@@ -203,9 +284,50 @@ useEffect(() => {
           { name: "Java Fern", count: 2, role: "slow-growing" }
         ],
         equipment: [
-          { name: "CO2 System", type: "other" },
-          { name: "Heater", type: "heating" },
-          { name: "Filter", type: "filtration" }
+          {
+            name: "CO2 System",
+            description: "Provides carbon dioxide to plants for photosynthesis, promoting healthier growth.",
+            role: "Plant Nutrition",
+            importance: "Essential for planted tanks to promote plant growth and maintain balance.",
+            usage: "Install a CO2 diffuser and adjust based on the number of plants.",
+            specialConsiderations: "Too much CO2 can harm fish. Monitor CO2 levels closely.",
+            fields: {
+              Brand: "Fluval",
+              "Model Name": "CO2 88 Kit",
+              "Flow Rate": "20 bubbles per minute",
+            },
+            type: 'other',
+          },
+          {
+            name: "Heater",
+            description: "Maintains water temperature within the required range for the fish species.",
+            role: "Water Heating",
+            importance: "Stable temperature is crucial for fish health.",
+            usage: "Place near a water flow source and set the thermostat to the desired temperature.",
+            specialConsiderations: "Regular monitoring to avoid overheating or underheating.",
+            fields: {
+              Brand: "Tetra",
+              "Model Name": "HT10 Submersible Heater",
+              Wattage: "50W",
+              "Temperature Range": "76-80°F",
+            },
+            type: 'heating',
+          },
+          {
+            name: "Filter",
+            description: "Removes debris, waste, and harmful chemicals from the water, keeping it clean and healthy for fish.",
+            role: "Water Filtration",
+            importance: "Maintains water quality by filtering out physical waste and converting harmful chemicals into less toxic compounds.",
+            usage: "Install in the aquarium and clean or replace filter media regularly to ensure efficient operation.",
+            specialConsiderations: "Do not over-clean or replace all filter media at once to avoid disrupting beneficial bacteria colonies.",
+            fields: {
+              Brand: "AquaClear",
+              "Model Name": "AquaClear 50",
+              "Flow Rate": "200 GPH",
+              Type: "Hang-on-back",
+            },
+            type: 'filtration',
+          }
         ],
         parameters: {
           temperature: 80,
@@ -218,12 +340,15 @@ useEffect(() => {
           co2: 20,
         }
       }
-    ];    
+    ];
+
     setAquariums(mockAquariums);
   };
 
   fetchAquariums();
 }, []);
+
+
 
 
 
