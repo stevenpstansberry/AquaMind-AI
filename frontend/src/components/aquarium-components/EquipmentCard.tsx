@@ -4,9 +4,11 @@ import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'; // Import Info Icon
 import EquipmentInfoCard from './EquipmentInfoCard'; // Import the EquipmentInfoCard component
+import AddEquipmentCard from './AddEquipmentCard';
+import { Aquarium } from '../../interfaces/Aquarium';
 
 interface EquipmentCardProps {
-  equipment: { name: string; type: string; role: string; description: string; importance: string; usage: string; specialConsiderations: string }[]; // Update with full Equipment details
+  aquarium: Aquarium; // Update with full Equipment details
 }
 
 enum DisplayMode {
@@ -19,17 +21,18 @@ enum DisplayMode {
   OTHER,
 }
 
-const EquipmentCard: React.FC<EquipmentCardProps> = ({ equipment }) => {
+const EquipmentCard: React.FC<EquipmentCardProps> = ({ aquarium }) => {
   const [displayMode, setDisplayMode] = useState<DisplayMode>(DisplayMode.ALL_EQUIPMENT);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null); // State for kebab menu
-  const [equipmentList, setEquipmentList] = useState(equipment);
+  const [equipmentList, setEquipmentList] = useState(aquarium.equipment || []); // State for equipment list
   const [selectedEquipment, setSelectedEquipment] = useState<any | null>(null); // State for selected equipment for the info card
   const [infoCardOpen, setInfoCardOpen] = useState(false); // State to open/close EquipmentInfoCard
+  const [addEquipmentOpen, setAddEquipmentOpen] = useState(false);  
 
   // Update equipmentList when new equipment props are passed
   useEffect(() => {
-    setEquipmentList(equipment);
-  }, [equipment]);
+    setEquipmentList(aquarium.equipment);
+  }, [aquarium]);
 
   // Filter the equipment based on the current display mode
   const filteredEquipment = equipmentList.filter((item) => {
@@ -86,9 +89,17 @@ const EquipmentCard: React.FC<EquipmentCardProps> = ({ equipment }) => {
 
   const handleAddNewEquipment = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation(); // Prevent cycling mode when adding new equipment
-    console.log('Add new equipment clicked');
+    setAddEquipmentOpen(true);
     };
     
+  const handleAddEquipment = (newEquipment: any) => {
+    setEquipmentList([...equipmentList, newEquipment]);
+    setAddEquipmentOpen(false);
+  }
+
+  const handleCloseAddEquipment = () => {
+    setAddEquipmentOpen(false);
+  }
 
   const displayModeText = {
     [DisplayMode.ALL_EQUIPMENT]: 'All Equipment',
@@ -177,6 +188,14 @@ const EquipmentCard: React.FC<EquipmentCardProps> = ({ equipment }) => {
 
       {/* Equipment Info Card */}
       <EquipmentInfoCard open={infoCardOpen} onClose={handleCloseInfoCard} equipment={selectedEquipment} />
+
+        {/* Add Equipment Modal */}
+        <AddEquipmentCard
+        open={addEquipmentOpen}
+        onClose={handleCloseAddEquipment}
+        aquarium={aquarium}  
+        onAddEquipment={handleAddEquipment}  
+      />
     </>
   );
 };

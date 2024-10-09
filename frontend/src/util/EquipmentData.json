@@ -1,0 +1,167 @@
+[
+    {
+      "name": "Filter",
+      "description": "Removes debris, waste, and harmful chemicals from the water, keeping it clean and healthy for fish.",
+      "role": "Water Filtration",
+      "importance": "Maintains water quality by filtering out physical waste and converting harmful chemicals (like ammonia) into less toxic compounds.",
+      "usage": "Install in the aquarium and clean or replace filter media regularly to ensure efficient operation.",
+      "specialConsiderations": "Do not over-clean or replace all filter media at once to avoid disrupting beneficial bacteria colonies.",
+      "fields": ["Brand", "Model Name", "Flow Rate", "Type"],
+      "type": "filtration"
+    },
+    {
+      "name": "Protein Skimmer",
+      "description": "Removes organic waste from water by creating foam that captures debris and dissolved organics.",
+      "role": "Advanced Filtration",
+      "importance": "Helps maintain clean water by removing dissolved organic compounds before they break down.",
+      "usage": "Install in saltwater systems. Adjust foam production to match the tank’s needs. Clean the collection cup regularly.",
+      "specialConsiderations": "Used mostly in marine systems. Overuse may disrupt beneficial bacteria.",
+      "fields": ["Brand", "Model Name", "Capacity"],
+      "type": "filtration"
+    },
+    {
+      "name": "UV Sterilizer",
+      "description": "Uses ultraviolet light to kill harmful bacteria, algae spores, and parasites in the water.",
+      "role": "Sterilization",
+      "importance": "Reduces the spread of diseases and controls algae blooms, improving overall water quality and fish health.",
+      "usage": "Install after the filter in the water flow path. Replace the UV bulb periodically for continued effectiveness.",
+      "specialConsiderations": "Overuse may disrupt beneficial bacteria.",
+      "fields": ["Brand", "Model Name", "Wattage"],
+      "type": "filtration"
+    },
+    {
+      "name": "Wave Maker",
+      "description": "Creates water movement to mimic natural currents, which is beneficial for some species and plants.",
+      "role": "Water Movement",
+      "importance": "Ensures even distribution of oxygen and nutrients throughout the tank.",
+      "usage": "Place the wave maker strategically in the tank to optimize water flow.",
+      "specialConsiderations": "Adjust the flow rate to avoid turbulence.",
+      "fields": ["Brand", "Model Name", "Flow Rate"],
+      "type": "filtration"
+    },
+    {
+      "name": "Heater",
+      "description": "Maintains the aquarium water temperature within the required range for the fish species.",
+      "role": "Water Heating",
+      "importance": "Keeps water at a stable temperature, crucial for the health and well-being of tropical fish.",
+      "usage": "Place near a water flow source for even heat distribution. Set the thermostat to the desired temperature.",
+      "specialConsiderations": "Monitor temperature regularly to avoid overheating or underheating.",
+      "fields": ["Brand", "Model Name", "Wattage", "Temperature Range"],
+      "type": "heating"
+    },
+    {
+      "name": "Light",
+      "description": "Provides lighting for fish and plants, simulating natural day-night cycles.",
+      "role": "Lighting",
+      "importance": "Essential for photosynthesis in live plants and to enhance the appearance of the fish and tank.",
+      "usage": "Choose appropriate spectrum and intensity based on the plants and fish. Use a timer to regulate day-night cycles.",
+      "specialConsiderations": "Avoid excessive lighting, as it can promote algae growth.",
+      "fields": ["Brand", "Model Name", "Wattage", "Spectrum Type"],
+      "type": "lighting"
+    },
+    {
+      "name": "Air Pump",
+      "description": "Provides oxygen by creating bubbles that increase surface agitation, enhancing gas exchange.",
+      "role": "Aeration",
+      "importance": "Ensures adequate oxygen levels in the water, especially in densely stocked tanks or tanks with limited surface area.",
+      "usage": "Install the air pump with an air stone or diffuser for better oxygen distribution.",
+      "specialConsiderations": "Over-aeration can cause excessive water movement, which may stress certain fish species.",
+      "fields": ["Brand", "Model Name", "Flow Rate"],
+      "type": "filtration"
+    },
+    {
+      "name": "CO2 System",
+      "description": "Provides carbon dioxide to plants for photosynthesis, promoting healthier growth.",
+      "role": "Plant Nutrition",
+      "importance": "Essential for planted tanks to enhance the growth of aquatic plants.",
+      "usage": "Install a CO2 diffuser and adjust the flow rate.",
+      "specialConsiderations": "Monitor CO2 levels closely, as too much can harm fish.",
+      "fields": ["Brand", "Model Name", "Flow Rate"],
+      "type": "other"
+    },
+    {
+      "name": "Flakes",
+      "description": "Standard fish food for omnivorous species.",
+      "role": "Feeding",
+      "importance": "Provides a balanced diet for general fish health.",
+      "fields": ["Brand", "Feeding Frequency", "Quantity"],
+      "type": "feeding"
+    },
+    {
+      "name": "Blood Worms",
+      "description": "High-protein food for carnivorous fish.",
+      "role": "Feeding",
+      "importance": "Provides essential nutrients and enhances coloration.",
+      "fields": ["Brand", "Feeding Frequency", "Quantity"],
+      "type": "feeding"
+    },
+    {
+      "name": "Algae Wafers",
+      "description": "Supplemental food for bottom-feeding fish and algae eaters.",
+      "role": "Feeding",
+      "importance": "Ensures proper nutrition for algae-eating fish.",
+      "fields": ["Brand", "Feeding Frequency", "Quantity"],
+      "type": "feeding"
+    },
+    {
+      "name": "Pellets",
+      "description": "Pellet food for medium to large fish, available in sinking and floating forms.",
+      "role": "Feeding",
+      "importance": "Good for species-specific diets, such as cichlids or goldfish.",
+      "fields": ["Brand", "Feeding Frequency", "Quantity"],
+      "type": "feeding"
+    },
+    {
+      "name": "Freeze-Dried Brine Shrimp",
+      "description": "Lightweight, nutritious food for various fish species.",
+      "role": "Feeding",
+      "importance": "Provides high-quality protein and is a favorite treat for many fish.",
+      "fields": ["Brand", "Feeding Frequency", "Quantity"],
+      "type": "feeding"
+    },
+    {
+      "name": "Frozen Bloodworms",
+      "description": "Frozen high-protein food suitable for carnivorous fish.",
+      "role": "Feeding",
+      "importance": "Excellent source of protein and other nutrients.",
+      "fields": ["Brand", "Feeding Frequency", "Quantity"],
+      "type": "feeding"
+    },
+    {
+      "name": "Live Brine Shrimp",
+      "description": "Live food for fish that prefer hunting live prey.",
+      "role": "Feeding",
+      "importance": "Stimulates natural hunting behavior in predatory fish.",
+      "fields": ["Source", "Feeding Frequency", "Quantity"],
+      "type": "feeding"
+    },
+    {
+      "name": "Spirulina Flakes",
+      "description": "Vegetable-based food for herbivorous fish.",
+      "role": "Feeding",
+      "importance": "Rich in nutrients, promotes healthy immune systems and vibrant coloration.",
+      "fields": ["Brand", "Feeding Frequency", "Quantity"],
+      "type": "feeding"
+    },
+    {
+      "name": "Water Conditioner",
+      "description": "Neutralizes harmful substances like chlorine and heavy metals from tap water, making it safe for aquarium use.",
+      "role": "Water Treatment",
+      "importance": "Prepares tap water for aquarium use.",
+      "usage": "Add to new water before water changes.",
+      "specialConsiderations": "Use with every water change. Overuse can result in poor water quality.",
+      "fields": ["Brand", "Type of Chemical", "Dosage", "Frequency of Use"],
+      "type": "test_chemicals"
+    },
+    {
+      "name": "Test Kits",
+      "description": "Measures water parameters like pH, ammonia, nitrite, and nitrate levels.",
+      "role": "Water Testing",
+      "importance": "Ensures water quality remains safe for fish.",
+      "usage": "Use regularly to monitor water conditions.",
+      "specialConsiderations": "Accurate testing is essential for high-stocked tanks.",
+      "fields": ["Brand", "Type of Test", "Frequency of Use"],
+      "type": "test_chemicals"
+    }
+  ]
+  

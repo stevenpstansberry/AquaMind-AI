@@ -425,7 +425,7 @@ useEffect(() => {
 
                 {/* Equipment Card */}
                 <Grid item xs={12} md={6} lg={4}>
-                  <EquipmentCard equipment={currentAquarium.equipment} />
+                  <EquipmentCard aquarium={currentAquarium} />
                 </Grid>
 
                 {/* Aquarium Parameters Card */}
