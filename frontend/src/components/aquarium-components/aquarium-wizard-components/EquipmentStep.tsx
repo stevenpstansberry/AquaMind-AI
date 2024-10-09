@@ -1,12 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Typography, Grid, Box, TextField, Checkbox, FormControlLabel, Collapse, IconButton, Dialog, DialogTitle, DialogContent, DialogActions, Button } from '@mui/material';
 import { ExpandMore, Add as AddIcon } from '@mui/icons-material';
-import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'; 
-import EquipmentInfoCard from '../EquipmentInfoCard'; 
-
-//Todo: Add the EquipmentInfoCard component
-
-// add clickability on aquarium screen
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import EquipmentInfoCard from '../EquipmentInfoCard';
 
 interface EquipmentStepProps {
   setAquariumData: React.Dispatch<React.SetStateAction<any>>;
@@ -21,7 +17,6 @@ interface EquipmentStepProps {
   setIsStepValid: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-// Separate essential and non-essential categories
 const essentialEquipment = [
   {
     category: 'Essential Filtration & Heating',
@@ -39,18 +34,18 @@ const essentialEquipment = [
         name: 'Heater',
         description: 'Maintains the aquarium water temperature within the required range for the fish species.',
         role: 'Water Heating',
-        importance: 'Keeps water at a stable temperature, which is crucial for the health and well-being of most tropical fish species.',
-        usage: 'Place near a water flow source for even heat distribution. Set the thermostat to the desired temperature based on the species in the aquarium.',
-        specialConsiderations: 'Monitor temperature regularly to avoid overheating or underheating, which can stress fish.',
+        importance: 'Keeps water at a stable temperature, crucial for the health and well-being of tropical fish.',
+        usage: 'Place near a water flow source for even heat distribution. Set the thermostat to the desired temperature.',
+        specialConsiderations: 'Monitor temperature regularly to avoid overheating or underheating.',
         fields: ['Brand', 'Model Name', 'Wattage', 'Temperature Range'],
       },
       {
         name: 'Light',
         description: 'Provides lighting for fish and plants, simulating natural day-night cycles.',
         role: 'Lighting',
-        importance: 'Essential for photosynthesis in live plants and to enhance the appearance of the fish and tank. It also helps establish a natural environment.',
-        usage: 'Choose appropriate spectrum and intensity based on the plants and fish in the aquarium. Use a timer to regulate day-night cycles.',
-        specialConsiderations: 'Avoid excessive lighting, as it can promote algae growth. Some species may require dim lighting.',
+        importance: 'Essential for photosynthesis in live plants and to enhance the appearance of the fish and tank.',
+        usage: 'Choose appropriate spectrum and intensity based on the plants and fish. Use a timer to regulate day-night cycles.',
+        specialConsiderations: 'Avoid excessive lighting, as it can promote algae growth.',
         fields: ['Brand', 'Model Name', 'Wattage', 'Spectrum Type'],
       },
     ],
@@ -65,9 +60,9 @@ const nonEssentialEquipment = [
         name: 'Protein Skimmer',
         description: 'Removes organic waste from water by creating foam that captures debris and dissolved organics.',
         role: 'Advanced Filtration',
-        importance: 'Helps in maintaining clean water by removing dissolved organic compounds before they break down and affect water quality.',
-        usage: 'Install in saltwater systems and adjust foam production to match the tank’s needs. Clean the collection cup regularly.',
-        specialConsiderations: 'Commonly used in marine systems where protein buildup can be significant. Less common in freshwater setups.',
+        importance: 'Helps maintain clean water by removing dissolved organic compounds before they break down.',
+        usage: 'Install in saltwater systems. Adjust foam production to match the tank’s needs. Clean the collection cup regularly.',
+        specialConsiderations: 'Used mostly in marine systems. Overuse may disrupt beneficial bacteria.',
         fields: ['Brand', 'Model Name', 'Capacity'],
       },
       {
@@ -76,29 +71,29 @@ const nonEssentialEquipment = [
         role: 'Sterilization',
         importance: 'Reduces the spread of diseases and controls algae blooms, improving overall water quality and fish health.',
         usage: 'Install after the filter in the water flow path. Replace the UV bulb periodically for continued effectiveness.',
-        specialConsiderations: 'Overuse may disrupt beneficial bacteria. Use with caution in tanks that rely on natural biological filtration.',
+        specialConsiderations: 'Overuse may disrupt beneficial bacteria.',
         fields: ['Brand', 'Model Name', 'Wattage'],
       },
       {
         name: 'Wave Maker',
         description: 'Creates water movement to mimic natural currents, which is beneficial for some species and plants.',
         role: 'Water Movement',
-        importance: 'Ensures even distribution of oxygen and nutrients throughout the tank, reducing dead spots and helping plant growth.',
-        usage: 'Place the wave maker strategically in the tank to optimize water flow without causing turbulence.',
-        specialConsiderations: 'Some fish species prefer calmer water, so adjust the flow rate accordingly.',
+        importance: 'Ensures even distribution of oxygen and nutrients throughout the tank.',
+        usage: 'Place the wave maker strategically in the tank to optimize water flow.',
+        specialConsiderations: 'Adjust the flow rate to avoid turbulence.',
         fields: ['Brand', 'Model Name', 'Flow Rate'],
       },
     ],
   },
   {
-    category: 'Aeration & Feeding',
+    category: 'Aeration',
     items: [
       {
         name: 'Air Pump',
         description: 'Provides oxygen by creating bubbles that increase surface agitation, enhancing gas exchange.',
         role: 'Aeration',
         importance: 'Ensures adequate oxygen levels in the water, especially in densely stocked tanks or tanks with limited surface area.',
-        usage: 'Install the air pump with an air stone or diffuser for better oxygen distribution. Adjust the flow rate based on tank size.',
+        usage: 'Install the air pump with an air stone or diffuser for better oxygen distribution.',
         specialConsiderations: 'Over-aeration can cause excessive water movement, which may stress certain fish species.',
         fields: ['Brand', 'Model Name', 'Flow Rate'],
       },
@@ -106,20 +101,72 @@ const nonEssentialEquipment = [
         name: 'CO2 System',
         description: 'Provides carbon dioxide to plants for photosynthesis, promoting healthier growth.',
         role: 'Plant Nutrition',
-        importance: 'Essential for planted tanks to enhance the growth of aquatic plants and maintain a balanced ecosystem.',
-        usage: 'Install a CO2 diffuser and adjust the flow rate based on the number of plants and tank size. Monitor CO2 levels to avoid excess.',
-        specialConsiderations: 'Too much CO2 can harm fish. Use a CO2 monitor or pH controller for optimal balance.',
+        importance: 'Essential for planted tanks to enhance the growth of aquatic plants.',
+        usage: 'Install a CO2 diffuser and adjust the flow rate.',
+        specialConsiderations: 'Monitor CO2 levels closely, as too much can harm fish.',
         fields: ['Brand', 'Model Name', 'Flow Rate'],
       },
+    ],
+  },
+  {
+    category: 'Feeding',
+    items: [
       {
-        name: 'Food',
-        description: 'Provides nutrition to fish and other aquatic species, ensuring their health and vitality.',
+        name: 'Flakes',
+        description: 'Standard fish food for omnivorous species.',
         role: 'Feeding',
-        importance: 'Proper feeding helps fish grow, maintain health, and display natural behaviors. It’s essential to feed the right amount and type of food.',
-        usage: 'Feed species-specific food in appropriate quantities and at regular intervals. Overfeeding can cause water pollution.',
-        specialConsiderations: 'Different species have different dietary needs (herbivore, carnivore, omnivore). Research specific dietary requirements.',
-        fields: ['Brand', 'Type of Food', 'Species-Specific', 'Quantity per Feeding', 'Feeding Frequency'],
+        importance: 'Provides a balanced diet for general fish health.',
+        fields: ['Brand', 'Feeding Frequency', 'Quantity'],
       },
+      {
+        name: 'Blood Worms',
+        description: 'High-protein food for carnivorous fish.',
+        role: 'Feeding',
+        importance: 'Provides essential nutrients and enhances coloration.',
+        fields: ['Brand', 'Feeding Frequency', 'Quantity'],
+      },
+      {
+        name: 'Algae Wafers',
+        description: 'Supplemental food for bottom-feeding fish and algae eaters.',
+        role: 'Feeding',
+        importance: 'Ensures proper nutrition for algae-eating fish.',
+        fields: ['Brand', 'Feeding Frequency', 'Quantity'],
+      },
+      {
+        name: 'Pellets',
+        description: 'Pellet food for medium to large fish, available in sinking and floating forms.',
+        role: 'Feeding',
+        importance: 'Good for species-specific diets, such as cichlids or goldfish.',
+        fields: ['Brand', 'Feeding Frequency', 'Quantity'],
+      },
+      {
+        name: 'Freeze-Dried Brine Shrimp',
+        description: 'Lightweight, nutritious food for various fish species.',
+        role: 'Feeding',
+        importance: 'Provides high-quality protein and is a favorite treat for many fish.',
+        fields: ['Brand', 'Feeding Frequency', 'Quantity'],
+      },
+      {
+        name: 'Frozen Bloodworms',
+        description: 'Frozen high-protein food suitable for carnivorous fish.',
+        role: 'Feeding',
+        importance: 'Excellent source of protein and other nutrients.',
+        fields: ['Brand', 'Feeding Frequency', 'Quantity'],
+      },
+      {
+        name: 'Live Brine Shrimp',
+        description: 'Live food for fish that prefer hunting live prey.',
+        role: 'Feeding',
+        importance: 'Stimulates natural hunting behavior in predatory fish.',
+        fields: ['Source', 'Feeding Frequency', 'Quantity'],
+      },
+      {
+        name: 'Spirulina Flakes',
+        description: 'Vegetable-based food for herbivorous fish.',
+        role: 'Feeding',
+        importance: 'Rich in nutrients, promotes healthy immune systems and vibrant coloration.',
+        fields: ['Brand', 'Feeding Frequency', 'Quantity'],
+      }
     ],
   },
   {
@@ -129,28 +176,19 @@ const nonEssentialEquipment = [
         name: 'Water Conditioner',
         description: 'Neutralizes harmful substances like chlorine and heavy metals from tap water, making it safe for aquarium use.',
         role: 'Water Treatment',
-        importance: 'Prepares tap water for aquarium use by removing toxic substances that could harm fish and invertebrates.',
-        usage: 'Add to new water before water changes or when setting up a new tank. Follow dosage instructions carefully.',
+        importance: 'Prepares tap water for aquarium use.',
+        usage: 'Add to new water before water changes.',
         specialConsiderations: 'Use with every water change. Overuse can result in poor water quality.',
-        fields: ['Brand', 'Type of Chemical', 'Dosage', 'Frequency of Use', 'Purpose'],
-      },
-      {
-        name: 'Filter Replacement',
-        description: 'Replaces old or clogged filter media, ensuring continued filtration efficiency.',
-        role: 'Maintenance',
-        importance: 'Ensures proper filtration by removing debris, chemicals, and waste from the aquarium. Clogged filters can lead to poor water quality.',
-        usage: 'Replace filter media as per the manufacturer’s schedule. Do not replace all media at once to avoid loss of beneficial bacteria.',
-        specialConsiderations: 'Some media types, like activated carbon, have limited lifespans and must be replaced regularly.',
-        fields: ['Brand', 'Model', 'Replacement Schedule'],
+        fields: ['Brand', 'Type of Chemical', 'Dosage', 'Frequency of Use'],
       },
       {
         name: 'Test Kits',
-        description: 'Measures water parameters like pH, ammonia, nitrite, and nitrate levels, which are critical for fish health.',
+        description: 'Measures water parameters like pH, ammonia, nitrite, and nitrate levels.',
         role: 'Water Testing',
-        importance: 'Monitors the water’s chemical balance to ensure it’s safe for fish. Regular testing prevents toxic buildup of harmful substances.',
-        usage: 'Use regularly to test water parameters and adjust tank conditions accordingly. Test more frequently in new tanks.',
-        specialConsiderations: 'Accurate testing is crucial for maintaining a stable environment, especially in high-stocked or planted tanks.',
-        fields: ['Brand', 'Type of Test (pH, Ammonia, etc.)', 'Frequency of Use'],
+        importance: 'Ensures water quality remains safe for fish.',
+        usage: 'Use regularly to monitor water conditions.',
+        specialConsiderations: 'Accurate testing is essential for high-stocked tanks.',
+        fields: ['Brand', 'Type of Test', 'Frequency of Use'],
       },
     ],
   },
@@ -163,15 +201,12 @@ const EquipmentStep: React.FC<EquipmentStepProps> = ({
 }) => {
   const [selectedEquipment, setSelectedEquipment] = useState<{ name: string; details: any }[]>(aquariumData.equipment || []);
 
-  // Separate expanded states for essential and non-essential categories
   const [expandedEssentialCategories, setExpandedEssentialCategories] = useState<boolean[]>(Array(essentialEquipment.length).fill(false));
   const [expandedNonEssentialCategories, setExpandedNonEssentialCategories] = useState<boolean[]>(Array(nonEssentialEquipment.length).fill(false));
 
-  // Dialog state for EquipmentInfoCard
   const [infoCardOpen, setInfoCardOpen] = useState<boolean>(false);
   const [selectedEquipmentInfo, setSelectedEquipmentInfo] = useState<any | null>(null);
 
-  // Function to toggle equipment selection
   const handleEquipmentToggle = (equipmentName: string) => {
     if (selectedEquipment.some(e => e.name === equipmentName)) {
       setSelectedEquipment(prev => prev.filter(item => item.name !== equipmentName));
@@ -180,13 +215,11 @@ const EquipmentStep: React.FC<EquipmentStepProps> = ({
     }
   };
 
-  // Open dialog to show equipment info
   const handleOpenInfoCard = (equipment: any) => {
     setSelectedEquipmentInfo(equipment);
     setInfoCardOpen(true);
   };
 
-  // Close the EquipmentInfoCard dialog
   const handleCloseInfoCard = () => {
     setInfoCardOpen(false);
     setSelectedEquipmentInfo(null);
@@ -256,7 +289,7 @@ const EquipmentStep: React.FC<EquipmentStepProps> = ({
 
                   <IconButton
                     aria-label="info"
-                    onClick={() => handleOpenInfoCard(equipment)} // Open the info card when clicked
+                    onClick={() => handleOpenInfoCard(equipment)}
                     sx={{ ml: 2 }}
                   >
                     <InfoOutlinedIcon color="primary" />
