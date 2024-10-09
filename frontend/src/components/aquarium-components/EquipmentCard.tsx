@@ -3,9 +3,10 @@ import { Card, CardContent, Typography, IconButton, Box, Tooltip, Menu, MenuItem
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'; // Import Info Icon
+import EquipmentInfoCard from './EquipmentInfoCard'; // Import the EquipmentInfoCard component
 
 interface EquipmentCardProps {
-  equipment: { name: string; type: string }[]; // Equipment has both 'name' and 'type' fields
+  equipment: { name: string; type: string; role: string; description: string; importance: string; usage: string; specialConsiderations: string }[]; // Update with full Equipment details
 }
 
 enum DisplayMode {
@@ -22,6 +23,8 @@ const EquipmentCard: React.FC<EquipmentCardProps> = ({ equipment }) => {
   const [displayMode, setDisplayMode] = useState<DisplayMode>(DisplayMode.ALL_EQUIPMENT);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null); // State for kebab menu
   const [equipmentList, setEquipmentList] = useState(equipment);
+  const [selectedEquipment, setSelectedEquipment] = useState<any | null>(null); // State for selected equipment for the info card
+  const [infoCardOpen, setInfoCardOpen] = useState(false); // State to open/close EquipmentInfoCard
 
   // Update equipmentList when new equipment props are passed
   useEffect(() => {
@@ -69,14 +72,23 @@ const EquipmentCard: React.FC<EquipmentCardProps> = ({ equipment }) => {
     setAnchorEl(null);
   };
 
+  // Handle showing the EquipmentInfoCard
+  const handleShowEquipmentInfo = (item: any) => {
+    setSelectedEquipment(item); // Set the selected equipment
+    setInfoCardOpen(true); // Open the EquipmentInfoCard
+  };
+
+  // Close the EquipmentInfoCard
+  const handleCloseInfoCard = () => {
+    setInfoCardOpen(false);
+    setSelectedEquipment(null); // Clear selected equipment when closing
+  };
+
   const handleAddNewEquipment = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation(); // Prevent cycling mode when adding new equipment
     console.log('Add new equipment clicked');
-  };
-
-  const handleShowEquipmentInfo = (item: { name: string; type: string }) => {
-    console.log('Equipment details:', item);
-  };
+    };
+    
 
   const displayModeText = {
     [DisplayMode.ALL_EQUIPMENT]: 'All Equipment',
@@ -89,78 +101,83 @@ const EquipmentCard: React.FC<EquipmentCardProps> = ({ equipment }) => {
   };
 
   return (
-    <Card sx={cardStyle} onClick={cycleDisplayMode}>
-      <CardContent>
-        <Typography variant="h6">Equipment</Typography>
-        <Typography variant="body1">{displayModeText[displayMode]}</Typography>
+    <>
+      <Card sx={cardStyle} onClick={cycleDisplayMode}>
+        <CardContent>
+          <Typography variant="h6">Equipment</Typography>
+          <Typography variant="body1">{displayModeText[displayMode]}</Typography>
 
-        <Box sx={{ marginTop: 2 }}>
-          {filteredEquipment.length > 0 ? (
-            filteredEquipment.map((item, index) => (
-              <Box
-                key={index}
-                sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 1 }}
-              >
-                {/* Equipment Name with Info Icon */}
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <Typography variant="body2">{item.name}</Typography>
-                  
-                  {/* Info Icon */}
-                  <Tooltip title="View Equipment Info">
-                    <IconButton
-                      size="small"
-                      color="info"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleShowEquipmentInfo(item);
-                      }}
-                    >
-                      <InfoOutlinedIcon />
-                    </IconButton>
-                  </Tooltip>
+          <Box sx={{ marginTop: 2 }}>
+            {filteredEquipment.length > 0 ? (
+              filteredEquipment.map((item, index) => (
+                <Box
+                  key={index}
+                  sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 1 }}
+                >
+                  {/* Equipment Name with Info Icon */}
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <Typography variant="body2">{item.name}</Typography>
+                    
+                    {/* Info Icon */}
+                    <Tooltip title="View Equipment Info">
+                      <IconButton
+                        size="small"
+                        color="info"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleShowEquipmentInfo(item); // Pass the clicked item to show in the info card
+                        }}
+                      >
+                        <InfoOutlinedIcon />
+                      </IconButton>
+                    </Tooltip>
+                  </Box>
                 </Box>
-              </Box>
-            ))
-          ) : (
-            <Typography variant="body2">No equipment in this category.</Typography>
-          )}
+              ))
+            ) : (
+              <Typography variant="body2">No equipment in this category.</Typography>
+            )}
+          </Box>
+        </CardContent>
+
+        {/* Add New Equipment Row */}
+        <Box sx={{ display: 'flex', alignItems: 'center', marginTop: 2, paddingLeft: '4px', paddingBottom: '16px' }}>
+          <Typography variant="body2" sx={{ flexGrow: 1, paddingLeft: '12px' }}>
+            Add New Equipment
+          </Typography>
+
+          <Tooltip title="Add New Equipment">
+            <IconButton
+              color="primary"
+              onClick={handleAddNewEquipment}
+            >
+              <AddCircleOutlineIcon />
+            </IconButton>
+          </Tooltip>
         </Box>
-      </CardContent>
 
-      {/* Add New Equipment Row */}
-      <Box sx={{ display: 'flex', alignItems: 'center', marginTop: 2, paddingLeft: '4px', paddingBottom: '16px' }}>
-        <Typography variant="body2" sx={{ flexGrow: 1, paddingLeft: '12px' }}>
-          Add New Equipment
-        </Typography>
-
-        <Tooltip title="Add New Equipment">
-          <IconButton
-            color="primary"
-            onClick={handleAddNewEquipment}
-          >
-            <AddCircleOutlineIcon />
+        {/* Tooltip and More Options (Kebab) Menu */}
+        <Tooltip title="More options">
+          <IconButton color="primary" sx={iconStyle} onClick={handleMenuOpen}>
+            <MoreVertIcon />
           </IconButton>
         </Tooltip>
-      </Box>
 
-      {/* Tooltip and More Options (Kebab) Menu */}
-      <Tooltip title="More options">
-        <IconButton color="primary" sx={iconStyle} onClick={handleMenuOpen}>
-          <MoreVertIcon />
-        </IconButton>
-      </Tooltip>
+        {/* Menu for More Options */}
+        <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
+          <MenuItem onClick={() => setDisplayMode(DisplayMode.ALL_EQUIPMENT)}>All Equipment</MenuItem>
+          <MenuItem onClick={() => setDisplayMode(DisplayMode.LIGHTING)}>Lighting</MenuItem>
+          <MenuItem onClick={() => setDisplayMode(DisplayMode.HEATING)}>Heating</MenuItem>
+          <MenuItem onClick={() => setDisplayMode(DisplayMode.FILTRATION)}>Filtration</MenuItem>
+          <MenuItem onClick={() => setDisplayMode(DisplayMode.FEEDING)}>Feeding</MenuItem>
+          <MenuItem onClick={() => setDisplayMode(DisplayMode.TEST_CHEMICALS)}>Test Chemicals</MenuItem>
+          <MenuItem onClick={() => setDisplayMode(DisplayMode.OTHER)}>Other Equipment</MenuItem>
+        </Menu>
+      </Card>
 
-      {/* Menu for More Options */}
-      <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
-        <MenuItem onClick={() => setDisplayMode(DisplayMode.ALL_EQUIPMENT)}>All Equipment</MenuItem>
-        <MenuItem onClick={() => setDisplayMode(DisplayMode.LIGHTING)}>Lighting</MenuItem>
-        <MenuItem onClick={() => setDisplayMode(DisplayMode.HEATING)}>Heating</MenuItem>
-        <MenuItem onClick={() => setDisplayMode(DisplayMode.FILTRATION)}>Filtration</MenuItem>
-        <MenuItem onClick={() => setDisplayMode(DisplayMode.FEEDING)}>Feeding</MenuItem>
-        <MenuItem onClick={() => setDisplayMode(DisplayMode.TEST_CHEMICALS)}>Test Chemicals</MenuItem>
-        <MenuItem onClick={() => setDisplayMode(DisplayMode.OTHER)}>Other Equipment</MenuItem>
-      </Menu>
-    </Card>
+      {/* Equipment Info Card */}
+      <EquipmentInfoCard open={infoCardOpen} onClose={handleCloseInfoCard} equipment={selectedEquipment} />
+    </>
   );
 };
 

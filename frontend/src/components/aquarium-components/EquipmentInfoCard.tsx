@@ -1,18 +1,12 @@
 import React from 'react';
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Typography, Box, Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { Equipment } from '../../interfaces/Aquarium';
 
 interface EquipmentInfoCardProps {
   open: boolean;
   onClose: () => void;
-  equipment: {
-    name: string;
-    description: string;
-    role: string;
-    importance: string;
-    usage: string;
-    specialConsiderations: string;
-  } | null;
+  equipment: Equipment | null;
 }
 
 const EquipmentInfoCard: React.FC<EquipmentInfoCardProps> = ({ open, onClose, equipment }) => {
