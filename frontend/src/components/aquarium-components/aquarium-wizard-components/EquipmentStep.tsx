@@ -4,6 +4,8 @@ import { ExpandMore, Add as AddIcon } from '@mui/icons-material';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'; 
 import EquipmentInfoCard from '../EquipmentInfoCard'; 
 
+//Todo: Add the EquipmentInfoCard component
+
 interface EquipmentStepProps {
   setAquariumData: React.Dispatch<React.SetStateAction<any>>;
   aquariumData: {
