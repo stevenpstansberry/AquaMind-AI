@@ -60,6 +60,27 @@ const EquipmentInfoCard: React.FC<EquipmentInfoCardProps> = ({ open, onClose, eq
             </AccordionDetails>
           </Accordion>
 
+          {/* Custom Fields */}
+          {equipment.fields && Object.keys(equipment.fields).length > 0 && (
+            <Accordion defaultExpanded>
+              <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                <Typography variant="subtitle1">Custom Fields</Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                {Object.entries(equipment.fields).map(([key, value]) => {
+                  if (value) {
+                    return (
+                      <Typography key={key} variant="body2" sx={{ mt: 1 }}>
+                        <strong>{key}:</strong> {value}
+                      </Typography>
+                    );
+                  }
+                  return null; // Do not render if the field is empty
+                })}
+              </AccordionDetails>
+            </Accordion>
+          )}
+
         </Box>
       </DialogContent>
       <DialogActions>
