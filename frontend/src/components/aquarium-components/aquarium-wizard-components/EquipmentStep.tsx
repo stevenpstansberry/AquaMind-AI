@@ -162,7 +162,10 @@ const EquipmentStep: React.FC<EquipmentStepProps> = ({
   setIsStepValid,
 }) => {
   const [selectedEquipment, setSelectedEquipment] = useState<{ name: string; details: any }[]>(aquariumData.equipment || []);
-  const [expandedCategories, setExpandedCategories] = useState<boolean[]>(Array(essentialEquipment.length).fill(false));
+
+  // Separate expanded states for essential and non-essential categories
+  const [expandedEssentialCategories, setExpandedEssentialCategories] = useState<boolean[]>(Array(essentialEquipment.length).fill(false));
+  const [expandedNonEssentialCategories, setExpandedNonEssentialCategories] = useState<boolean[]>(Array(nonEssentialEquipment.length).fill(false));
 
   // Dialog state for EquipmentInfoCard
   const [infoCardOpen, setInfoCardOpen] = useState<boolean>(false);
@@ -200,19 +203,25 @@ const EquipmentStep: React.FC<EquipmentStepProps> = ({
     setIsStepValid(selectedEquipment.length > 0);
   }, [selectedEquipment, setAquariumData, setIsStepValid]);
 
-  const renderEquipmentCategory = (categories: any[], essential: boolean) => (
+  const renderEquipmentCategory = (
+    categories: any[],
+    expandedCategories: boolean[],
+    setExpandedCategories: React.Dispatch<React.SetStateAction<boolean[]>>
+  ) => (
     <Grid container spacing={2}>
       {categories.map((category, catIndex) => (
         <Grid item xs={12} key={catIndex}>
           <Box
             display="flex"
             alignItems="center"
-            onClick={() => setExpandedCategories(prev => {
-              const updated = [...prev];
-              updated[catIndex] = !updated[catIndex];
-              return updated;
-            })}
-            sx={{ cursor: 'pointer', backgroundColor: essential ? '#e0f7fa' : 'inherit', padding: '10px', borderRadius: '8px' }}
+            onClick={() =>
+              setExpandedCategories(prev => {
+                const updated = [...prev];
+                updated[catIndex] = !updated[catIndex];
+                return updated;
+              })
+            }
+            sx={{ cursor: 'pointer', padding: '10px', borderRadius: '8px' }}
           >
             <IconButton
               sx={{
@@ -242,7 +251,7 @@ const EquipmentStep: React.FC<EquipmentStepProps> = ({
                         color="primary"
                       />
                     }
-                    label={<Typography sx={{ fontWeight: essential ? 'bold' : 'inherit' }}>{equipment.name}</Typography>}
+                    label={<Typography sx={{ fontWeight: 'bold' }}>{equipment.name}</Typography>}
                   />
 
                   <IconButton
@@ -286,21 +295,17 @@ const EquipmentStep: React.FC<EquipmentStepProps> = ({
       <Typography variant="h5" sx={{ mt: 2, mb: 1, color: 'primary.main' }}>
         Essential Equipment
       </Typography>
-      {renderEquipmentCategory(essentialEquipment, true)}
+      {renderEquipmentCategory(essentialEquipment, expandedEssentialCategories, setExpandedEssentialCategories)}
 
       {/* Render Non-Essential Equipment */}
       <Typography variant="h5" sx={{ mt: 3, mb: 1 }}>
         Non-Essential Equipment
       </Typography>
-      {renderEquipmentCategory(nonEssentialEquipment, false)}
+      {renderEquipmentCategory(nonEssentialEquipment, expandedNonEssentialCategories, setExpandedNonEssentialCategories)}
 
       {/* Equipment Info Card Dialog */}
       {selectedEquipmentInfo && (
-        <EquipmentInfoCard
-          open={infoCardOpen}
-          onClose={handleCloseInfoCard}
-          equipment={selectedEquipmentInfo}
-        />
+        <EquipmentInfoCard open={infoCardOpen} onClose={handleCloseInfoCard} equipment={selectedEquipmentInfo} />
       )}
     </Box>
   );
