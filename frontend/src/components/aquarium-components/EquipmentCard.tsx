@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent, Typography, IconButton, Box, Tooltip } from '@mui/material';
+import { Card, CardContent, Typography, IconButton, Box, Tooltip, Menu, MenuItem } from '@mui/material';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';  // Import Info Icon
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'; // Import Info Icon
 
 interface EquipmentCardProps {
   equipment: { name: string; type: string }[]; // Equipment has both 'name' and 'type' fields
@@ -13,11 +13,14 @@ enum DisplayMode {
   LIGHTING,
   HEATING,
   FILTRATION,
+  FEEDING,
+  TEST_CHEMICALS,
   OTHER,
 }
 
 const EquipmentCard: React.FC<EquipmentCardProps> = ({ equipment }) => {
   const [displayMode, setDisplayMode] = useState<DisplayMode>(DisplayMode.ALL_EQUIPMENT);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null); // State for kebab menu
   const [equipmentList, setEquipmentList] = useState(equipment);
 
   // Update equipmentList when new equipment props are passed
@@ -34,8 +37,12 @@ const EquipmentCard: React.FC<EquipmentCardProps> = ({ equipment }) => {
         return item.type === 'heating';
       case DisplayMode.FILTRATION:
         return item.type === 'filtration';
+      case DisplayMode.FEEDING:
+        return item.type === 'feeding';
+      case DisplayMode.TEST_CHEMICALS:
+        return item.type === 'test_chemicals';
       case DisplayMode.OTHER:
-        return !['lighting', 'heating', 'filtration'].includes(item.type);
+        return !['lighting', 'heating', 'filtration', 'feeding', 'test_chemicals'].includes(item.type);
       case DisplayMode.ALL_EQUIPMENT:
       default:
         return true;
@@ -49,6 +56,17 @@ const EquipmentCard: React.FC<EquipmentCardProps> = ({ equipment }) => {
       const nextMode = (prevMode + 1) % validModes.length;
       return nextMode;
     });
+  };
+
+  // Handle opening the kebab menu
+  const handleMenuOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation(); // Prevent triggering card click
+    setAnchorEl(event.currentTarget);
+  };
+
+  // Handle closing the kebab menu
+  const handleMenuClose = () => {
+    setAnchorEl(null);
   };
 
   const handleAddNewEquipment = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -65,6 +83,8 @@ const EquipmentCard: React.FC<EquipmentCardProps> = ({ equipment }) => {
     [DisplayMode.LIGHTING]: 'Lighting',
     [DisplayMode.HEATING]: 'Heating',
     [DisplayMode.FILTRATION]: 'Filtration',
+    [DisplayMode.FEEDING]: 'Feeding',
+    [DisplayMode.TEST_CHEMICALS]: 'Test Chemicals',
     [DisplayMode.OTHER]: 'Other Equipment',
   };
 
@@ -123,12 +143,23 @@ const EquipmentCard: React.FC<EquipmentCardProps> = ({ equipment }) => {
         </Tooltip>
       </Box>
 
-      {/* More Options Button */}
+      {/* Tooltip and More Options (Kebab) Menu */}
       <Tooltip title="More options">
-        <IconButton color="primary" sx={iconStyle}>
+        <IconButton color="primary" sx={iconStyle} onClick={handleMenuOpen}>
           <MoreVertIcon />
         </IconButton>
       </Tooltip>
+
+      {/* Menu for More Options */}
+      <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
+        <MenuItem onClick={() => setDisplayMode(DisplayMode.ALL_EQUIPMENT)}>All Equipment</MenuItem>
+        <MenuItem onClick={() => setDisplayMode(DisplayMode.LIGHTING)}>Lighting</MenuItem>
+        <MenuItem onClick={() => setDisplayMode(DisplayMode.HEATING)}>Heating</MenuItem>
+        <MenuItem onClick={() => setDisplayMode(DisplayMode.FILTRATION)}>Filtration</MenuItem>
+        <MenuItem onClick={() => setDisplayMode(DisplayMode.FEEDING)}>Feeding</MenuItem>
+        <MenuItem onClick={() => setDisplayMode(DisplayMode.TEST_CHEMICALS)}>Test Chemicals</MenuItem>
+        <MenuItem onClick={() => setDisplayMode(DisplayMode.OTHER)}>Other Equipment</MenuItem>
+      </Menu>
     </Card>
   );
 };
