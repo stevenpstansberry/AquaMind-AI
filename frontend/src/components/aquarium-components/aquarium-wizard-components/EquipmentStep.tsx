@@ -6,6 +6,8 @@ import EquipmentInfoCard from '../EquipmentInfoCard';
 
 //Todo: Add the EquipmentInfoCard component
 
+// add clickability on aquarium screen
+
 interface EquipmentStepProps {
   setAquariumData: React.Dispatch<React.SetStateAction<any>>;
   aquariumData: {
