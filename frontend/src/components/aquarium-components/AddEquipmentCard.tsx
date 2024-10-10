@@ -18,8 +18,6 @@ interface EquipmentFromDB {
   type: 'filtration' | 'lighting' | 'heating' | 'feeding' | 'test_chemicals' | 'other';
 }
 
-
-
 interface AddEquipmentCardProps {
   open: boolean;
   onClose: () => void;
@@ -47,13 +45,19 @@ const equipmentList: EquipmentFromDB[] = [
     fields: ["Brand", "Model Name", "Capacity"],
     type: "filtration",
     usage: "Install in the aquarium and clean or replace filter media regularly to ensure efficient operation.",
-  }
+    specialConsiderations: "Do not over-clean or replace all filter media at once to avoid disrupting beneficial bacteria colonies."
+  },
+  // Add other equipment data here...
 ];
 
 const AddEquipmentCard: React.FC<AddEquipmentCardProps> = ({ open, onClose, onAddEquipment }) => {
   const [selectedEquipment, setSelectedEquipment] = useState<Equipment[]>([]);
   const [customFields, setCustomFields] = useState<{ [key: string]: string }>({});
+  const [selectedType, setSelectedType] = useState<string>(''); // Track selected type
   const [selectedEquipmentItem, setSelectedEquipmentItem] = useState<EquipmentFromDB | null>(null);
+
+  // Filter equipment by selected type
+  const filteredEquipmentList = equipmentList.filter(equipment => equipment.type === selectedType);
 
   // Handle selection of equipment from the dropdown
   const handleSelectEquipment = (equipment: EquipmentFromDB) => {
@@ -92,6 +96,7 @@ const AddEquipmentCard: React.FC<AddEquipmentCardProps> = ({ open, onClose, onAd
       setSelectedEquipment([...selectedEquipment, equipmentToSave]);
       setCustomFields({});  // Reset fields after adding equipment
       setSelectedEquipmentItem(null);  // Reset selected equipment
+      setSelectedType('');  // Reset the type after adding equipment
     }
   };
 
@@ -102,30 +107,58 @@ const AddEquipmentCard: React.FC<AddEquipmentCardProps> = ({ open, onClose, onAd
   };
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
+    <Dialog 
+      open={open} 
+      onClose={onClose} 
+      maxWidth="lg" 
+      fullWidth
+      sx={{ '& .MuiDialog-paper': { minHeight: '500px' } }}  // Make dialog taller by default
+    >
       <DialogTitle>Add New Equipment</DialogTitle>
       <DialogContent>
         <Box>
-          {/* Equipment selection dropdown */}
+          {/* Type selection dropdown */}
           <FormControl fullWidth margin="normal">
-            <InputLabel>Select Equipment</InputLabel>
+            <InputLabel shrink>Select Equipment Type</InputLabel> {/* Ensures label does not overlap */}
             <Select
-              value={selectedEquipmentItem ? selectedEquipmentItem.name : ''}
-              onChange={(e) => {
-                const foundEquipment = equipmentList.find(eq => eq.name === e.target.value);
-                if (foundEquipment) {
-                  handleSelectEquipment(foundEquipment);
-                }
-              }}
+              value={selectedType}
+              onChange={(e) => setSelectedType(e.target.value)}
               displayEmpty
             >
-              {equipmentList.map((equipment) => (
-                <MenuItem key={equipment.name} value={equipment.name}>
-                  {equipment.name}
-                </MenuItem>
-              ))}
+              <MenuItem value="">
+                <em>None</em>
+              </MenuItem>
+              <MenuItem value="filtration">Filtration</MenuItem>
+              <MenuItem value="lighting">Lighting</MenuItem>
+              <MenuItem value="heating">Heating</MenuItem>
+              <MenuItem value="feeding">Feeding</MenuItem>
+              <MenuItem value="test_chemicals">Test Chemicals</MenuItem>
+              <MenuItem value="other">Other</MenuItem>
             </Select>
           </FormControl>
+
+          {/* Equipment selection dropdown, filtered by type */}
+          {selectedType && (
+            <FormControl fullWidth margin="normal">
+              <InputLabel shrink>Select Equipment</InputLabel> {/* Ensures label does not overlap */}
+              <Select
+                value={selectedEquipmentItem ? selectedEquipmentItem.name : ''}
+                onChange={(e) => {
+                  const foundEquipment = filteredEquipmentList.find(eq => eq.name === e.target.value);
+                  if (foundEquipment) {
+                    handleSelectEquipment(foundEquipment);
+                  }
+                }}
+                displayEmpty
+              >
+                {filteredEquipmentList.map((equipment) => (
+                  <MenuItem key={equipment.name} value={equipment.name}>
+                    {equipment.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          )}
 
           {/* Display fields for the selected equipment */}
           {selectedEquipmentItem && (
