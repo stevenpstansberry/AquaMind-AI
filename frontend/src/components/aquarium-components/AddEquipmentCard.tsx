@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, Box,
   MenuItem, Select, InputLabel, FormControl, List, ListItem, Typography
@@ -51,13 +51,23 @@ const equipmentList: EquipmentFromDB[] = [
 ];
 
 const AddEquipmentCard: React.FC<AddEquipmentCardProps> = ({ open, onClose, onAddEquipment }) => {
+  // Set default type to "filtration"
+  const [selectedType, setSelectedType] = useState<string>('filtration'); // Default to filtration
   const [selectedEquipment, setSelectedEquipment] = useState<Equipment[]>([]);
   const [customFields, setCustomFields] = useState<{ [key: string]: string }>({});
-  const [selectedType, setSelectedType] = useState<string>(''); // Track selected type
   const [selectedEquipmentItem, setSelectedEquipmentItem] = useState<EquipmentFromDB | null>(null);
 
   // Filter equipment by selected type
   const filteredEquipmentList = equipmentList.filter(equipment => equipment.type === selectedType);
+
+  // Automatically select the first available equipment when the type changes
+  useEffect(() => {
+    if (filteredEquipmentList.length > 0) {
+      handleSelectEquipment(filteredEquipmentList[0]);
+    } else {
+      setSelectedEquipmentItem(null);
+    }
+  }, [selectedType]);
 
   // Handle selection of equipment from the dropdown
   const handleSelectEquipment = (equipment: EquipmentFromDB) => {
@@ -96,7 +106,7 @@ const AddEquipmentCard: React.FC<AddEquipmentCardProps> = ({ open, onClose, onAd
       setSelectedEquipment([...selectedEquipment, equipmentToSave]);
       setCustomFields({});  // Reset fields after adding equipment
       setSelectedEquipmentItem(null);  // Reset selected equipment
-      setSelectedType('');  // Reset the type after adding equipment
+      setSelectedType('filtration');  // Reset the type to default "filtration" after adding equipment
     }
   };
 
@@ -125,9 +135,7 @@ const AddEquipmentCard: React.FC<AddEquipmentCardProps> = ({ open, onClose, onAd
               onChange={(e) => setSelectedType(e.target.value)}
               displayEmpty
             >
-              <MenuItem value="">
-                <em>None</em>
-              </MenuItem>
+              {/* Removed "None" option; defaults to "filtration" */}
               <MenuItem value="filtration">Filtration</MenuItem>
               <MenuItem value="lighting">Lighting</MenuItem>
               <MenuItem value="heating">Heating</MenuItem>
