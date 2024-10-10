@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import {
   Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, Box,
-  MenuItem, Select, InputLabel, FormControl, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TablePagination, Typography, IconButton, List, ListItem
+  MenuItem, Select, InputLabel, FormControl, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TablePagination, Typography, IconButton
 } from '@mui/material';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import { Aquarium, Equipment } from '../../interfaces/Aquarium';
 
-// Interface for equipment from the database (fields as an array of strings)
 interface EquipmentFromDB {
   name: string;
   description: string;
@@ -21,40 +20,31 @@ interface EquipmentFromDB {
 interface AddEquipmentCardProps {
   open: boolean;
   onClose: () => void;
-  onAddEquipment: (equipment: Equipment[]) => void;
+  onAddEquipment: (equipment: Equipment) => void;
   aquarium: Aquarium;
 }
 
-// Mocked list of equipment coming from the database (using EquipmentFromDB)
-const equipmentList: EquipmentFromDB[] = [
-  {
-    name: "Filter",
-    description: "Removes debris, waste, and harmful chemicals from the water, keeping it clean and healthy for fish.",
-    role: "Water Filtration",
-    importance: "Maintains water quality by filtering out physical waste and converting harmful chemicals (like ammonia) into less toxic compounds.",
-    usage: "Install in the aquarium and clean or replace filter media regularly.",
-    fields: ["Brand", "Model Name", "Flow Rate", "Type"],
-    type: "filtration"
-  },
-  {
-    name: "Protein Skimmer",
-    description: "Removes organic waste from water by creating foam that captures debris and dissolved organics.",
-    role: "Advanced Filtration",
-    importance: "Helps maintain clean water by removing dissolved organic compounds before they break down.",
-    fields: ["Brand", "Model Name", "Capacity"],
-    type: "filtration",
-    usage: "Install in saltwater systems. Adjust foam production to match the tank’s needs."
-  },
-  // Add other equipment data here...
-];
-
 const AddEquipmentCard: React.FC<AddEquipmentCardProps> = ({ open, onClose, onAddEquipment }) => {
   const [selectedType, setSelectedType] = useState<string>('filtration');
-  const [selectedEquipment, setSelectedEquipment] = useState<Equipment[]>([]);
+  const [selectedEquipment, setSelectedEquipment] = useState<Equipment | null>(null); // Allow only one equipment to be selected
   const [customFields, setCustomFields] = useState<{ [key: string]: string }>({});
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
+
+  // Mocked equipment list from DB
+  const equipmentList: EquipmentFromDB[] = [
+    {
+      name: "Filter",
+      description: "Removes debris, waste, and harmful chemicals from the water.",
+      role: "Water Filtration",
+      importance: "Maintains water quality by filtering out harmful chemicals.",
+      usage: "Install in the aquarium and clean or replace filter media.",
+      fields: ["Brand", "Model Name", "Flow Rate", "Type"],
+      type: "filtration"
+    },
+    // other equipment...
+  ];
 
   const filteredEquipmentList = equipmentList
     .filter((equipment) => equipment.type === selectedType)
@@ -68,23 +58,30 @@ const AddEquipmentCard: React.FC<AddEquipmentCardProps> = ({ open, onClose, onAd
       importance: equipment.importance,
       usage: equipment.usage,
       specialConsiderations: equipment.specialConsiderations || '',
-      fields: {},  // Initialize fields as an empty object
+      fields: {},  // Initialize fields as an empty object for user input
       type: equipment.type,
     };
 
-    setSelectedEquipment([...selectedEquipment, equipmentToAdd]);
+    setSelectedEquipment(equipmentToAdd);  // Set only one selected equipment at a time
   };
 
-  const handleFieldChange = (equipmentIndex: number, fieldName: string, value: string) => {
-    const updatedEquipment = [...selectedEquipment];
-    updatedEquipment[equipmentIndex].fields[fieldName] = value;  // Update the field value
-    setSelectedEquipment(updatedEquipment);  // Update the state with modified equipment
+  // Update `selectedEquipment`'s fields when inputs change
+  const handleFieldChange = (fieldName: string, value: string) => {
+    if (selectedEquipment) {
+      setSelectedEquipment({
+        ...selectedEquipment,
+        fields: { ...selectedEquipment.fields, [fieldName]: value },  // Update fields object inside `selectedEquipment`
+      });
+    }
   };
 
-  const handleAddAllEquipment = () => {
-    onAddEquipment(selectedEquipment);
-    setSelectedEquipment([]); // Reset selected equipment after saving
-    setCustomFields({}); // Reset custom fields
+  // Ensure selected equipment and its fields are correctly saved
+  const handleSaveEquipment = () => {
+    if (selectedEquipment) {
+      console.log("Saving this equipment", selectedEquipment);  // Debugging output
+      onAddEquipment(selectedEquipment);  // Save the selected equipment with its fields
+      setCustomFields({});  // Reset custom fields
+    }
   };
 
   const handleChangePage = (event: unknown, newPage: number) => {
@@ -173,35 +170,35 @@ const AddEquipmentCard: React.FC<AddEquipmentCardProps> = ({ open, onClose, onAd
           />
 
           {/* Selected Equipment and Fields Input */}
-          {selectedEquipment.length > 0 && (
+          {selectedEquipment && (
             <Box mt={2}>
               <Typography variant="h6">Selected Equipment to Add:</Typography>
-              <List>
-                {selectedEquipment.map((equipment, index) => (
-                  <ListItem key={index}>
-                    <Box width="100%">
-                      <Typography variant="body2">{equipment.name}</Typography>
+              <Typography variant="body2">{selectedEquipment.name}</Typography>
 
-                      {/* Render input fields for each selected equipment's fields */}
-                      {equipmentList
-                        .find((eq) => eq.name === equipment.name)
-                        ?.fields.map((field) => (
-                          <TextField
-                            key={field}
-                            label={field}
-                            value={selectedEquipment[index].fields[field] || ''}
-                            onChange={(e) => handleFieldChange(index, field, e.target.value)}
-                            fullWidth
-                            margin="normal"
-                          />
-                        ))}
-                    </Box>
-                  </ListItem>
+              {/* Render input fields for the selected equipment's fields */}
+              {equipmentList
+                .find((eq) => eq.name === selectedEquipment.name)
+                ?.fields.map((field) => (
+                  <TextField
+                    key={field}
+                    label={field}
+                    value={selectedEquipment.fields[field] || ''}
+                    onChange={(e) => handleFieldChange(field, e.target.value)}
+                    fullWidth
+                    margin="normal"
+                  />
                 ))}
-              </List>
-              <Button variant="contained" color="primary" onClick={handleAddAllEquipment}>
-                Add Selected Equipment
-              </Button>
+
+              {/* Right-aligned button */}
+              <Box display="flex" justifyContent="flex-end" mt={2}>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={handleSaveEquipment}
+                >
+                  Add Selected Equipment
+                </Button>
+              </Box>
             </Box>
           )}
         </Box>
