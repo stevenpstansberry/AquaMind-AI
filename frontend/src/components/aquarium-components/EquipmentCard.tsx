@@ -1,14 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent, Typography, IconButton, Box, Tooltip, Menu, MenuItem } from '@mui/material';
+import {
+  Card, CardContent, Typography, IconButton, Box, Tooltip, Menu, MenuItem, Dialog, DialogActions, DialogContent, DialogTitle, Button
+} from '@mui/material';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'; // Import Info Icon
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import DeleteIcon from '@mui/icons-material/Delete'; // Import Delete Icon
 import EquipmentInfoCard from './EquipmentInfoCard'; // Import the EquipmentInfoCard component
 import AddEquipmentCard from './AddEquipmentCard';
 import { Aquarium } from '../../interfaces/Aquarium';
 
 interface EquipmentCardProps {
-  aquarium: Aquarium; // Update with full Equipment details
+  aquarium: Aquarium;
 }
 
 enum DisplayMode {
@@ -27,7 +30,9 @@ const EquipmentCard: React.FC<EquipmentCardProps> = ({ aquarium }) => {
   const [equipmentList, setEquipmentList] = useState(aquarium.equipment || []); // State for equipment list
   const [selectedEquipment, setSelectedEquipment] = useState<any | null>(null); // State for selected equipment for the info card
   const [infoCardOpen, setInfoCardOpen] = useState(false); // State to open/close EquipmentInfoCard
-  const [addEquipmentOpen, setAddEquipmentOpen] = useState(false);  
+  const [addEquipmentOpen, setAddEquipmentOpen] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false); // State for delete confirmation dialog
+  const [equipmentToDelete, setEquipmentToDelete] = useState<any | null>(null); // Track the equipment to be deleted
 
   // Update equipmentList when new equipment props are passed
   useEffect(() => {
@@ -90,16 +95,34 @@ const EquipmentCard: React.FC<EquipmentCardProps> = ({ aquarium }) => {
   const handleAddNewEquipment = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation(); // Prevent cycling mode when adding new equipment
     setAddEquipmentOpen(true);
-    };
-    
+  };
+
   const handleAddEquipment = (newEquipment: any) => {
     setEquipmentList([...equipmentList, newEquipment]);
     setAddEquipmentOpen(false);
-  }
+  };
 
   const handleCloseAddEquipment = () => {
     setAddEquipmentOpen(false);
-  }
+  };
+
+  // Handle opening delete confirmation dialog
+  const handleOpenDeleteDialog = (equipment: any) => {
+    setEquipmentToDelete(equipment); // Track the equipment to delete
+    setDeleteDialogOpen(true); // Open confirmation dialog
+  };
+
+  // Handle closing delete confirmation dialog
+  const handleCloseDeleteDialog = () => {
+    setDeleteDialogOpen(false);
+    setEquipmentToDelete(null); // Reset the tracked equipment
+  };
+
+  // Handle deleting the selected equipment
+  const handleDeleteEquipment = () => {
+    setEquipmentList(equipmentList.filter(item => item !== equipmentToDelete)); // Remove the equipment from the list
+    setDeleteDialogOpen(false); // Close the dialog after deletion
+  };
 
   const displayModeText = {
     [DisplayMode.ALL_EQUIPMENT]: 'All Equipment',
@@ -143,6 +166,19 @@ const EquipmentCard: React.FC<EquipmentCardProps> = ({ aquarium }) => {
                       </IconButton>
                     </Tooltip>
                   </Box>
+                  {/* Delete Icon */}
+                  <Tooltip title="Delete Equipment" disableInteractive>
+                    <IconButton
+                      size="small"
+                      sx={deleteIconStyle} // Apply new styles here
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleOpenDeleteDialog(item); // Open delete confirmation dialog
+                      }}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </Tooltip>
                 </Box>
               ))
             ) : (
@@ -189,13 +225,28 @@ const EquipmentCard: React.FC<EquipmentCardProps> = ({ aquarium }) => {
       {/* Equipment Info Card */}
       <EquipmentInfoCard open={infoCardOpen} onClose={handleCloseInfoCard} equipment={selectedEquipment} />
 
-        {/* Add Equipment Modal */}
-        <AddEquipmentCard
+      {/* Add Equipment Modal */}
+      <AddEquipmentCard
         open={addEquipmentOpen}
         onClose={handleCloseAddEquipment}
-        aquarium={aquarium}  
-        onAddEquipment={handleAddEquipment}  
+        aquarium={aquarium}
+        onAddEquipment={handleAddEquipment}
       />
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog
+        open={deleteDialogOpen}
+        onClose={handleCloseDeleteDialog}
+      >
+        <DialogTitle>Delete {equipmentToDelete?.name}?</DialogTitle>
+        <DialogContent>
+          <Typography>Are you sure you want to delete {equipmentToDelete?.name}? This action cannot be undone.</Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDeleteDialog} color="secondary">Cancel</Button>
+          <Button onClick={handleDeleteEquipment} color="error">Delete</Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 };
@@ -224,6 +275,14 @@ const iconStyle = {
   right: '10px',
   color: '#B0BEC5',
   fontSize: '20px',
+};
+
+// New delete icon style
+const deleteIconStyle = {
+  color: '#B0BEC5', // Light gray by default
+  '&:hover': {
+    color: '#ff5252', // Turn red when hovered over
+  },
 };
 
 export default EquipmentCard;
