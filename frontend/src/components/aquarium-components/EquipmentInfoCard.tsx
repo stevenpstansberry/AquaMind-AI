@@ -4,6 +4,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { Equipment } from '../../interfaces/Aquarium';
 
 //Todo test
+// export
 
 interface EquipmentInfoCardProps {
   open: boolean;
