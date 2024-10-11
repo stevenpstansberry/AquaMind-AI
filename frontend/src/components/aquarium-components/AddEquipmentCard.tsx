@@ -4,6 +4,7 @@ import {
   MenuItem, Select, InputLabel, FormControl, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TablePagination, Typography, IconButton
 } from '@mui/material';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import EquipmentInfoCard from './EquipmentInfoCard';
 import { Aquarium, Equipment } from '../../interfaces/Aquarium';
 
 interface EquipmentFromDB {
@@ -31,6 +32,7 @@ const AddEquipmentCard: React.FC<AddEquipmentCardProps> = ({ open, onClose, onAd
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [infoOpen, setInfoOpen] = useState(false);
 
   // Mocked equipment list from DB
   const equipmentList: EquipmentFromDB[] = [
@@ -93,6 +95,31 @@ const AddEquipmentCard: React.FC<AddEquipmentCardProps> = ({ open, onClose, onAd
     setPage(0);
   };
 
+  const isEquipmentSelected = (equipment: Equipment) => {
+    return ((equipment: { name: any; }) => equipment.name === equipment.name);
+  };
+
+  const handleEquipmentClick = (equipment: EquipmentFromDB) => {
+      const equipmentToAdd: Equipment = {
+        name: equipment.name,
+        description: equipment.description,
+        role: equipment.role,
+        importance: equipment.importance,
+        usage: equipment.usage,
+        specialConsiderations: equipment.specialConsiderations || '',
+        fields: {},  // Initialize fields as an empty object for user input
+        type: equipment.type,
+      };
+  
+      setSelectedEquipment(equipmentToAdd);
+      setInfoOpen(true);
+    }
+
+  const handleCloseInfo = () => {
+    setInfoOpen(false);
+    setSelectedEquipment(null);
+  };
+
   return (
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
       <DialogTitle>Add New Equipment</DialogTitle>
@@ -140,14 +167,24 @@ const AddEquipmentCard: React.FC<AddEquipmentCardProps> = ({ open, onClose, onAd
                 {filteredEquipmentList
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((equipment) => (
-                    <TableRow key={equipment.name}>
+                    <TableRow
+                    key={equipment.name}
+                    hover
+                    sx={{
+                      cursor: 'pointer',
+                    }}
+                    onClick={() => handleEquipmentClick(equipment)}  
+                  >
                       <TableCell>{equipment.name}</TableCell>
                       <TableCell>{equipment.role}</TableCell>
                       <TableCell>{equipment.importance}</TableCell>
                       <TableCell>
                         <IconButton
                           color="primary"
-                          onClick={() => handleSelectEquipment(equipment)}
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            handleSelectEquipment(equipment)}
+                          }
                         >
                           <AddCircleOutlineIcon />
                         </IconButton>
@@ -206,7 +243,18 @@ const AddEquipmentCard: React.FC<AddEquipmentCardProps> = ({ open, onClose, onAd
       <DialogActions>
         <Button onClick={onClose} color="secondary">Cancel</Button>
       </DialogActions>
+
+      {/* Equipment Info Modal using EquipmentInfoCard */}
+      {selectedEquipment && (
+      <EquipmentInfoCard 
+        open={infoOpen} 
+        onClose={handleCloseInfo} 
+        equipment={selectedEquipment} 
+      />
+    )}  
     </Dialog>
+
+
   );
 };
 

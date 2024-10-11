@@ -3,6 +3,8 @@ import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Typography, 
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { Equipment } from '../../interfaces/Aquarium';
 
+//Todo test
+
 interface EquipmentInfoCardProps {
   open: boolean;
   onClose: () => void;
