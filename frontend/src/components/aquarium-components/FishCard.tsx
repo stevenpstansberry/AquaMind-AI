@@ -186,14 +186,13 @@ const FishCard: React.FC<FishCardProps> = ({ aquarium }) => {
             {filteredSpecies.length > 0
               ? filteredSpecies.map((fish) => (
                   <Box key={fish.name} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 1 }}>
-                    
                     {/* Fish Name, Count and Info Button */}
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                       <Typography variant="body2">
                         {fish.name} (x{fish.count})
                       </Typography>
                       
-                      <Tooltip title="View Fish Info">
+                      <Tooltip title="View Fish Info" disableInteractive>
                         <IconButton
                           size="small"
                           color="info"
@@ -209,7 +208,7 @@ const FishCard: React.FC<FishCardProps> = ({ aquarium }) => {
 
                     {/* Increment/Decrement Button Group */}
                     <Box sx={{ display: 'flex', gap: 1 }}>
-                      <Tooltip title="Decrease count">
+                      <Tooltip title="Decrease count" disableInteractive>
                         <IconButton
                           size="small"
                           color="primary"
@@ -222,7 +221,7 @@ const FishCard: React.FC<FishCardProps> = ({ aquarium }) => {
                         </IconButton>
                       </Tooltip>
 
-                      <Tooltip title="Increase count">
+                      <Tooltip title="Increase count" disableInteractive>
                         <IconButton
                           size="small"
                           color="primary"
