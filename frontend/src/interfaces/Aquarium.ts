@@ -5,7 +5,7 @@ export interface Aquarium {
     type: "Freshwater" | "Saltwater";
     size: string;
     species: Fish[]; 
-    plants: { name: string; count: number; role: string }[]; 
+    plants:  Plant[]; 
     equipment: Equipment[];
     parameters?: {
       temperature?: number;
@@ -78,7 +78,7 @@ export interface Equipment {
   importance: string; // Why the equipment is important
   usage: string; // How the equipment is used
   specialConsiderations: string; // Any special considerations for the equipment
-  fields: { [key: string]: string };
+  fields: { [key: string]: string | undefined }; // Allow fields to be string or undefined
   type: 'filtration' | 'lighting' | 'heating' | 'feeding' | 'test_chemicals' | 'other'; // Category for display mode
 }
   
