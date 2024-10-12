@@ -26,6 +26,20 @@ interface AddEquipmentCardProps {
   aquarium: Aquarium;
 }
 
+const fieldUnitMapping: { [key: string]: string[] } = {
+  "Flow Rate": ["Gallons per Hour (GPH)", "Liters per Hour (LPH)", "Cubic Meters per Hour (m³/h)"],  
+  "Capacity": ["Gallons", "Liters", "Cubic Meters"],         
+  "Wattage": ["Watts (W)", "Kilowatts (kW)"],                
+  "Temperature Range": ["°F (Fahrenheit)", "°C (Celsius)"],  
+  "Spectrum Type": ["Kelvin (K)", "Nanometers (nm)"],    
+  "Quantity": ["Grams (g)", "Milligrams (mg)", "Ounces (oz)"],           
+  "Dosage": ["Milliliters (mL)", "Liters (L)", "Fluid Ounces (fl oz)"],   
+  "Frequency of Use": ["times/day", "times/week", "times/month"],         
+  // Add more field mappings as necessary...
+};
+
+
+
 const AddEquipmentCard: React.FC<AddEquipmentCardProps> = ({ open, onClose, onAddEquipment, aquarium }) => {
   const [selectedType, setSelectedType] = useState<string>('filtration');
   const [selectedEquipment, setSelectedEquipment] = useState<Equipment | null>(null); // Allow only one equipment to be selected
@@ -139,7 +153,7 @@ const AddEquipmentCard: React.FC<AddEquipmentCardProps> = ({ open, onClose, onAd
               <MenuItem value="other">Other</MenuItem>
             </Select>
           </FormControl>
-
+  
           {/* Search by Equipment Name */}
           <TextField
             label="Search Equipment"
@@ -149,7 +163,7 @@ const AddEquipmentCard: React.FC<AddEquipmentCardProps> = ({ open, onClose, onAd
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
-
+  
           {/* Equipment Table */}
           <TableContainer component={Paper}>
             <Table>
@@ -190,7 +204,7 @@ const AddEquipmentCard: React.FC<AddEquipmentCardProps> = ({ open, onClose, onAd
               </TableBody>
             </Table>
           </TableContainer>
-
+  
           {/* Pagination */}
           <TablePagination
             rowsPerPageOptions={[5, 10, 25]}
@@ -201,27 +215,49 @@ const AddEquipmentCard: React.FC<AddEquipmentCardProps> = ({ open, onClose, onAd
             onPageChange={handleChangePage}
             onRowsPerPageChange={handleChangeRowsPerPage}
           />
-
+  
           {/* Selected Equipment and Fields Input */}
           {selectedEquipment && (
             <Box mt={2}>
-              <Typography variant="h6">Selected Equipment to Add:</Typography>
-              <Typography variant="body2">{selectedEquipment.name}</Typography>
-
+              <Typography variant="h6" sx={{ mb: 2 }}>Selected Equipment to Add:</Typography>
+              <Typography variant="body2" sx={{ mb: 2 }}>{selectedEquipment.name}</Typography>
+  
               {/* Render input fields for the selected equipment's fields */}
               {equipmentList
                 .find((eq) => eq.name === selectedEquipment.name)
                 ?.fields.map((field) => (
-                  <TextField
-                    key={field}
-                    label={field}
-                    value={selectedEquipment.fields[field] || ''}
-                    onChange={(e) => handleFieldChange(field, e.target.value)}
-                    fullWidth
-                    margin="normal"
-                  />
+                  <Box key={field} display="flex" alignItems="center" sx={{ mb: 2 }}>
+                    {/* Input field for custom field */}
+                    <TextField
+                      label={field}
+                      value={selectedEquipment.fields[field] || ''}
+                      onChange={(e) => handleFieldChange(field, e.target.value)}
+                      sx={{ flex: 2, marginRight: '10px' }}  // Adjust for better alignment
+                      margin="dense"
+                    />
+  
+                    {/* Unit of measurement dropdown or placeholder for alignment */}
+                    {fieldUnitMapping[field] ? (
+                      <FormControl sx={{ flex: 1 }} margin="dense">
+                        <InputLabel>Unit</InputLabel>
+                        <Select
+                          value={selectedEquipment.fields[`${field}_unit`] || fieldUnitMapping[field][0]}  // Default to first unit
+                          onChange={(e) => handleFieldChange(`${field}_unit`, e.target.value)}  // Save the selected unit
+                        >
+                          {fieldUnitMapping[field].map((unit) => (
+                            <MenuItem key={unit} value={unit}>
+                              {unit}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
+                    ) : (
+                      // Invisible placeholder to keep fields aligned
+                      <Box sx={{ flex: 1 }} />
+                    )}
+                  </Box>
                 ))}
-
+  
               {/* Right-aligned button */}
               <Box display="flex" justifyContent="flex-end" mt={2}>
                 <Button
@@ -239,7 +275,7 @@ const AddEquipmentCard: React.FC<AddEquipmentCardProps> = ({ open, onClose, onAd
       <DialogActions>
         <Button onClick={onClose} color="secondary">Cancel</Button>
       </DialogActions>
-
+  
       {/* Equipment Info Modal using EquipmentInfoCard */}
       {equipmentInfo && (
         <EquipmentInfoCard
@@ -249,7 +285,7 @@ const AddEquipmentCard: React.FC<AddEquipmentCardProps> = ({ open, onClose, onAd
         />
       )}
     </Dialog>
-  );
+  );  
 };
 
 export default AddEquipmentCard;
