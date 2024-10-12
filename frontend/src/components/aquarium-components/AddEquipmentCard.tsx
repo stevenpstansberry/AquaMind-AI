@@ -26,7 +26,7 @@ interface AddEquipmentCardProps {
   aquarium: Aquarium;
 }
 
-const AddEquipmentCard: React.FC<AddEquipmentCardProps> = ({ open, onClose, onAddEquipment }) => {
+const AddEquipmentCard: React.FC<AddEquipmentCardProps> = ({ open, onClose, onAddEquipment, aquarium }) => {
   const [selectedType, setSelectedType] = useState<string>('filtration');
   const [selectedEquipment, setSelectedEquipment] = useState<Equipment | null>(null); // Allow only one equipment to be selected
   const [customFields, setCustomFields] = useState<{ [key: string]: string }>({});
@@ -35,13 +35,24 @@ const AddEquipmentCard: React.FC<AddEquipmentCardProps> = ({ open, onClose, onAd
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [infoOpen, setInfoOpen] = useState(false);
   const [equipmentInfo, setEquipmentInfo] = useState<Equipment | null>(null);
+  const [filteredEquipmentList, setFilteredEquipmentList] = useState<EquipmentFromDB[]>([]);
 
   // Mocked equipment list from DB
   const equipmentList: EquipmentFromDB[] = equipmentData as EquipmentFromDB[];
 
-  const filteredEquipmentList = equipmentList
-    .filter((equipment) => equipment.type === selectedType)
-    .filter((equipment) => equipment.name.toLowerCase().includes(searchQuery.toLowerCase()));
+  // Re-filter the equipment list whenever the modal is opened or the aquarium equipment changes
+  useEffect(() => {
+    if (open) {
+      const filteredList = equipmentList
+        .filter((equipment) => equipment.type === selectedType)
+        .filter((equipment) => equipment.name.toLowerCase().includes(searchQuery.toLowerCase()))
+        .filter((equipment) => {
+          // Exclude equipment already added to the aquarium
+          return !aquarium.equipment.some((aqEquipment) => aqEquipment.name === equipment.name);
+        });
+      setFilteredEquipmentList(filteredList);
+    }
+  }, [open, aquarium.equipment, selectedType, searchQuery]);
 
   const handleSelectEquipment = (equipment: EquipmentFromDB) => {
     const equipmentToAdd: Equipment = {
@@ -86,25 +97,21 @@ const AddEquipmentCard: React.FC<AddEquipmentCardProps> = ({ open, onClose, onAd
     setPage(0);
   };
 
-  const isEquipmentSelected = (equipment: Equipment) => {
-    return ((equipment: { name: any; }) => equipment.name === equipment.name);
-  };
-
   const handleEquipmentClick = (equipment: EquipmentFromDB) => {
-      const equipmentToAdd: Equipment = {
-        name: equipment.name,
-        description: equipment.description,
-        role: equipment.role,
-        importance: equipment.importance,
-        usage: equipment.usage,
-        specialConsiderations: equipment.specialConsiderations || '',
-        fields: {},  // Initialize fields as an empty object for user input
-        type: equipment.type,
-      };
-  
-      setEquipmentInfo(equipmentToAdd);
-      setInfoOpen(true);
-    }
+    const equipmentToAdd: Equipment = {
+      name: equipment.name,
+      description: equipment.description,
+      role: equipment.role,
+      importance: equipment.importance,
+      usage: equipment.usage,
+      specialConsiderations: equipment.specialConsiderations || '',
+      fields: {},  // Initialize fields as an empty object for user input
+      type: equipment.type,
+    };
+    
+    setEquipmentInfo(equipmentToAdd);
+    setInfoOpen(true);
+  };
 
   const handleCloseInfo = () => {
     setInfoOpen(false);
@@ -159,13 +166,11 @@ const AddEquipmentCard: React.FC<AddEquipmentCardProps> = ({ open, onClose, onAd
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((equipment) => (
                     <TableRow
-                    key={equipment.name}
-                    hover
-                    sx={{
-                      cursor: 'pointer',
-                    }}
-                    onClick={() => handleEquipmentClick(equipment)}  
-                  >
+                      key={equipment.name}
+                      hover
+                      sx={{ cursor: 'pointer' }}
+                      onClick={() => handleEquipmentClick(equipment)}
+                    >
                       <TableCell>{equipment.name}</TableCell>
                       <TableCell>{equipment.role}</TableCell>
                       <TableCell>{equipment.importance}</TableCell>
@@ -174,8 +179,8 @@ const AddEquipmentCard: React.FC<AddEquipmentCardProps> = ({ open, onClose, onAd
                           color="primary"
                           onClick={(event) => {
                             event.stopPropagation();
-                            handleSelectEquipment(equipment)}
-                          }
+                            handleSelectEquipment(equipment);
+                          }}
                         >
                           <AddCircleOutlineIcon />
                         </IconButton>
@@ -237,15 +242,13 @@ const AddEquipmentCard: React.FC<AddEquipmentCardProps> = ({ open, onClose, onAd
 
       {/* Equipment Info Modal using EquipmentInfoCard */}
       {equipmentInfo && (
-      <EquipmentInfoCard 
-        open={infoOpen} 
-        onClose={handleCloseInfo} 
-        equipment={equipmentInfo} 
-      />
-    )}  
+        <EquipmentInfoCard
+          open={infoOpen}
+          onClose={handleCloseInfo}
+          equipment={equipmentInfo}
+        />
+      )}
     </Dialog>
-
-
   );
 };
 
