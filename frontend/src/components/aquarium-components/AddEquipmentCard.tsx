@@ -96,11 +96,29 @@ const AddEquipmentCard: React.FC<AddEquipmentCardProps> = ({ open, onClose, onAd
   // Ensure selected equipment and its fields are correctly saved
   const handleSaveEquipment = () => {
     if (selectedEquipment) {
-      console.log("Saving this equipment", selectedEquipment);  // Debugging output
-      onAddEquipment(selectedEquipment);  // Save the selected equipment with its fields
+      const updatedFields = { ...selectedEquipment.fields };
+  
+      // Concatenate the selected unit with the value for each field
+      Object.keys(updatedFields).forEach((field) => {
+        // Only concatenate if there is a unit mapping for the field
+        const unit = updatedFields[`${field}_unit`];
+        if (unit) {
+          updatedFields[field] = `${updatedFields[field]} ${unit}`;
+        }
+      });
+  
+      const equipmentToSave = {
+        ...selectedEquipment,
+        fields: updatedFields,
+      };
+  
+      console.log("Saving this equipment", equipmentToSave);  // Debugging output
+      onAddEquipment(equipmentToSave);  // Save the selected equipment with concatenated units
       setCustomFields({});  // Reset custom fields
+      setSelectedEquipment(null);  // Reset selected equipment
     }
   };
+  
 
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);
