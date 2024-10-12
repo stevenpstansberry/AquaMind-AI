@@ -94,17 +94,28 @@ const EquipmentCard: React.FC<EquipmentCardProps> = ({ aquarium }) => {
 
   const handleAddNewEquipment = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation(); // Prevent cycling mode when adding new equipment
+    setEquipmentList(aquarium.equipment); 
     setAddEquipmentOpen(true);
   };
 
   const handleAddEquipment = (newEquipment: any) => {
-    setEquipmentList([...equipmentList, newEquipment]);
+    // Add the new equipment to the actual aquarium.equipment array
+    const updatedAquariumEquipment = [...aquarium.equipment, newEquipment];
+  
+    // Update the aquarium object
+    aquarium.equipment = updatedAquariumEquipment;
+  
+    // Sync the local state with the updated aquarium.equipment
+    setEquipmentList(updatedAquariumEquipment);
+  
+    // Close the Add Equipment modal
     setAddEquipmentOpen(false);
   };
-
+  
   const handleCloseAddEquipment = () => {
     setAddEquipmentOpen(false);
   };
+
 
   // Handle opening delete confirmation dialog
   const handleOpenDeleteDialog = (equipment: any) => {
@@ -118,11 +129,21 @@ const EquipmentCard: React.FC<EquipmentCardProps> = ({ aquarium }) => {
     setEquipmentToDelete(null); // Reset the tracked equipment
   };
 
-  // Handle deleting the selected equipment
-  const handleDeleteEquipment = () => {
-    setEquipmentList(equipmentList.filter(item => item !== equipmentToDelete)); // Remove the equipment from the list
-    setDeleteDialogOpen(false); // Close the dialog after deletion
-  };
+// Handle deleting the selected equipment
+const handleDeleteEquipment = () => {
+  // Remove the equipment from the aquarium.equipment array
+  const updatedAquariumEquipment = aquarium.equipment.filter(item => item !== equipmentToDelete);
+
+  // Update the aquarium object
+  aquarium.equipment = updatedAquariumEquipment;
+
+  // Sync the local state with the updated aquarium.equipment
+  setEquipmentList(updatedAquariumEquipment);
+
+  // Close the delete confirmation dialog
+  setDeleteDialogOpen(false);
+};
+
 
   const displayModeText = {
     [DisplayMode.ALL_EQUIPMENT]: 'All Equipment',
