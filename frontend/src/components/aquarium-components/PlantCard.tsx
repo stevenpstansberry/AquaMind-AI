@@ -5,6 +5,7 @@ import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'; 
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';  // Import the Outlined Info icon
+import PlantInfoCard from './PlantInfoCard';
 import { Aquarium } from '../../interfaces/Aquarium';
 
 interface PlantCardProps {
@@ -25,7 +26,7 @@ const PlantCard: React.FC<PlantCardProps> = ({ aquarium }) => {
   const [plantList, setPlantList] = useState(aquarium.plants); // Track plant count updates
   const [originalPlantList, setOriginalPlantList] = useState(aquarium.plants); // Track original state of plant list
   const [changesSaved, setChangesSaved] = useState(true); // Track unsaved changes
-  const [selectedPlant, setSelectedPlant] = useState<{ name: string; count: number; role: string } | null>(null);  // Track selected plant
+  const [selectedPlant, setSelectedPlant] = useState<{ name: string; count: number; role: string; type: string } | null>(null);  // Track selected plant
   const [infoCardOpen, setInfoCardOpen] = useState(false);  
   const [addPlantOpen, setAddPlantOpen] = useState(false);  
   const [plantToDelete, setPlantToDelete] = useState<{ name: string; count: number; role: string; type: string } | null>(null);  // Track fish to be deleted
@@ -150,10 +151,10 @@ const PlantCard: React.FC<PlantCardProps> = ({ aquarium }) => {
     setAddPlantOpen(false);  
   };
 
-  const handleShowPlantInfo = (plant: { name: string; count: number; role: string }) => {
-    setSelectedPlant(plant);
-    setInfoCardOpen(true);
-    console.log('Plant details:', plant);
+  const handleShowPlantInfo = (plant: { name: string; count: number; role: string; type: string }) => {
+      setSelectedPlant(plant);
+      setInfoCardOpen(true);
+      console.log('Plant details:', plant);
   };
 
   const handleInfoCardClose = () => {
@@ -174,112 +175,117 @@ const PlantCard: React.FC<PlantCardProps> = ({ aquarium }) => {
   };
 
   return (
-    <Card sx={cardStyle} onClick={cycleDisplayMode}>
-      <CardContent>
-        <Typography variant="h6">Plants</Typography>
-        <Typography variant="body1">{displayModeText[displayMode]}</Typography>
-        
-        <Box sx={{ marginTop: 2 }}>
-          {filteredPlants.length > 0
-            ? filteredPlants.map((plant) => (
-                <Box key={plant.name} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 1 }}>
-                  
-                  {/* Plant Name, Count and Info Button */}
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <Typography variant="body2">
-                      {plant.name} (x{plant.count})
-                    </Typography>
+    <>
+      <Card sx={cardStyle} onClick={cycleDisplayMode}>
+        <CardContent>
+          <Typography variant="h6">Plants</Typography>
+          <Typography variant="body1">{displayModeText[displayMode]}</Typography>
+          
+          <Box sx={{ marginTop: 2 }}>
+            {filteredPlants.length > 0
+              ? filteredPlants.map((plant) => (
+                  <Box key={plant.name} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 1 }}>
                     
-                    {/* Info Button placed directly next to the plant name and count */}
-                    <Tooltip title="View Plant Info">
-                      <IconButton
-                        size="small"
-                        color="info"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleShowPlantInfo(plant);
-                        }}
-                      >
-                        <InfoOutlinedIcon />
-                      </IconButton>
-                    </Tooltip>
+                    {/* Plant Name, Count and Info Button */}
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <Typography variant="body2">
+                        {plant.name} (x{plant.count})
+                      </Typography>
+                      
+                      {/* Info Button placed directly next to the plant name and count */}
+                      <Tooltip title="View Plant Info">
+                        <IconButton
+                          size="small"
+                          color="info"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleShowPlantInfo(plant);
+                          }}
+                        >
+                          <InfoOutlinedIcon />
+                        </IconButton>
+                      </Tooltip>
+                    </Box>
+
+                    {/* Increment/Decrement Button Group */}
+                    <Box sx={{ display: 'flex', gap: 1 }}>
+                      <Tooltip title="Decrease count">
+                        <IconButton
+                          size="small"
+                          color="primary"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDecrement(plant.name);
+                          }}
+                        >
+                          <RemoveIcon />
+                        </IconButton>
+                      </Tooltip>
+
+                      <Tooltip title="Increase count">
+                        <IconButton
+                          size="small"
+                          color="primary"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleIncrement(plant.name);
+                          }}
+                        >
+                          <AddIcon />
+                        </IconButton>
+                      </Tooltip>
+                    </Box>
                   </Box>
-
-                  {/* Increment/Decrement Button Group */}
-                  <Box sx={{ display: 'flex', gap: 1 }}>
-                    <Tooltip title="Decrease count">
-                      <IconButton
-                        size="small"
-                        color="primary"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDecrement(plant.name);
-                        }}
-                      >
-                        <RemoveIcon />
-                      </IconButton>
-                    </Tooltip>
-
-                    <Tooltip title="Increase count">
-                      <IconButton
-                        size="small"
-                        color="primary"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleIncrement(plant.name);
-                        }}
-                      >
-                        <AddIcon />
-                      </IconButton>
-                    </Tooltip>
-                  </Box>
-                </Box>
-              ))
-            : <Typography variant="body2">No plants in this category.</Typography>
-          }
-        </Box>
-
-        {/* Add New Plant Row */}
-        <Box sx={{ display: 'flex', alignItems: 'center', marginTop: 2 }}>
-          <Typography variant="body2" sx={{ flexGrow: 1 }}>
-            Add New Plant
-          </Typography>
-
-          <Tooltip title="Add New Plant">
-            <IconButton
-              color="primary"
-              onClick={handleAddNewPlant}
-            >
-              <AddCircleOutlineIcon />
-            </IconButton>
-          </Tooltip>
-        </Box>
-
-        {/* Save/Discard Buttons */}
-        {!changesSaved && (
-          <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, marginTop: 2 }}>
-            <Button onClick={handleDiscardChanges} color="secondary" variant="outlined">
-              Discard Changes
-            </Button>
-            <Button onClick={handleSaveChanges} color="primary" variant="contained">
-              Save Changes
-            </Button>
+                ))
+              : <Typography variant="body2">No plants in this category.</Typography>
+            }
           </Box>
-        )}
-      </CardContent>
 
-      <IconButton color="primary" sx={iconStyle} onClick={handleMenuOpen}>
-          <MoreVertIcon />
-      </IconButton>
+          {/* Add New Plant Row */}
+          <Box sx={{ display: 'flex', alignItems: 'center', marginTop: 2 }}>
+            <Typography variant="body2" sx={{ flexGrow: 1 }}>
+              Add New Plant
+            </Typography>
 
-      <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
-          <MenuItem onClick={() => setDisplayMode(DisplayMode.ALL_PLANTS)}>All Plants</MenuItem>
-          <MenuItem onClick={() => setDisplayMode(DisplayMode.FAST_GROWING)}>Fast Growing Plants</MenuItem>
-          <MenuItem onClick={() => setDisplayMode(DisplayMode.SLOW_GROWING)}>Slow Growing Plants</MenuItem>
-          <MenuItem onClick={() => setDisplayMode(DisplayMode.FLOATING)}>Floating Plants</MenuItem>
-          <MenuItem onClick={() => setDisplayMode(DisplayMode.ROOTED)}>Rooted Plants</MenuItem>
-        </Menu>
-    </Card>    
+            <Tooltip title="Add New Plant">
+              <IconButton
+                color="primary"
+                onClick={handleAddNewPlant}
+              >
+                <AddCircleOutlineIcon />
+              </IconButton>
+            </Tooltip>
+          </Box>
+
+          {/* Save/Discard Buttons */}
+          {!changesSaved && (
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, marginTop: 2 }}>
+              <Button onClick={handleDiscardChanges} color="secondary" variant="outlined">
+                Discard Changes
+              </Button>
+              <Button onClick={handleSaveChanges} color="primary" variant="contained">
+                Save Changes
+              </Button>
+            </Box>
+          )}
+        </CardContent>
+
+        <IconButton color="primary" sx={iconStyle} onClick={handleMenuOpen}>
+            <MoreVertIcon />
+        </IconButton>
+
+        <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
+            <MenuItem onClick={() => setDisplayMode(DisplayMode.ALL_PLANTS)}>All Plants</MenuItem>
+            <MenuItem onClick={() => setDisplayMode(DisplayMode.FAST_GROWING)}>Fast Growing Plants</MenuItem>
+            <MenuItem onClick={() => setDisplayMode(DisplayMode.SLOW_GROWING)}>Slow Growing Plants</MenuItem>
+            <MenuItem onClick={() => setDisplayMode(DisplayMode.FLOATING)}>Floating Plants</MenuItem>
+            <MenuItem onClick={() => setDisplayMode(DisplayMode.ROOTED)}>Rooted Plants</MenuItem>
+          </Menu>
+      </Card>
+
+      {/* Plant Info Modal */}
+      <PlantInfoCard open={infoCardOpen} onClose={handleInfoCardClose} plant={selectedPlant} />
+    </>    
   );
 };
 
