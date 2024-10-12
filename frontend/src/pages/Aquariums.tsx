@@ -107,7 +107,7 @@ useEffect(() => {
 
                 {/* Plant Card */}
                 <Grid item xs={12} md={6} lg={6}>
-                  <PlantCard plants={currentAquarium.plants} />
+                  <PlantCard aquarium={currentAquarium} />
                 </Grid>
 
                 {/* Equipment Card */}
