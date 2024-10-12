@@ -6,6 +6,7 @@ import {
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import EquipmentInfoCard from './EquipmentInfoCard';
 import { Aquarium, Equipment } from '../../interfaces/Aquarium';
+import equipmentData from '../../util/EquipmentData.json';
 
 interface EquipmentFromDB {
   name: string;
@@ -35,18 +36,7 @@ const AddEquipmentCard: React.FC<AddEquipmentCardProps> = ({ open, onClose, onAd
   const [infoOpen, setInfoOpen] = useState(false);
 
   // Mocked equipment list from DB
-  const equipmentList: EquipmentFromDB[] = [
-    {
-      name: "Filter",
-      description: "Removes debris, waste, and harmful chemicals from the water.",
-      role: "Water Filtration",
-      importance: "Maintains water quality by filtering out harmful chemicals.",
-      usage: "Install in the aquarium and clean or replace filter media.",
-      fields: ["Brand", "Model Name", "Flow Rate", "Type"],
-      type: "filtration"
-    },
-    // other equipment...
-  ];
+  const equipmentList: EquipmentFromDB[] = equipmentData as EquipmentFromDB[];
 
   const filteredEquipmentList = equipmentList
     .filter((equipment) => equipment.type === selectedType)
