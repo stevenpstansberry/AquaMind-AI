@@ -34,6 +34,7 @@ const AddEquipmentCard: React.FC<AddEquipmentCardProps> = ({ open, onClose, onAd
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [infoOpen, setInfoOpen] = useState(false);
+  const [equipmentInfo, setEquipmentInfo] = useState<Equipment | null>(null);
 
   // Mocked equipment list from DB
   const equipmentList: EquipmentFromDB[] = equipmentData as EquipmentFromDB[];
@@ -101,13 +102,13 @@ const AddEquipmentCard: React.FC<AddEquipmentCardProps> = ({ open, onClose, onAd
         type: equipment.type,
       };
   
-      setSelectedEquipment(equipmentToAdd);
+      setEquipmentInfo(equipmentToAdd);
       setInfoOpen(true);
     }
 
   const handleCloseInfo = () => {
     setInfoOpen(false);
-    setSelectedEquipment(null);
+    setEquipmentInfo(null);
   };
 
   return (
@@ -235,11 +236,11 @@ const AddEquipmentCard: React.FC<AddEquipmentCardProps> = ({ open, onClose, onAd
       </DialogActions>
 
       {/* Equipment Info Modal using EquipmentInfoCard */}
-      {selectedEquipment && (
+      {equipmentInfo && (
       <EquipmentInfoCard 
         open={infoOpen} 
         onClose={handleCloseInfo} 
-        equipment={selectedEquipment} 
+        equipment={equipmentInfo} 
       />
     )}  
     </Dialog>
