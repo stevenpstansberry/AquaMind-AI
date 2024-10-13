@@ -1,3 +1,12 @@
+/**
+ * @fileoverview This component renders a detailed information card for an aquarium plant, displaying its
+ * attributes such as general information, tank and water requirements, growth, care, propagation,
+ * lifespan, and compatibility.
+ *
+ * @author Steven Stansberry
+ * @file src/components/aquarium-components/PlantInfoCard.tsx
+ */
+
 import React from 'react';
 import {
   Dialog, DialogTitle, DialogContent, DialogActions, Button, Typography, Box,
@@ -6,12 +15,22 @@ import {
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { Plant } from '../../interfaces/Aquarium'; // Assuming Plant interface is defined in Aquarium
 
-interface PlantInfoCardProps {
-  open: boolean;
-  onClose: () => void;
-  plant: Plant | null;
-}
+/**
+ * Props for the PlantInfoCard component.
+ * @typedef {Object} PlantInfoCardProps
+ * @property {boolean} open - Determines whether the dialog is open or closed.
+ * @property {() => void} onClose - Function to close the dialog.
+ * @property {Plant | null} plant - The plant object containing information to display, or null if no plant is selected.
+ */
 
+/**
+ * PlantInfoCard component.
+ * Renders a dialog containing detailed information about an aquarium plant.
+ *
+ * @component
+ * @param {PlantInfoCardProps} props - The props for the component.
+ * @returns {React.ReactElement | null} The rendered plant info card, or null if no plant is selected.
+ */
 const PlantInfoCard: React.FC<PlantInfoCardProps> = ({ open, onClose, plant }) => {
   if (!plant) return null;
 
