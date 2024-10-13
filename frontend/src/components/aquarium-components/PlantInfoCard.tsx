@@ -6,14 +6,13 @@
  * @author Steven Stansberry
  * @file src/components/aquarium-components/PlantInfoCard.tsx
  */
-
 import React from 'react';
 import {
   Dialog, DialogTitle, DialogContent, DialogActions, Button, Typography, Box,
   Accordion, AccordionSummary, AccordionDetails
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { Plant } from '../../interfaces/Aquarium'; // Assuming Plant interface is defined in Aquarium
+import { Plant } from '../../interfaces/Aquarium'; 
 
 /**
  * Props for the PlantInfoCard component.
@@ -22,6 +21,12 @@ import { Plant } from '../../interfaces/Aquarium'; // Assuming Plant interface i
  * @property {() => void} onClose - Function to close the dialog.
  * @property {Plant | null} plant - The plant object containing information to display, or null if no plant is selected.
  */
+interface PlantInfoCardProps {
+  open: boolean;
+  onClose: () => void;
+  plant: Plant | null;
+}
+
 
 /**
  * PlantInfoCard component.
