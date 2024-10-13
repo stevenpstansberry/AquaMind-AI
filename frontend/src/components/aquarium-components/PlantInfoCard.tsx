@@ -16,7 +16,7 @@ import { Plant } from '../../interfaces/Aquarium';
 
 /**
  * Props for the PlantInfoCard component.
- * @typedef {Object} PlantInfoCardProps
+ * @type {Object} PlantInfoCardProps
  * @property {boolean} open - Determines whether the dialog is open or closed.
  * @property {() => void} onClose - Function to close the dialog.
  * @property {Plant | null} plant - The plant object containing information to display, or null if no plant is selected.

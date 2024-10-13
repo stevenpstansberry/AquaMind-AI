@@ -6,6 +6,7 @@ import RemoveIcon from '@mui/icons-material/Remove';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'; 
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';  // Import the Outlined Info icon
 import PlantInfoCard from './PlantInfoCard';
+import AddPlantCard from './AddPlantCard';
 import { Aquarium } from '../../interfaces/Aquarium';
 
 interface PlantCardProps {
@@ -285,6 +286,9 @@ const PlantCard: React.FC<PlantCardProps> = ({ aquarium }) => {
 
       {/* Plant Info Modal */}
       <PlantInfoCard open={infoCardOpen} onClose={handleInfoCardClose} plant={selectedPlant} />
+
+      {/* Add Plant Modal */}
+      <AddPlantCard open={addPlantOpen} onClose={handleCloseAddPlant} aquarium={aquarium} onAddPlant={handleAddPlant} />
     </>    
   );
 };
