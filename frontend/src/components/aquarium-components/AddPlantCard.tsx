@@ -73,8 +73,14 @@ const AddPlantCard: React.FC<AddPlantCardProps> = ({ open, onClose, aquarium, on
 
   const plantList = aquarium.type === 'Freshwater' ? freshwaterPlantList : [];  // Saltwater plants could be added later
 
+   // Extract names of existing plants in the aquarium
+   const existingPlantNames = aquarium.plants.map(plant => plant.name.toLowerCase());
+
+   // Filter the plant list to exclude plants that are already in the aquarium
+   const availablePlants = plantList.filter(plant => !existingPlantNames.includes(plant.name.toLowerCase()));
+
   // Filter plant list based on role, care level, minimum tank size, and search query
-  const filteredPlantList = plantList.filter(plant => {
+  const filteredPlantList = availablePlants.filter(plant => {
     return (
       (!roleFilter || plant.role === roleFilter) &&
       (!careLevelFilter || plant.careLevel === careLevelFilter) &&
