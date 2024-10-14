@@ -24,7 +24,7 @@ enum DisplayMode {
 const PlantCard: React.FC<PlantCardProps> = ({ aquarium }) => {
   const [displayMode, setDisplayMode] = useState<DisplayMode>(DisplayMode.ALL_PLANTS);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [plantList, setPlantList] = useState(aquarium.plants); // Track plant count updates
+  const [plantList, setPlantList] = useState(aquarium.plants || []);  // Track plant count updates
   const [originalPlantList, setOriginalPlantList] = useState(aquarium.plants); // Track original state of plant list
   const [changesSaved, setChangesSaved] = useState(true); // Track unsaved changes
   const [selectedPlant, setSelectedPlant] = useState<{ name: string; count: number; role: string; type: string } | null>(null);  // Track selected plant
@@ -35,27 +35,32 @@ const PlantCard: React.FC<PlantCardProps> = ({ aquarium }) => {
 
   // Update plantList and originalPlantList when new plants props are passed
   useEffect(() => {
-    console.log('aquarium.plants:', aquarium.plants);
-    
-    // Ensure every plant has a valid count
-    const validatedPlants = aquarium.plants.map(plant => ({
+    const plants = aquarium.plants || [];
+    console.log('aquarium.plants:', plants);
+    const validatedPlants = plants.map(plant => ({
       ...plant,
-      count: plant.count ?? 1,  // Default to 1 if count is missing
+      count: plant.count ?? 1,
     }));
-  
     setPlantList(validatedPlants);
     setOriginalPlantList(validatedPlants);
     setChangesSaved(true);
   }, [aquarium]);
   
+  
 
   // Function to compare current plant list with the original list
   const checkChangesSaved = () => {
-    if(!plantList || !originalPlantList) return;
-
+    if (!plantList || !originalPlantList) return;
+  
+    if (plantList.length !== originalPlantList.length) {
+      setChangesSaved(false);
+      return;
+    }
+  
     const isSame = plantList.every((plant, idx) => plant.count === originalPlantList[idx].count);
     setChangesSaved(isSame);
   };
+  
 
   // Update to check for changes every time plantList is updated
   useEffect(() => {
@@ -344,6 +349,27 @@ const handleConfirmDelete = () => {
 
       {/* Add Plant Modal */}
       <AddPlantCard open={addPlantOpen} onClose={handleCloseAddPlant} aquarium={aquarium} onAddPlant={handleAddPlant} />
+
+        {/* Confirm Delete Plant Dialog */}
+        <Dialog
+        open={confirmDeleteOpen}
+        onClose={handleCancelDelete}
+      >
+        <DialogTitle>Confirm Fish Removal</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Are you sure you want to remove <strong>{plantToDelete?.name}</strong> from the aquarium?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCancelDelete} color="secondary">
+            Cancel
+          </Button>
+          <Button onClick={handleConfirmDelete} color="primary">
+            Confirm
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>    
   );
 };
