@@ -1,73 +1,56 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Box, Typography, Button, TextField, CircularProgress } from '@mui/material';
+import { Box, Typography, Button, TextField } from '@mui/material';
 import { Aquarium } from '../interfaces/Aquarium'  
 
-/**
- * Props for the AIChatInterface component.
- * @typedef {Object} AIChatInterfaceProps
- * @property {boolean} showChat - A flag to toggle the visibility of the chat interface.
- * @property {function} onClose - A callback function to handle closing the chat interface.
- * @property {Aquarium} [aquarium] - Optional aquarium data for AI suggestions based on the tank.
- */
 interface AIChatInterfaceProps {
   showChat: boolean;
   onClose: () => void;
-  aquarium?: Aquarium;  // Optional aquarium prop
+  aquarium?: Aquarium;
 }
 
-/**
- * AIChatInterface component provides a simple messaging interface between the user and a simulated AI.
- * It can optionally take aquarium data to provide tank-related suggestions.
- * 
- * @param {AIChatInterfaceProps} props - The properties passed to the component.
- * @returns {JSX.Element} The rendered AIChatInterface component.
- */
 const AIChatInterface: React.FC<AIChatInterfaceProps> = ({ showChat, onClose, aquarium }) => {
-  const [messages, setMessages] = useState<{ sender: string, text: string }[]>([]);
+  const [messages, setMessages] = useState<{ sender: string, text: string, timestamp: string }[]>([]);
   const [userInput, setUserInput] = useState('');
   const [loading, setLoading] = useState(false);
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
-  /**
-   * Scrolls to the bottom of the chat container when new messages are added.
-   */
   const scrollToBottom = () => {
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
     }
   };
 
-  /**
-   * Handles sending a message. The user's message is added to the chat, followed by a simulated AI response.
-   * The AI response can be contextual if aquarium data is provided.
-   */
+  const getCurrentTimestamp = () => {
+    return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  };
+
   const handleSendMessage = async () => {
     if (!userInput.trim()) return;
 
-    // Add the user's message to the conversation
-    const newMessage = { sender: 'User', text: userInput };
+    const newMessage = { sender: 'User', text: userInput, timestamp: getCurrentTimestamp() };
     setMessages((prev) => [...prev, newMessage]);
-    setUserInput(''); // Clear the input
+    setUserInput('');
 
-    // Simulated AI response with optional aquarium context
     setLoading(true);
     setTimeout(() => {
       let aiResponseText = `Simulated response to: "${newMessage.text}"`;
 
-      // Add some context based on the aquarium if available
       if (aquarium) {
-        aiResponseText += ` (Considering your ${aquarium.name} tank with ${aquarium.species.length} species)`;
+        aiResponseText += ` Considering your ${aquarium.name} tank with the following details: ${JSON.stringify(aquarium)}`;
       }
 
-      const aiResponse = { sender: 'AI', text: aiResponseText };
+      const aiResponse = { sender: 'AI', text: aiResponseText, timestamp: getCurrentTimestamp() };
       setMessages((prev) => [...prev, aiResponse]);
       setLoading(false);
     }, 1000);
   };
 
-  /**
-   * useEffect hook to scroll to the bottom of the chat whenever new messages are added.
-   */
+  const handleKeyPress = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === 'Enter') {
+      handleSendMessage();
+    }
+  };
+
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
@@ -104,22 +87,101 @@ const AIChatInterface: React.FC<AIChatInterfaceProps> = ({ showChat, onClose, aq
             }}
           >
             {messages.map((message, index) => (
-              <Box key={index} display="flex" justifyContent={message.sender === 'User' ? 'flex-end' : 'flex-start'} mb={1}>
+              <Box key={index} mb={1}>
+                {/* Timestamp */}
                 <Typography
                   sx={{
-                    bgcolor: message.sender === 'User' ? '#007bff' : '#e0e0e0',
-                    color: message.sender === 'User' ? '#fff' : '#000',
+                    fontSize: '12px',
+                    color: '#888',
+                    textAlign: message.sender === 'User' ? 'right' : 'left',
+                    mb: '5px',
+                  }}
+                >
+                  {message.timestamp}
+                </Typography>
+
+                {/* Message */}
+                <Box display="flex" justifyContent={message.sender === 'User' ? 'flex-end' : 'flex-start'}>
+                  <Typography
+                    sx={{
+                      bgcolor: message.sender === 'User' ? '#007bff' : '#e0e0e0',
+                      color: message.sender === 'User' ? '#fff' : '#000',
+                      padding: '10px',
+                      borderRadius: '10px',
+                      maxWidth: '70%',
+                      wordWrap: 'break-word',
+                    }}
+                  >
+                    {message.text}
+                  </Typography>
+                </Box>
+              </Box>
+            ))}
+
+            {/* Loading indicator (cascading dots) */}
+            {loading && (
+              <Box display="flex" justifyContent="flex-start" mb={1}>
+                <Typography
+                  sx={{
+                    bgcolor: '#e0e0e0',
+                    color: '#000',
                     padding: '10px',
                     borderRadius: '10px',
                     maxWidth: '70%',
                     wordWrap: 'break-word',
                   }}
                 >
-                  {message.text}
+                  <Box
+                    sx={{
+                      display: 'inline-block',
+                      width: '8px',
+                      height: '8px',
+                      borderRadius: '50%',
+                      backgroundColor: '#000',
+                      animation: 'dot 1.4s infinite both',
+                      '@keyframes dot': {
+                        '0%': { transform: 'scale(0)' },
+                        '40%': { transform: 'scale(1)' },
+                        '100%': { transform: 'scale(0)' },
+                      },
+                      '&:nth-of-type(1)': {
+                        animationDelay: '0s',
+                      },
+                      '&:nth-of-type(2)': {
+                        animationDelay: '0.2s',
+                      },
+                      '&:nth-of-type(3)': {
+                        animationDelay: '0.4s',
+                      },
+                    }}
+                  />
+                  <Box
+                    component="span"
+                    sx={{
+                      display: 'inline-block',
+                      width: '8px',
+                      height: '8px',
+                      borderRadius: '50%',
+                      backgroundColor: '#000',
+                      marginLeft: '4px',
+                      animation: 'dot 1.4s infinite both',
+                    }}
+                  />
+                  <Box
+                    component="span"
+                    sx={{
+                      display: 'inline-block',
+                      width: '8px',
+                      height: '8px',
+                      borderRadius: '50%',
+                      backgroundColor: '#000',
+                      marginLeft: '4px',
+                      animation: 'dot 1.4s infinite both',
+                    }}
+                  />
                 </Typography>
               </Box>
-            ))}
-            {loading && <CircularProgress size={24} />}
+            )}
           </Box>
 
           {/* Input area */}
@@ -127,6 +189,7 @@ const AIChatInterface: React.FC<AIChatInterfaceProps> = ({ showChat, onClose, aq
             <TextField
               value={userInput}
               onChange={(e) => setUserInput(e.target.value)}
+              onKeyUp={handleKeyPress}
               placeholder="Type your question..."
               variant="outlined"
               fullWidth
