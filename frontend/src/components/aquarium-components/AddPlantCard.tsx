@@ -91,8 +91,8 @@ const AddPlantCard: React.FC<AddPlantCardProps> = ({ open, onClose, aquarium, on
   const handleSelectPlant = (plant: Plant) => {
     const isSelected = selectedPlantList.some(p => p.name === plant.name);
     
-    // Ensure `count` is initialized
-    const plantWithCount = { ...plant, count: plant.count || 1 };  // Add default count if it's missing
+    // Ensure `count` is initialized with a default value if undefined
+    const plantWithCount = { ...plant, count: plant.count ?? 1 };  // Use '??' to assign 1 if count is undefined
   
     if (isSelected) {
       setSelectedPlantList(selectedPlantList.filter(p => p.name !== plant.name));  
@@ -118,7 +118,7 @@ const AddPlantCard: React.FC<AddPlantCardProps> = ({ open, onClose, aquarium, on
   };
 
   const handleAddAllPlants = () => {
-    // Double-check before adding that all plants have the `count` property
+    // Ensure all selected plants have a valid `count` property
     if (selectedPlantList.every(plant => plant.count !== undefined)) {
       onAddPlant(selectedPlantList);  
       setSelectedPlantList([]);  

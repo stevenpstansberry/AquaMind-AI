@@ -311,8 +311,12 @@ const AddFishCard: React.FC<AddFishCardProps> = ({ open, onClose, aquarium, onAd
 
   const fishList = aquarium.type === 'Freshwater' ? freshwaterFishList : saltwaterFishList;
 
+  const existingFishNames = aquarium.species.map(fish => fish.name.toLowerCase());
+
+  const availableFish = fishList.filter(fish => !existingFishNames.includes(fish.name.toLowerCase()));
+
   // Filter fish list based on role, care level, minimum tank size, and search query
-  const filteredFishList = fishList.filter(fish => {
+  const filteredFishList = availableFish.filter(fish => {
     return (
       (!roleFilter || fish.role === roleFilter) &&
       (!careLevelFilter || fish.careLevel === careLevelFilter) &&  // Filter by care level
