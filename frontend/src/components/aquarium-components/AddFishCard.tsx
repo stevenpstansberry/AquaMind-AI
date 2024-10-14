@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField,
   Box, MenuItem, Select, InputLabel, FormControl, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TablePagination, Typography, IconButton, List, ListItem
@@ -293,10 +293,6 @@ const saltwaterFishList = [
   }
 ];
 
-
-
-
-
 const AddFishCard: React.FC<AddFishCardProps> = ({ open, onClose, aquarium, onAddFish }) => {
   const [roleFilter, setRoleFilter] = useState('');  
   const [careLevelFilter, setCareLevelFilter] = useState('');  // New filter for care level
@@ -308,18 +304,49 @@ const AddFishCard: React.FC<AddFishCardProps> = ({ open, onClose, aquarium, onAd
   const [selectedFishList, setSelectedFishList] = useState<Fish[]>([]);  
   const [selectedFish, setSelectedFish] = useState<Fish | null>(null);  
   const [infoOpen, setInfoOpen] = useState(false);  
+  const [filteredFishList, setFilteredFishList] = useState<Fish[]>([]);
 
+  // Local state for keeping track of fish in the aquarium
+  const [localAquarium, setLocalAquarium] = useState<Aquarium>(aquarium);
+
+  // Select fish list based on aquarium type
   const fishList = aquarium.type === 'Freshwater' ? freshwaterFishList : saltwaterFishList;
 
   // Filter fish list based on role, care level, minimum tank size, and search query
-  const filteredFishList = fishList.filter(fish => {
-    return (
-      (!roleFilter || fish.role === roleFilter) &&
-      (!careLevelFilter || fish.careLevel === careLevelFilter) &&  // Filter by care level
-      (!minTankSizeFilter || Number(fish.minTankSize) <= minTankSizeFilter) &&  // Ensure fish tank size <= user's tank size
-      (!searchQuery || fish.name.toLowerCase().includes(searchQuery.toLowerCase()))
-    );
-  });
+  useEffect(() => {
+    if (open) {
+      console.log("Dialog opened. Filtering fish.");
+
+      // Map the names of fish that already exist in the aquarium
+      const existingFishNames = localAquarium.species.map(fish => fish.name.toLowerCase());
+      console.log("Existing fish names (lowercased):", existingFishNames);
+
+      // Filter the fish list based on the current aquarium state and available fish
+      const availableFish = fishList.filter(fish => {
+        const isExisting = existingFishNames.includes(fish.name.toLowerCase());
+        console.log(`Checking if ${fish.name} is already in the aquarium: ${isExisting}`);
+        return !isExisting; // Exclude existing fish
+      });
+
+      console.log("Available fish after filtering:", availableFish);
+
+      // Apply other filters: role, care level, tank size, search query
+      const filteredFish = availableFish.filter(fish => {
+        const matchesRole = !roleFilter || fish.role === roleFilter;
+        const matchesCareLevel = !careLevelFilter || fish.careLevel === careLevelFilter;
+        const matchesTankSize = !minTankSizeFilter || Number(fish.minTankSize) <= minTankSizeFilter;
+        const matchesSearch = !searchQuery || fish.name.toLowerCase().includes(searchQuery.toLowerCase());
+
+        console.log(`Fish: ${fish.name}, Role: ${matchesRole}, CareLevel: ${matchesCareLevel}, TankSize: ${matchesTankSize}, Search: ${matchesSearch}`);
+
+        return matchesRole && matchesCareLevel && matchesTankSize && matchesSearch;
+      });
+
+      console.log("Filtered fish list:", filteredFish);
+
+      setFilteredFishList(filteredFish);
+    }
+  }, [open, localAquarium.species, roleFilter, careLevelFilter, minTankSizeFilter, searchQuery]);
 
   const handleSelectFish = (fish: Fish) => {
     const isSelected = selectedFishList.some(f => f.name === fish.name);
@@ -334,7 +361,6 @@ const AddFishCard: React.FC<AddFishCardProps> = ({ open, onClose, aquarium, onAd
     return selectedFishList.some(f => f.name === fish.name);
   };
 
-  // Handle opening the fish info card (replace existing modal with FishInfoCard)
   const handleFishClick = (fish: Fish) => {
     setSelectedFish(fish);
     setInfoOpen(true);  // Open the FishInfoCard modal
@@ -346,8 +372,23 @@ const AddFishCard: React.FC<AddFishCardProps> = ({ open, onClose, aquarium, onAd
   };
 
   const handleAddAllFish = () => {
-    onAddFish(selectedFishList);  
-    setSelectedFishList([]);  
+    console.log('Adding selected fish to aquarium:', selectedFishList);
+
+    // Ensure every fish has a count (use default of 1 if not provided)
+    const validFish = selectedFishList.map(fish => ({
+      ...fish,
+      count: fish.count ?? 1
+    }));
+
+    onAddFish(validFish);
+
+    // Update the local aquarium species list with newly added fish
+    setLocalAquarium(prevAquarium => ({
+      ...prevAquarium,
+      species: [...prevAquarium.species, ...validFish] // Add new fish to the local species list
+    }));
+
+    setSelectedFishList([]);  // Clear selected list after adding fish
   };
 
   const handleChangePage = (event: unknown, newPage: number) => {
