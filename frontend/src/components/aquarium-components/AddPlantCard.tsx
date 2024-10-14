@@ -84,6 +84,7 @@ const AddPlantCard: React.FC<AddPlantCardProps> = ({ open, onClose, aquarium, on
     return (
       (!roleFilter || plant.role === roleFilter) &&
       (!careLevelFilter || plant.careLevel === careLevelFilter) &&
+      (!minTankSizeFilter || Number(plant.minTankSize) <= minTankSizeFilter) &&  // Ensure plant tank size <= user's tank size
       (!searchQuery || plant.name.toLowerCase().includes(searchQuery.toLowerCase()))
     );
   });
@@ -200,6 +201,16 @@ const AddPlantCard: React.FC<AddPlantCardProps> = ({ open, onClose, aquarium, on
                 <MenuItem value="Difficult">Difficult</MenuItem>
               </Select>
             </FormControl>
+
+            {/* Filter by Minimum Tank Size */}
+            <TextField
+              label="Filter by Minimum Tank Size (gallons)"
+              type="number"
+              value={minTankSizeFilter}
+              onChange={(e) => setMinTankSizeFilter(parseInt(e.target.value))}  // Update based on user input
+              fullWidth
+              margin="normal"
+            />
 
             {/* Search by Plant Name */}
             <TextField
