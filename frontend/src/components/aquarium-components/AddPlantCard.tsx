@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField,
   Box, MenuItem, Select, InputLabel, FormControl, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TablePagination, Typography, IconButton, List, ListItem
@@ -70,6 +70,7 @@ const AddPlantCard: React.FC<AddPlantCardProps> = ({ open, onClose, aquarium, on
   const [selectedPlantList, setSelectedPlantList] = useState<Plant[]>([]);  
   const [selectedPlant, setSelectedPlant] = useState<Plant | null>(null);  
   const [infoOpen, setInfoOpen] = useState(false);  
+  const [localPlantList, setLocalPlantList] = useState<Plant[]>(aquarium.plants);  // Local copy of aquarium plants
 
   const plantList = aquarium.type === 'Freshwater' ? freshwaterPlantList : [];  // Saltwater plants could be added later
 
@@ -80,14 +81,40 @@ const AddPlantCard: React.FC<AddPlantCardProps> = ({ open, onClose, aquarium, on
    const availablePlants = plantList.filter(plant => !existingPlantNames.includes(plant.name.toLowerCase()));
 
   // Filter plant list based on role, care level, minimum tank size, and search query
-  const filteredPlantList = availablePlants.filter(plant => {
-    return (
-      (!roleFilter || plant.role === roleFilter) &&
-      (!careLevelFilter || plant.careLevel === careLevelFilter) &&
-      (!minTankSizeFilter || Number(plant.minTankSize) <= minTankSizeFilter) &&  // Ensure plant tank size <= user's tank size
-      (!searchQuery || plant.name.toLowerCase().includes(searchQuery.toLowerCase()))
-    );
-  });
+
+const [filteredPlantList, setFilteredPlantList] = useState<Plant[]>([]);
+
+useEffect(() => {
+    if (open) {
+      console.log("Opened Add Plant Card");
+      console.log("Aquarium data:", aquarium);
+      console.log("Aquarium size:", aquarium.size);
+      console.log("Aquarium type:", aquarium.type);
+      console.log("Existing plants in aquarium:", localPlantList);  // Use localPlantList here
+
+      const existingPlantNames = localPlantList.map(plant => plant.name.toLowerCase());
+      console.log("Existing plant names (lowercased):", existingPlantNames);
+
+      const filtered = plantList.filter(plant => {
+        const matchesRole = !roleFilter || plant.role === roleFilter;
+        const matchesCareLevel = !careLevelFilter || plant.careLevel === careLevelFilter;
+        const matchesTankSize = !minTankSizeFilter || Number(plant.minTankSize) <= minTankSizeFilter;
+        const matchesSearch = !searchQuery || plant.name.toLowerCase().includes(searchQuery.toLowerCase());
+        const notInExisting = !existingPlantNames.includes(plant.name.toLowerCase());
+
+        console.log(`Plant: ${plant.name}, Role: ${matchesRole}, CareLevel: ${matchesCareLevel}, TankSize: ${matchesTankSize}, Search: ${matchesSearch}, NotInExisting: ${notInExisting}`);
+
+        return matchesRole && matchesCareLevel && matchesTankSize && matchesSearch && notInExisting;
+      });
+
+      console.log("Filtered plants:", filtered);
+      setFilteredPlantList(filtered);
+    }
+  }, [roleFilter, careLevelFilter, minTankSizeFilter, searchQuery, plantList, open, localPlantList]);  // Add localPlantList as a dependency
+
+ 
+
+  
 
   const handleSelectPlant = (plant: Plant) => {
     console.log('Plant selected:', plant);  // Log the plant when selected
@@ -124,33 +151,18 @@ const AddPlantCard: React.FC<AddPlantCardProps> = ({ open, onClose, aquarium, on
   };
 
   const handleAddAllPlants = () => {
-    console.log('Adding all selected plants:', selectedPlantList);  // Log all selected plants
-    
-    // Ensure all selected plants have a valid `count` property
+    console.log('Adding all selected plants:', selectedPlantList);
+
     const validPlants = selectedPlantList.map(plant => ({ 
       ...plant, 
       count: plant.count ?? 1  // Ensure every plant has a count
     }));
-  
-    console.log('Selected plants after count initialization:', validPlants);  // Log plants after ensuring count
-  
-    // Check if any plant is undefined or missing `count`
-    const hasUndefinedPlants = validPlants.some(plant => {
-      if (!plant || typeof plant.count === 'undefined') {
-        console.error('Found undefined plant or missing count:', plant);
-        return true;
-      }
-      return false;
-    });
-  
-    // Prevent adding plants if any are undefined or missing `count`
-    if (hasUndefinedPlants) {
-      console.error('One or more plants are missing the "count" property or are undefined.');
-      return;
-    }
-  
-    // If all plants are valid, proceed to add them
+
     onAddPlant(validPlants);
+
+    // Update the local plant list with newly added plants
+    setLocalPlantList(prevList => [...prevList, ...validPlants]);
+    
     setSelectedPlantList([]);
   };
   
