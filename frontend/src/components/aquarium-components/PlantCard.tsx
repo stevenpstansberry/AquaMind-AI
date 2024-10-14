@@ -7,7 +7,7 @@ import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';  // Import the Outlined Info icon
 import PlantInfoCard from './PlantInfoCard';
 import AddPlantCard from './AddPlantCard';
-import { Aquarium } from '../../interfaces/Aquarium';
+import { Aquarium, Plant } from '../../interfaces/Aquarium';
 
 interface PlantCardProps {
   aquarium : Aquarium;
@@ -35,10 +35,19 @@ const PlantCard: React.FC<PlantCardProps> = ({ aquarium }) => {
 
   // Update plantList and originalPlantList when new plants props are passed
   useEffect(() => {
-    setPlantList(aquarium.plants);
-    setOriginalPlantList(aquarium.plants);
-    setChangesSaved(true); // Reset changes saved status when plants update
+    console.log('aquarium.plants:', aquarium.plants);
+    
+    // Ensure every plant has a valid count
+    const validatedPlants = aquarium.plants.map(plant => ({
+      ...plant,
+      count: plant.count ?? 1,  // Default to 1 if count is missing
+    }));
+  
+    setPlantList(validatedPlants);
+    setOriginalPlantList(validatedPlants);
+    setChangesSaved(true);
   }, [aquarium]);
+  
 
   // Function to compare current plant list with the original list
   const checkChangesSaved = () => {
@@ -90,40 +99,58 @@ const PlantCard: React.FC<PlantCardProps> = ({ aquarium }) => {
 
 
   const handleIncrement = (name: string) => {
-    setPlantList((prevList) =>
-      prevList.map((plant) =>
-        plant.name === name ? { ...plant, count: plant.count + 1 } : plant
-      )
-    );
-  };
-
-  // Decrement function with confirmation for deletion
-  const handleDecrement = (name: string) => {
-    const updatedPlantList = plantList.map((plant) => {
-      if (plant.name === name) {
-        const newCount = plant.count - 1;
-        if (newCount === 0) {
-          setPlantToDelete(plant);  // Store plant to potentially delete
-          setConfirmDeleteOpen(true);  // Open confirmation dialog
-          return plant;  // Return unchanged to keep plant in the list temporarily
+    setPlantList((prevList) => {
+      const updatedList = prevList.map((plant) => {
+        if (plant.name === name) {
+          console.log('Incrementing count for:', plant);
+          return { ...plant, count: (plant.count ?? 0) + 1 };
         }
-        return { ...plant, count: newCount };
-      }
-      return plant;
+        return plant;
+      });
+      console.log('Updated plant list after increment:', updatedList);
+      return updatedList;
     });
-    setPlantList(updatedPlantList);
   };
+  
+  const handleDecrement = (name: string) => {
+    setPlantList((prevList) => {
+      const updatedList = prevList.map((plant) => {
+        if (plant.name === name) {
+          const newCount = (plant.count ?? 1) - 1;
+          console.log('Decrementing count for:', plant);
+  
+          if (newCount <= 0) {
+            console.log('Setting plant for deletion:', plant);
+            setPlantToDelete(plant);  // Store plant to potentially delete
+            setConfirmDeleteOpen(true);  // Open confirmation dialog
+            return plant;
+          }
+          return { ...plant, count: newCount };
+        }
+        return plant;
+      });
+      console.log('Updated plant list after decrement:', updatedList);
+      return updatedList;
+    });
+  };
+  
 
   // Remove plant if confirmed and update both plantList and originalPlantList
-  const handleConfirmDelete = () => {
-    if (plantToDelete) {
-      // Update both the current plant list and the original plant list
-      setPlantList((prevList) => prevList.filter(plant => plant.name !== plantToDelete.name));
-      setOriginalPlantList((prevList) => prevList.filter(plant => plant.name !== plantToDelete.name));  // Update original list
-      setPlantToDelete(null);  // Clear the plant to delete state
-      setConfirmDeleteOpen(false);  // Close the confirmation dialog
-    }
-  };
+const handleConfirmDelete = () => {
+  if (plantToDelete) {
+    console.log('Confirming deletion of plant:', plantToDelete);
+
+    setPlantList((prevList) => {
+      const newList = prevList.filter((plant) => plant.name !== plantToDelete.name);
+      console.log('Updated plant list after deletion:', newList);
+      return newList;
+    });
+
+    setOriginalPlantList((prevList) => prevList.filter((plant) => plant.name !== plantToDelete.name));
+    setPlantToDelete(null);  // Clear the plant to delete state
+    setConfirmDeleteOpen(false);  // Close the confirmation dialog
+  }
+};
 
   const handleCancelDelete = () => {
     setPlantToDelete(null);  // Reset plant to delete
@@ -147,10 +174,38 @@ const PlantCard: React.FC<PlantCardProps> = ({ aquarium }) => {
     setAddPlantOpen(true); // Open the add plant dialog
   };
 
-  const handleAddPlant = (plantList: { name: string; count: number; type: string; role: string }[]) => {
-    setPlantList((prevList) => [...prevList, ...plantList]); 
-    setAddPlantOpen(false);  
+  const handleAddPlant = (plants: Plant[]) => {
+    console.log('Adding new plants:', plants);
+  
+    setPlantList((prevList) => {
+      // Ensure that all new plants have a valid 'count' value
+      const newPlantsWithCount = plants.map((plant) => ({
+        ...plant,
+        count: plant.count ?? 1,  // Default count to 1 if undefined
+      }));
+  
+      // Optionally, check for duplicate plants by name before adding
+      const updatedList = [...prevList];
+  
+      newPlantsWithCount.forEach((newPlant) => {
+        const existingPlant = updatedList.find((plant) => plant.name === newPlant.name);
+  
+        if (existingPlant) {
+          // If the plant exists, increment the count
+          existingPlant.count += newPlant.count;
+        } else {
+          // If the plant doesn't exist, add it to the list
+          updatedList.push(newPlant);
+        }
+      });
+  
+      console.log('Updated plant list after adding new plants:', updatedList);
+      return updatedList;
+    });
+  
+    setAddPlantOpen(false);  // Close the dialog
   };
+  
 
   const handleShowPlantInfo = (plant: { name: string; count: number; role: string; type: string }) => {
       setSelectedPlant(plant);

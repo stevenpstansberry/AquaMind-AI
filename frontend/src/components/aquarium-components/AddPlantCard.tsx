@@ -89,18 +89,21 @@ const AddPlantCard: React.FC<AddPlantCardProps> = ({ open, onClose, aquarium, on
   });
 
   const handleSelectPlant = (plant: Plant) => {
+    console.log('Plant selected:', plant);  // Log the plant when selected
     const isSelected = selectedPlantList.some(p => p.name === plant.name);
     
     // Ensure `count` is initialized with a default value if undefined
     const plantWithCount = { ...plant, count: plant.count ?? 1 };  // Use '??' to assign 1 if count is undefined
-  
+    console.log('Plant after count initialization:', plantWithCount);  // Log plant after ensuring count
+
     if (isSelected) {
-      setSelectedPlantList(selectedPlantList.filter(p => p.name !== plant.name));  
+      console.log('Removing plant from selected list:', plantWithCount);
+      setSelectedPlantList(selectedPlantList.filter(p => p.name !== plant.name));
     } else {
-      setSelectedPlantList([...selectedPlantList, plantWithCount]);  
+      console.log('Adding plant to selected list:', plantWithCount);
+      setSelectedPlantList([...selectedPlantList, plantWithCount]);
     }
   };
-  
 
   const isPlantSelected = (plant: Plant) => {
     return selectedPlantList.some(p => p.name === plant.name);
@@ -108,23 +111,46 @@ const AddPlantCard: React.FC<AddPlantCardProps> = ({ open, onClose, aquarium, on
 
   // Handle opening the plant info card
   const handlePlantClick = (plant: Plant) => {
+    console.log('Opening plant info card:', plant);  // Log the plant when opening the info card
     setSelectedPlant(plant);
     setInfoOpen(true);
   };
 
   const handleCloseInfo = () => {
+    console.log('Closing plant info card.');
     setInfoOpen(false);  
     setSelectedPlant(null);  
   };
 
   const handleAddAllPlants = () => {
+    console.log('Adding all selected plants:', selectedPlantList);  // Log all selected plants
+    
     // Ensure all selected plants have a valid `count` property
-    if (selectedPlantList.every(plant => plant.count !== undefined)) {
-      onAddPlant(selectedPlantList);  
-      setSelectedPlantList([]);  
-    } else {
-      console.error("One or more plants are missing the 'count' property.");
+    const validPlants = selectedPlantList.map(plant => ({ 
+      ...plant, 
+      count: plant.count ?? 1  // Ensure every plant has a count
+    }));
+  
+    console.log('Selected plants after count initialization:', validPlants);  // Log plants after ensuring count
+  
+    // Check if any plant is undefined or missing `count`
+    const hasUndefinedPlants = validPlants.some(plant => {
+      if (!plant || typeof plant.count === 'undefined') {
+        console.error('Found undefined plant or missing count:', plant);
+        return true;
+      }
+      return false;
+    });
+  
+    // Prevent adding plants if any are undefined or missing `count`
+    if (hasUndefinedPlants) {
+      console.error('One or more plants are missing the "count" property or are undefined.');
+      return;
     }
+  
+    // If all plants are valid, proceed to add them
+    onAddPlant(validPlants);
+    setSelectedPlantList([]);
   };
   
 
@@ -174,7 +200,6 @@ const AddPlantCard: React.FC<AddPlantCardProps> = ({ open, onClose, aquarium, on
                 <MenuItem value="Difficult">Difficult</MenuItem>
               </Select>
             </FormControl>
-
 
             {/* Search by Plant Name */}
             <TextField
