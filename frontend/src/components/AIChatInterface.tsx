@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Box, Typography, TextField, IconButton } from '@mui/material';
+import { Box, Typography, TextField, IconButton, Button } from '@mui/material';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import SquareIcon from '@mui/icons-material/Square';
 import { Aquarium } from '../interfaces/Aquarium';
@@ -8,9 +8,10 @@ interface AIChatInterfaceProps {
   showChat: boolean;
   onClose: () => void;
   aquarium?: Aquarium;
+  suggestions?: string[];  // Optional prop for chat suggestions
 }
 
-const AIChatInterface: React.FC<AIChatInterfaceProps> = ({ showChat, onClose, aquarium }) => {
+const AIChatInterface: React.FC<AIChatInterfaceProps> = ({ showChat, onClose, aquarium, suggestions }) => {
   const [messages, setMessages] = useState<{ sender: string, text: string, timestamp: string }[]>([]);
   const [userInput, setUserInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -121,6 +122,11 @@ const AIChatInterface: React.FC<AIChatInterfaceProps> = ({ showChat, onClose, aq
     }
   };
 
+  // Handle selecting a suggestion
+  const handleSuggestionClick = (suggestion: string) => {
+    setUserInput(suggestion); // Set the suggestion as user input
+  };
+
   return (
     <Box
       sx={{
@@ -139,6 +145,22 @@ const AIChatInterface: React.FC<AIChatInterfaceProps> = ({ showChat, onClose, aq
             paddingTop: '20px',
           }}
         >
+          {/* Chat Suggestions */}
+          {suggestions && suggestions.length > 0 && (
+            <Box sx={{ mb: 2 }}>
+              {suggestions.map((suggestion, index) => (
+                <Button
+                  key={index}
+                  variant="outlined"
+                  sx={{ mr: 1, mb: 1 }}
+                  onClick={() => handleSuggestionClick(suggestion)}
+                >
+                  {suggestion}
+                </Button>
+              ))}
+            </Box>
+          )}
+
           {/* Chat area */}
           <Box
             ref={chatContainerRef}
