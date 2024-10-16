@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Box, Typography, Button, TextField } from '@mui/material';
-import { Aquarium } from '../interfaces/Aquarium'  
+import { Box, Typography, TextField, IconButton } from '@mui/material';
+import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
+import SquareIcon from '@mui/icons-material/Square';
+import { Aquarium } from '../interfaces/Aquarium';
 
 interface AIChatInterfaceProps {
   showChat: boolean;
@@ -12,7 +14,11 @@ const AIChatInterface: React.FC<AIChatInterfaceProps> = ({ showChat, onClose, aq
   const [messages, setMessages] = useState<{ sender: string, text: string, timestamp: string }[]>([]);
   const [userInput, setUserInput] = useState('');
   const [loading, setLoading] = useState(false);
+  const [revealedText, setRevealedText] = useState(''); // For the text being revealed in the typewriter effect
+  const [typewriterCompleted, setTypewriterCompleted] = useState(true); // To track the completion of the typewriter effect
+  const [fullResponseText, setFullResponseText] = useState(''); // Store the full AI response text
   const chatContainerRef = useRef<HTMLDivElement>(null);
+  const typingIntervalRef = useRef<NodeJS.Timeout | null>(null); // Ref to track and clear typing interval
 
   const scrollToBottom = () => {
     if (chatContainerRef.current) {
@@ -32,28 +38,88 @@ const AIChatInterface: React.FC<AIChatInterfaceProps> = ({ showChat, onClose, aq
     setUserInput('');
 
     setLoading(true);
+    setTypewriterCompleted(false);
+
     setTimeout(() => {
       let aiResponseText = `Simulated response to: "${newMessage.text}"`;
 
       if (aquarium) {
-        aiResponseText += ` Considering your ${aquarium.name} tank with the following details: ${JSON.stringify(aquarium)}`;
+        aiResponseText += ` Considering your ${aquarium.name}`;
       }
 
-      const aiResponse = { sender: 'AI', text: aiResponseText, timestamp: getCurrentTimestamp() };
-      setMessages((prev) => [...prev, aiResponse]);
+      setFullResponseText(aiResponseText); // Store the full AI response
+      typeTextEffect(aiResponseText); // Start the typewriter effect
       setLoading(false);
     }, 1000);
   };
 
-  const handleKeyPress = (event: React.KeyboardEvent<HTMLDivElement>) => {
-    if (event.key === 'Enter') {
-      handleSendMessage();
-    }
+  // Typewriter effect function
+  const typeTextEffect = (text: string) => {
+    setRevealedText('');
+    let index = 0;
+
+    // Add the AI message to the messages only when typing begins
+    setMessages((prev) => [...prev, { sender: 'AI', text: '', timestamp: getCurrentTimestamp() }]);
+
+    typingIntervalRef.current = setInterval(() => {
+      if (index < text.length) {
+        setRevealedText((prev) => prev + text[index]);
+        index++;
+        scrollToBottom(); // Ensure the chat scrolls to the newest message
+      } else {
+        clearInterval(typingIntervalRef.current!); // Stop the interval when typing is done
+        setTypewriterCompleted(true); // Mark the typewriter effect as completed
+      }
+    }, 50); // Speed of the typing effect (50ms per character)
   };
 
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  useEffect(() => {
+    // Only update the AI message progressively as text reveals
+    if (!loading && revealedText) {
+      setMessages((prev) => {
+        const updatedMessages = prev.map((msg, index) =>
+          index === prev.length - 1 && msg.sender === 'AI'
+            ? { ...msg, text: revealedText }
+            : msg
+        );
+        return updatedMessages;
+      });
+    }
+  }, [revealedText]);
+
+  const handleAutoCompleteText = () => {
+    // Stop the typewriter effect immediately
+    if (typingIntervalRef.current) {
+      clearInterval(typingIntervalRef.current); // Clear the typewriter interval
+      typingIntervalRef.current = null;
+    }
+
+    // Set the revealed text to the full response and mark typewriter as completed
+    setRevealedText(fullResponseText);
+    
+    // Immediately update the AI message with the full response
+    setMessages((prev) => {
+      const updatedMessages = prev.map((msg, index) =>
+        index === prev.length - 1 && msg.sender === 'AI' ? { ...msg, text: fullResponseText } : msg
+      );
+      return updatedMessages;
+    });
+
+    setTypewriterCompleted(true);
+    scrollToBottom(); // Ensure chat is scrolled to bottom after completion
+  };
+
+  const handleKeyPress = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === 'Enter' && typewriterCompleted) {
+      handleSendMessage();
+    } else if (event.key === 'Enter' && !typewriterCompleted) {
+      handleAutoCompleteText();
+    }
+  };
 
   return (
     <Box
@@ -110,93 +176,54 @@ const AIChatInterface: React.FC<AIChatInterfaceProps> = ({ showChat, onClose, aq
                       borderRadius: '10px',
                       maxWidth: '70%',
                       wordWrap: 'break-word',
+                      transition: 'all 0.3s ease',
                     }}
                   >
-                    {message.text}
+                    {message.text || (message.sender === 'AI' && loading ? revealedText : message.text)}
                   </Typography>
                 </Box>
               </Box>
             ))}
-
-            {/* Loading indicator (cascading dots) */}
-            {loading && (
-              <Box display="flex" justifyContent="flex-start" mb={1}>
-                <Typography
-                  sx={{
-                    bgcolor: '#e0e0e0',
-                    color: '#000',
-                    padding: '10px',
-                    borderRadius: '10px',
-                    maxWidth: '70%',
-                    wordWrap: 'break-word',
-                  }}
-                >
-                  <Box
-                    sx={{
-                      display: 'inline-block',
-                      width: '8px',
-                      height: '8px',
-                      borderRadius: '50%',
-                      backgroundColor: '#000',
-                      animation: 'dot 1.4s infinite both',
-                      '@keyframes dot': {
-                        '0%': { transform: 'scale(0)' },
-                        '40%': { transform: 'scale(1)' },
-                        '100%': { transform: 'scale(0)' },
-                      },
-                      '&:nth-of-type(1)': {
-                        animationDelay: '0s',
-                      },
-                      '&:nth-of-type(2)': {
-                        animationDelay: '0.2s',
-                      },
-                      '&:nth-of-type(3)': {
-                        animationDelay: '0.4s',
-                      },
-                    }}
-                  />
-                  <Box
-                    component="span"
-                    sx={{
-                      display: 'inline-block',
-                      width: '8px',
-                      height: '8px',
-                      borderRadius: '50%',
-                      backgroundColor: '#000',
-                      marginLeft: '4px',
-                      animation: 'dot 1.4s infinite both',
-                    }}
-                  />
-                  <Box
-                    component="span"
-                    sx={{
-                      display: 'inline-block',
-                      width: '8px',
-                      height: '8px',
-                      borderRadius: '50%',
-                      backgroundColor: '#000',
-                      marginLeft: '4px',
-                      animation: 'dot 1.4s infinite both',
-                    }}
-                  />
-                </Typography>
-              </Box>
-            )}
           </Box>
 
           {/* Input area */}
-          <Box display="flex" mt={2}>
+          <Box display="flex" alignItems="center" mt={2} sx={{ borderRadius: '24px', bgcolor: '#f0f0f0', padding: '4px 8px' }}>
             <TextField
               value={userInput}
               onChange={(e) => setUserInput(e.target.value)}
               onKeyUp={handleKeyPress}
-              placeholder="Type your question..."
-              variant="outlined"
+              placeholder="Message AI..."
+              variant="standard"
               fullWidth
+              InputProps={{
+                disableUnderline: true,
+                sx: {
+                  color: '#000',
+                  padding: '10px',
+                },
+              }}
+              sx={{
+                bgcolor: '#fff',
+                borderRadius: '24px',
+                paddingLeft: '12px',
+              }}
             />
-            <Button onClick={handleSendMessage} variant="contained" sx={{ ml: 2 }}>
-              Send
-            </Button>
+
+            <IconButton
+              onClick={typewriterCompleted ? handleSendMessage : handleAutoCompleteText}
+              sx={{
+                ml: 1,
+                color: typewriterCompleted ? '#007bff' : 'gray',
+                backgroundColor: typewriterCompleted ? '#e0e0e0' : '#f0f0f0',
+                borderRadius: '50%',
+                padding: '8px',
+                '&:hover': {
+                  backgroundColor: typewriterCompleted ? '#d0d0d0' : '#e0e0e0',
+                },
+              }}
+            >
+              {typewriterCompleted ? <ArrowUpwardIcon /> : <SquareIcon />}
+            </IconButton>
           </Box>
         </Box>
       )}
