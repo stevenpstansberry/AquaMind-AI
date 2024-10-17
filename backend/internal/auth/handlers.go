@@ -2,15 +2,15 @@
 // including user registration and login. These handlers interact
 // with the models package to manage users in the database and use
 // utility functions for password hashing and JWT generation.
-package handlers
+package auth
 
 import (
     "encoding/json"
     "log"
     "net/http"
     "golang.org/x/crypto/bcrypt"
-    "github.com/stevenpstansberry/AquaMind-AI/models"
-    "github.com/stevenpstansberry/AquaMind-AI/util"
+    "github.com/stevenpstansberry/AquaMind-AI/internal/models"
+    "github.com/stevenpstansberry/AquaMind-AI/internal/util"
 )
 
 // Credentials represents the structure for incoming authentication requests.
