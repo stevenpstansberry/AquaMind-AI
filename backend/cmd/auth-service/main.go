@@ -1,6 +1,3 @@
-// Package main initializes the AquaMind-AI server, connecting to a PostgreSQL database,
-// setting up routes for user registration and login, and applying CORS middleware to handle
-// cross-origin requests. 
 package main
 
 import (
@@ -9,31 +6,21 @@ import (
     "log"
     "net/http"
     "os"
-
     "github.com/joho/godotenv"
-    "github.com/stevenpstansberry/AquaMind-AI/handlers"
-    "github.com/stevenpstansberry/AquaMind-AI/models"
+    "github.com/stevenpstansberry/AquaMind-AI/internal/auth"   // Now using the auth package
+    "github.com/stevenpstansberry/AquaMind-AI/internal/models"  
     _ "github.com/lib/pq" // PostgreSQL driver
 )
 
 // enableCORS is a middleware function that adds headers to allow cross-origin requests.
-// It handles preflight OPTIONS requests and ensures that other HTTP methods like POST,
-// GET, PUT, and DELETE are allowed.
-//
-// Params:
-//   - next: the next http.Handler to be called in the chain.
-//
-// Returns:
-//   - http.Handler: a wrapped handler that includes the CORS headers.
 func enableCORS(next http.Handler) http.Handler {
     return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-        w.Header().Set("Access-Control-Allow-Origin", "*") // Allow all origins
+        w.Header().Set("Access-Control-Allow-Origin", "*")
         w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
         w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Api-Key")
 
         // Handle preflight OPTIONS request
         if r.Method == http.MethodOptions {
-            // Just return OK if it's an OPTIONS request
             w.WriteHeader(http.StatusOK)
             return
         }
@@ -79,9 +66,9 @@ func main() {
     // Initialize the database in models package
     models.InitDB(db)
 
-    // Set up routes for user registration and login
-    http.HandleFunc("/register", handlers.RegisterUser)
-    http.HandleFunc("/login", handlers.LoginUser)
+    // Set up routes for user registration and login using the auth package
+    http.HandleFunc("/register", auth.RegisterUser)  // Use auth package for handlers
+    http.HandleFunc("/login", auth.LoginUser)        // Use auth package for handlers
 
     // Apply the CORS middleware to all routes
     corsHandler := enableCORS(http.DefaultServeMux)

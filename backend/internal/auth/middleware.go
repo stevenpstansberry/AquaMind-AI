@@ -1,10 +1,11 @@
 // Package middlewares provides middleware functions for HTTP handlers.
-package middlewares
+package auth
 
 import (
     "net/http"
     "strings"
-    "backend/util"
+    "github.com/stevenpstansberry/AquaMind-AI/internal/util"
+    "log"
 )
 
 // JWTAuthMiddleware is an HTTP middleware that protects routes by verifying the presence and validity of a JWT token.
@@ -34,11 +35,13 @@ func JWTAuthMiddleware(next http.HandlerFunc) http.HandlerFunc {
         tokenString := strings.TrimPrefix(authHeader, "Bearer ")
 
         // Validate the JWT token
-        claims, err := util.ValidateJWT(tokenString)
+        claims, err := utils.ValidateJWT(tokenString)
         if err != nil {
             http.Error(w, "Invalid token", http.StatusUnauthorized)
             return
         }
+
+        log.Printf("Authenticated user: %s", claims.Email)
 
         // Optionally, you can pass claims in the request context here if needed
 
