@@ -46,6 +46,9 @@ const TypingIndicator: React.FC = () => (
   </Box>
 );
 
+
+const MAX_CHARACTERS = 500; // Maximum characters allowed in the input field
+
 /**
  * ChatContent Component
  * @description Handles the chat content, including displaying messages, handling user input, and showing suggestions.
@@ -334,9 +337,9 @@ const ChatContent = forwardRef<{ clearChat: () => void }, ChatContentProps>(
         >
           <TextField
             value={userInput}
-            onChange={(e) => setUserInput(e.target.value)}
+            onChange={(e) => setUserInput(e.target.value.slice(0, MAX_CHARACTERS))}
             onKeyUp={handleKeyPress}
-            placeholder="Message AI..."
+            placeholder={`Message AI... (Max ${MAX_CHARACTERS} characters)`}
             variant="standard"
             fullWidth
             InputProps={{
