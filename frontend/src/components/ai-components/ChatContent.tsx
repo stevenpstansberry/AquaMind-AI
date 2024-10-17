@@ -5,7 +5,7 @@
  * It handles the message sending, typewriter effect, and displays chat messages between the user and the AI.
  * Provides a method to clear the chat messages.
  * 
- * @author 
+ * @author Steven Stansberry
  */
 
 import React, { useState, useRef, useEffect, forwardRef, useImperativeHandle } from 'react';
@@ -14,6 +14,7 @@ import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import SquareIcon from '@mui/icons-material/Square';
 import { Aquarium } from '../../interfaces/Aquarium';
 import { keyframes } from '@mui/system';
+import { sendMessageToOpenAI } from '../../services/APIServices';
 
 interface ChatContentProps {
   aquarium?: Aquarium;
@@ -113,32 +114,50 @@ const ChatContent = forwardRef<{ clearChat: () => void }, ChatContentProps>(
     const handleSendMessage = async (inputMessage?: string) => {
       const messageToSend = inputMessage || userInput;
       if (!messageToSend.trim()) return;
-      
+
+      console.log("User message:", messageToSend);
+
       const newMessage = { sender: 'User', text: messageToSend, timestamp: getCurrentTimestamp() };
       setMessages((prev) => [...prev, newMessage]);
-      setUserInput('');  // Clear the input field
+      setUserInput(''); // Clear the input field
 
       // Hide suggestions when a message is sent
       setSuggestions(null);
-      
+
       // Set isMessageAdding to true to block the stop button temporarily
       setIsMessageAdding(true);
 
       setLoading(true);
       setTypewriterCompleted(false);
 
-      setTimeout(() => {
-        let aiResponseText = `Simulated response to: "${newMessage.text}"`;
+      try {
+        // Make the API call using the sendMessageToOpenAI function
+        console.log("Sending message to OpenAI...");
+        const aiResponse = await sendMessageToOpenAI(messageToSend);
+        console.log("AI Response:", aiResponse);
 
-        if (aquarium) {
-          aiResponseText += ` Considering your ${aquarium.name}`;
-        }
+        // Extract the AI response text
+        const aiResponseText = typeof aiResponse === 'string' ? aiResponse : JSON.stringify(aiResponse);
 
-        setFullResponseText(aiResponseText);  // Store the full AI response
-        typeTextEffect(aiResponseText);       // Start the typewriter effect
+        // Store the full AI response
+        setFullResponseText(aiResponseText);
+
+        // Start the typewriter effect with the AI response
+        typeTextEffect(aiResponseText);
+
+      } catch (error) {
+        console.error("Error communicating with OpenAI:", error);
+        setMessages((prev) => [
+          ...prev,
+          { sender: 'AI', text: 'Sorry, there was an error with the response.', timestamp: getCurrentTimestamp() },
+        ]);
         setLoading(false);
-      }, 1000);
+        setTypewriterCompleted(true);
+      } finally {
+        setLoading(false);
+      }
     };
+
 
     /**
      * @description Simulates a typewriter effect for the AI response, progressively revealing text.
