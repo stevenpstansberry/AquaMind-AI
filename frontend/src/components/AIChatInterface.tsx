@@ -181,6 +181,7 @@ const AIChatInterface: React.FC<AIChatInterfaceProps> = ({ showChat, onClose, aq
   return (
     <Box
       sx={{
+        backgroundColor: '#f8f9fa',
         height: showChat ? (isExpanded ? '85vh' : '400px') : '0px',  // Increased height for the entire chat interface
         width: isExpanded ? '90vw' : '100%',  // Full width in expanded mode
         overflow: 'hidden',
