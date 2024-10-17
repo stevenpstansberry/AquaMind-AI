@@ -160,20 +160,26 @@ const AIChatInterface: React.FC<AIChatInterfaceProps> = ({ showChat, onClose, aq
             position: 'relative',
           }}
         >
-          {/* Expand/Collapse Icon */}
-          <IconButton
-            sx={{
-              position: 'absolute',
-              top: '10px',
-              right: '10px',
-              zIndex: 10,
-              color: '#666',
-            }}
-            onClick={() => setIsExpanded(!isExpanded)}
-          >
-            {isExpanded ? <FullscreenExitIcon /> : <FullscreenIcon />}
-          </IconButton>
-
+        {/* Expand/Collapse Icon */}
+        <IconButton
+          sx={{
+            position: 'absolute',
+            top: '15px',             
+            left: '15px',            
+            zIndex: 10,               
+            color: '#666',           
+            padding: '8px',          
+            borderRadius: '50%',      
+            backgroundColor: '#fff',  
+            boxShadow: '0 2px 5px rgba(0, 0, 0, 0.2)', 
+            '&:hover': {
+              backgroundColor: '#f0f0f0',  
+            },
+          }}
+          onClick={() => setIsExpanded(!isExpanded)}
+        >
+          {isExpanded ? <FullscreenExitIcon /> : <FullscreenIcon />}
+        </IconButton>
           {/* Chat area */}
           <Box
             ref={chatContainerRef}
