@@ -4,7 +4,7 @@ import {
   Box, MenuItem, Select, InputLabel, FormControl, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TablePagination, Typography, IconButton, List, ListItem
 } from '@mui/material';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
-import AIChatInterface from '../AIChatInterface';  // Assuming you have this for AI suggestions
+import AIChatInterface from '../ai-components/AIChatInterface';  // Assuming you have this for AI suggestions
 import PlantInfoCard from './PlantInfoCard';  // Component similar to FishInfoCard
 import { Aquarium, Plant } from '../../interfaces/Aquarium';  // Ensure Plant interface is imported
 

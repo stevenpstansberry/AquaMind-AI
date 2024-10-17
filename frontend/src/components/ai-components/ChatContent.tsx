@@ -11,7 +11,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Box, Typography, TextField, IconButton, Button } from '@mui/material';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import SquareIcon from '@mui/icons-material/Square';
-import { Aquarium } from '../interfaces/Aquarium';
+import { Aquarium } from '../../interfaces/Aquarium';
 import { keyframes } from '@mui/system';
 
 interface ChatContentProps {

@@ -4,7 +4,7 @@ import {
   Box, MenuItem, Select, InputLabel, FormControl, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TablePagination, Typography, IconButton, List, ListItem
 } from '@mui/material';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';  // Icon for add button
-import AIChatInterface from '../AIChatInterface';  // Dummy AI chat component
+import AIChatInterface from '../ai-components/AIChatInterface';  // Dummy AI chat component
 import FishInfoCard from './FishInfoCard';
 import { Aquarium, Fish } from '../../interfaces/Aquarium';
 

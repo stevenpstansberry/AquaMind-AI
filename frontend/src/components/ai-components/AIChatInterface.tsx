@@ -12,8 +12,8 @@ import React, { useState } from 'react';
 import { Box, IconButton, Modal } from '@mui/material';
 import FullscreenIcon from '@mui/icons-material/Fullscreen'; // Expand icon
 import FullscreenExitIcon from '@mui/icons-material/FullscreenExit'; // Collapse icon
-import ChatContent from './ai-components/ChatContent'; // Import the ChatContent component
-import { Aquarium } from '../interfaces/Aquarium';
+import ChatContent from './ChatContent'; // Import the ChatContent component
+import { Aquarium } from '../../interfaces/Aquarium';
 
 interface AIChatInterfaceProps {
   showChat: boolean;

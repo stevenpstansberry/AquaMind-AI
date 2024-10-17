@@ -8,7 +8,7 @@ import PlantSelectionStep from './PlantSelectionStep';
 import EquipmentStep from './EquipmentStep';
 import SummaryStep from './SummaryStep';
 import AquariumWizardProgress from './AquariumWizardProgress';
-import AIChatInterface from '../../../components/AIChatInterface'; 
+import AIChatInterface from '../../ai-components/AIChatInterface'; 
 
 interface AquariumWizardProps {
   onClose: () => void;
