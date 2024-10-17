@@ -192,7 +192,7 @@ const postToOpenAI = async (endpoint, data) => {
 export const sendMessageToOpenAI = async (chatHistory) => {
   // Prepare the request payload based on the chat history
   const requestData = {
-    prompt: chatHistory,
+    messages: chatHistory,
   };
 
   // Use the generic post method to send the request

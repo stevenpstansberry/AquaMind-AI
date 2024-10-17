@@ -114,37 +114,45 @@ const ChatContent = forwardRef<{ clearChat: () => void }, ChatContentProps>(
     const handleSendMessage = async (inputMessage?: string) => {
       const messageToSend = inputMessage || userInput;
       if (!messageToSend.trim()) return;
-
+    
       console.log("User message:", messageToSend);
-
+    
       const newMessage = { sender: 'User', text: messageToSend, timestamp: getCurrentTimestamp() };
-      setMessages((prev) => [...prev, newMessage]);
+      const updatedMessages = [...messages, newMessage];
+    
+      setMessages(updatedMessages);
       setUserInput(''); // Clear the input field
-
+    
       // Hide suggestions when a message is sent
       setSuggestions(null);
-
+    
       // Set isMessageAdding to true to block the stop button temporarily
       setIsMessageAdding(true);
-
+    
       setLoading(true);
       setTypewriterCompleted(false);
-
+    
       try {
+        // Prepare chat history in OpenAI format
+        const chatHistory = updatedMessages.map(msg => ({
+          role: msg.sender === 'User' ? 'user' : 'assistant',
+          content: msg.text
+        }));
+    
         // Make the API call using the sendMessageToOpenAI function
         console.log("Sending message to OpenAI...");
-        const aiResponse = await sendMessageToOpenAI(messageToSend);
+        const aiResponse = await sendMessageToOpenAI(chatHistory);
         console.log("AI Response:", aiResponse);
-
+    
         // Extract the AI response text
-        const aiResponseText = typeof aiResponse === 'string' ? aiResponse : JSON.stringify(aiResponse);
-
+        const aiResponseText = typeof aiResponse === 'string' ? aiResponse : (aiResponse as { content: string }).content; // Ensure aiResponseText is always a string
+    
         // Store the full AI response
         setFullResponseText(aiResponseText);
-
+    
         // Start the typewriter effect with the AI response
         typeTextEffect(aiResponseText);
-
+    
       } catch (error) {
         console.error("Error communicating with OpenAI:", error);
         setMessages((prev) => [
