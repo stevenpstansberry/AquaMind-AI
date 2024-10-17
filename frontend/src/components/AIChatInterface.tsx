@@ -68,8 +68,10 @@ const AIChatInterface: React.FC<AIChatInterfaceProps> = ({ showChat, onClose, aq
   const [fullResponseText, setFullResponseText] = useState(''); // Store the full AI response text
   const [suggestions, setSuggestions] = useState<string[] | null>(initialSuggestions || null);  // State for suggestions
   const [isExpanded, setIsExpanded] = useState(false); // State for chat expansion
+  const [isMessageAdding, setIsMessageAdding] = useState(false);  // New state to block stop button during message adding  
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const typingIntervalRef = useRef<NodeJS.Timeout | null>(null); // Ref to track and clear typing interval
+  
 
 
   /**
@@ -89,38 +91,42 @@ const AIChatInterface: React.FC<AIChatInterfaceProps> = ({ showChat, onClose, aq
     return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
 
-  /**
-   * @description Handles sending a user message to the chat and generating an AI response.
-   * @param {string} [inputMessage] - Optional input message. Defaults to user input state.
-   */
-  const handleSendMessage = async (inputMessage?: string) => {
-    const messageToSend = inputMessage || userInput;
-    if (!messageToSend.trim()) return;
+/**
+ * @description Handles sending a user message to the chat and generating an AI response.
+ * @param {string} [inputMessage] - Optional input message. Defaults to user input state.
+ */
+const handleSendMessage = async (inputMessage?: string) => {
+  const messageToSend = inputMessage || userInput;
+  if (!messageToSend.trim()) return;
   
-    const newMessage = { sender: 'User', text: messageToSend, timestamp: getCurrentTimestamp() };
-    setMessages((prev) => [...prev, newMessage]);
-    setUserInput('');  // Clear the input field
-  
-    // Hide suggestions when a message is sent
-    setSuggestions(null);
-  
-    setLoading(true);
-    setTypewriterCompleted(false);
-  
-    setTimeout(() => {
-      let aiResponseText = `Simulated response to: "${newMessage.text}"`;
-  
-      if (aquarium) {
-        aiResponseText += ` Considering your ${aquarium.name}`;
-      }
-  
-      setFullResponseText(aiResponseText); // Store the full AI response
-      typeTextEffect(aiResponseText); // Start the typewriter effect
-      setLoading(false);
-    }, 1000);
-  };
+  const newMessage = { sender: 'User', text: messageToSend, timestamp: getCurrentTimestamp() };
+  setMessages((prev) => [...prev, newMessage]);
+  setUserInput('');  // Clear the input field
 
- /**
+  // Hide suggestions when a message is sent
+  setSuggestions(null);
+  
+  // Set isMessageAdding to true to block the stop button temporarily
+  setIsMessageAdding(true);
+
+  setLoading(true);
+  setTypewriterCompleted(false);
+
+  setTimeout(() => {
+    let aiResponseText = `Simulated response to: "${newMessage.text}"`;
+
+    if (aquarium) {
+      aiResponseText += ` Considering your ${aquarium.name}`;
+    }
+
+    setFullResponseText(aiResponseText);  // Store the full AI response
+    typeTextEffect(aiResponseText);       // Start the typewriter effect
+    setLoading(false);
+  }, 1000);
+};
+
+
+/**
  * @description Simulates a typewriter effect for the AI response, progressively revealing text.
  * @param {string} text - The AI response text to be revealed.
  */
@@ -130,6 +136,9 @@ const typeTextEffect = (text: string) => {
 
   // Ensure message is added before typing starts
   setMessages((prev) => [...prev, { sender: 'AI', text: '', timestamp: getCurrentTimestamp() }]);
+
+  // Reset isMessageAdding to false once the typewriter effect begins
+  setIsMessageAdding(false);
 
   typingIntervalRef.current = setInterval(() => {
     if (index <= text.length) {
@@ -141,8 +150,9 @@ const typeTextEffect = (text: string) => {
       clearInterval(typingIntervalRef.current!); // Stop the interval when done
       setTypewriterCompleted(true); // Mark typewriter as complete
     }
-  }, 25); // Speed of the typing effect (50ms per character)
+  }, 25); // Speed of the typing effect (25ms per character)
 };
+
 
 
   useEffect(() => {
@@ -164,30 +174,34 @@ const typeTextEffect = (text: string) => {
   }, [revealedText]);
   
 
-  /**
-   * @description Handles completing the typewriter effect and instantly revealing the full AI response.
-   */
-  const handleAutoCompleteText = () => {
-    // Stop the typewriter effect immediately
-    if (typingIntervalRef.current) {
-      clearInterval(typingIntervalRef.current); // Clear the typewriter interval
-      typingIntervalRef.current = null;
-    }
+/**
+ * @description Handles completing the typewriter effect and instantly revealing the full AI response.
+ */
+const handleAutoCompleteText = () => {
+  // If a message is being added (before the typewriter effect starts), do nothing
+  if (isMessageAdding) return;
 
-    // Set the revealed text to the full response and mark typewriter as completed
-    setRevealedText(fullResponseText);
-    
-    // Immediately update the AI message with the full response
-    setMessages((prev) => {
-      const updatedMessages = prev.map((msg, index) =>
-        index === prev.length - 1 && msg.sender === 'AI' ? { ...msg, text: fullResponseText } : msg
-      );
-      return updatedMessages;
-    });
+  // Stop the typewriter effect immediately
+  if (typingIntervalRef.current) {
+    clearInterval(typingIntervalRef.current); // Clear the typewriter interval
+    typingIntervalRef.current = null;
+  }
 
-    setTypewriterCompleted(true);
-    scrollToBottom(); // Ensure chat is scrolled to bottom after completion
-  };
+  // Set the revealed text to the full response and mark typewriter as completed
+  setRevealedText(fullResponseText);
+  
+  // Immediately update the AI message with the full response
+  setMessages((prev) => {
+    const updatedMessages = prev.map((msg, index) =>
+      index === prev.length - 1 && msg.sender === 'AI' ? { ...msg, text: fullResponseText } : msg
+    );
+    return updatedMessages;
+  });
+
+  setTypewriterCompleted(true);
+  scrollToBottom(); // Ensure chat is scrolled to bottom after completion
+};
+
 
   /**
    * @description Handles the Enter key press to send a message or complete the typewriter effect.
