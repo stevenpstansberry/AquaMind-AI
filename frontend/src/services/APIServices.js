@@ -152,7 +152,7 @@ const postToOpenAI = async (endpoint, data) => {
   const url = `http://localhost:8082${endpoint}`; // Base URL + endpoint
 
   console.log("Making POST request to:", url);
-  console.log("Request Data:", data);
+  console.log("Request Data:", JSON.stringify(data, null, 2)); // Pretty print the request data for clarity
 
   try {
     const response = await axios.post(url, data, {
@@ -162,7 +162,7 @@ const postToOpenAI = async (endpoint, data) => {
     });
 
     console.log("Response Status:", response.status);
-    console.log("Response Data:", response.data);
+    console.log("Response Data:", JSON.stringify(response.data, null, 2));
 
     return response.data;
   } catch (error) {
@@ -180,18 +180,19 @@ const postToOpenAI = async (endpoint, data) => {
 };
 
 /**
- * Sends a message (prompt) to the OpenAI API.
+ * Sends a conversation history to the OpenAI API.
  *
  * @async
  * @function sendMessageToOpenAI
- * @param {string} message - The user's message to be sent to the OpenAI API.
+ * @param {Array} chatHistory - An array of message objects representing the conversation history.
+ * Each object should have a `role` (either 'user' or 'assistant') and `content`.
  * @returns {Promise<Object>} Response data from the OpenAI API.
  * @throws Will throw an error if the request fails.
  */
-export const sendMessageToOpenAI = async (message) => {
-  // Prepare the request payload
+export const sendMessageToOpenAI = async (chatHistory) => {
+  // Prepare the request payload based on the chat history
   const requestData = {
-    prompt: message,
+    prompt: chatHistory,
   };
 
   // Use the generic post method to send the request
