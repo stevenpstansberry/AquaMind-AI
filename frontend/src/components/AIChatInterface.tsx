@@ -138,7 +138,7 @@ const AIChatInterface: React.FC<AIChatInterfaceProps> = ({ showChat, onClose, aq
   return (
     <Box
       sx={{
-        height: showChat ? (isExpanded ? '85vh' : '300px') : '0px',  // Dynamic height based on expansion
+        height: showChat ? (isExpanded ? '85vh' : '400px') : '0px',  // Increased height for the entire chat interface
         width: isExpanded ? '90vw' : '100%',  // Full width in expanded mode
         overflow: 'hidden',
         transition: 'height 0.5s ease, width 0.5s ease',
@@ -148,7 +148,6 @@ const AIChatInterface: React.FC<AIChatInterfaceProps> = ({ showChat, onClose, aq
         left: isExpanded ? '5%' : 'unset',
         zIndex: isExpanded ? 1000 : 'unset',  // Bring to front in expanded mode
         boxShadow: isExpanded ? '0 4px 10px rgba(0,0,0,0.3)' : 'none',
-        backgroundColor: '#fff',
         borderRadius: isExpanded ? '10px' : 'none',
       }}
     >
@@ -158,7 +157,6 @@ const AIChatInterface: React.FC<AIChatInterfaceProps> = ({ showChat, onClose, aq
           flexDirection="column"
           sx={{
             height: '100%',
-            paddingTop: '20px',
             position: 'relative',
           }}
         >
@@ -186,7 +184,7 @@ const AIChatInterface: React.FC<AIChatInterfaceProps> = ({ showChat, onClose, aq
               border: '1px solid #ddd',
               borderRadius: '5px',
               bgcolor: '#f9f9f9',
-              maxHeight: isExpanded ? '70vh' : '300px', // Expanded height control
+              height: isExpanded ? '70vh' : '250px', // Fixed height for the chat messages area
             }}
           >
             {messages.map((message, index) => (
@@ -223,34 +221,8 @@ const AIChatInterface: React.FC<AIChatInterfaceProps> = ({ showChat, onClose, aq
             ))}
           </Box>
 
-          {/* Suggestions placed above the input box */}
-          {suggestions && suggestions.length > 0 && (
-            <Box sx={{ mb: 2, display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-              {suggestions.map((suggestion, index) => (
-                <Button
-                  key={index}
-                  variant="contained"
-                  sx={{
-                    borderRadius: '24px',
-                    backgroundColor: '#f0f0f0',
-                    color: '#000',
-                    boxShadow: '0 2px 5px rgba(0,0,0,0.2)',
-                    padding: '6px 12px',
-                    textTransform: 'none',
-                    '&:hover': {
-                      backgroundColor: '#e0e0e0',
-                    },
-                  }}
-                  onClick={() => handleSuggestionClick(suggestion)}
-                >
-                  {suggestion}
-                </Button>
-              ))}
-            </Box>
-          )}
-
           {/* Input area */}
-          <Box display="flex" alignItems="center" mt={2} sx={{ borderRadius: '24px', bgcolor: '#f0f0f0', padding: '4px 8px' }}>
+          <Box display="flex" alignItems="center" mt={2} sx={{ borderRadius: '24px', padding: '4px 8px' }}>
             <TextField
               value={userInput}
               onChange={(e) => setUserInput(e.target.value)}
@@ -294,6 +266,44 @@ const AIChatInterface: React.FC<AIChatInterfaceProps> = ({ showChat, onClose, aq
               {typewriterCompleted ? <ArrowUpwardIcon /> : <SquareIcon />}
             </IconButton>
           </Box>
+
+          {/* Suggestions */}
+          {suggestions && suggestions.length > 0 && (
+            <Box 
+              sx={{ 
+                display: 'flex', 
+                flexDirection: 'row',  // Align horizontally
+                flexWrap: 'wrap',      // Allow wrapping if there's overflow
+                gap: 2,                // Increase the spacing between buttons
+                justifyContent: 'flex-start',  
+                alignItems: 'flex-end',
+                padding: '8px',        // Add padding around the suggestions area
+                height: 'auto',        // Let suggestions adjust their height
+              }}
+            >
+              {suggestions.map((suggestion, index) => (
+                <Button
+                  key={index}
+                  variant="contained"
+                  sx={{
+                    borderRadius: '24px',
+                    backgroundColor: '#f0f0f0',
+                    color: '#000',
+                    boxShadow: '0 2px 5px rgba(0,0,0,0.2)',
+                    padding: '6px 12px',
+                    margin: '4px',      // Add margin around each button for additional space
+                    textTransform: 'none',
+                    '&:hover': {
+                      backgroundColor: '#e0e0e0',
+                    },
+                  }}
+                  onClick={() => handleSuggestionClick(suggestion)}
+                >
+                  {suggestion}
+                </Button>
+              ))}
+            </Box>
+          )}
         </Box>
       )}
     </Box>

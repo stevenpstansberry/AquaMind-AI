@@ -545,7 +545,6 @@ const AddFishCard: React.FC<AddFishCardProps> = ({ open, onClose, aquarium, onAd
             </Button>
             <AIChatInterface showChat={showChat} onClose={() => setShowChat(false)} aquarium={aquarium}  suggestions={[
               "What fish can I add to this tank?", 
-              "How do I introduce new fish to my aquarium safely?",
               "Do the fish in my tank need any special care?",
             ]} />
           </Box>
