@@ -27,3 +27,6 @@ frontend/node_modules
 frontend/.env
 notes.md
 backend/.env
+backend/cmd/auth-service/.env
+backend/cmd/openai-service/.env
+backend/cmd/auth-service/.env
