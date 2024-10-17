@@ -14,6 +14,8 @@ import SquareIcon from '@mui/icons-material/Square';
 import FullscreenIcon from '@mui/icons-material/Fullscreen'; // Expand icon
 import FullscreenExitIcon from '@mui/icons-material/FullscreenExit'; // Collapse icon
 import { Aquarium } from '../interfaces/Aquarium';
+import { keyframes } from '@mui/system';
+
 
 
 interface AIChatInterfaceProps {
@@ -22,6 +24,31 @@ interface AIChatInterfaceProps {
   aquarium?: Aquarium;
   suggestions?: string[];  // Optional array for chat suggestions
 }
+
+const typingAnimation = keyframes`
+  0% { opacity: 0.2; }
+  20% { opacity: 1; }
+  100% { opacity: 0.2; }
+`;
+
+const TypingIndicator: React.FC = () => (
+  <Box sx={{ display: 'flex', alignItems: 'center' }}>
+    {[0, 0.2, 0.4].map((delay, index) => (
+      <Box
+        key={index}
+        sx={{
+          width: '8px',
+          height: '8px',
+          backgroundColor: '#ccc',
+          borderRadius: '50%',
+          animation: `${typingAnimation} 1.4s infinite`,
+          animationDelay: `${delay}s`,
+          mr: index < 2 ? '4px' : '0',
+        }}
+      />
+    ))}
+  </Box>
+);
 
 /**
  * AIChatInterface Component
@@ -69,21 +96,24 @@ const AIChatInterface: React.FC<AIChatInterfaceProps> = ({ showChat, onClose, aq
   const handleSendMessage = async (inputMessage?: string) => {
     const messageToSend = inputMessage || userInput;
     if (!messageToSend.trim()) return;
-
+  
     const newMessage = { sender: 'User', text: messageToSend, timestamp: getCurrentTimestamp() };
     setMessages((prev) => [...prev, newMessage]);
     setUserInput('');  // Clear the input field
-
+  
+    // Hide suggestions when a message is sent
+    setSuggestions(null);
+  
     setLoading(true);
     setTypewriterCompleted(false);
-
+  
     setTimeout(() => {
       let aiResponseText = `Simulated response to: "${newMessage.text}"`;
-
+  
       if (aquarium) {
         aiResponseText += ` Considering your ${aquarium.name}`;
       }
-
+  
       setFullResponseText(aiResponseText); // Store the full AI response
       typeTextEffect(aiResponseText); // Start the typewriter effect
       setLoading(false);
@@ -258,7 +288,7 @@ const AIChatInterface: React.FC<AIChatInterfaceProps> = ({ showChat, onClose, aq
                       bgcolor: message.sender === 'User' ? '#007bff' : '#e0e0e0',
                       color: message.sender === 'User' ? '#fff' : '#000',
                       padding: '10px',
-                      borderRadius: '10px',
+                      borderRadius: '15px',
                       maxWidth: '70%',
                       wordWrap: 'break-word',
                       transition: 'all 0.3s ease',
@@ -322,13 +352,13 @@ const AIChatInterface: React.FC<AIChatInterfaceProps> = ({ showChat, onClose, aq
             <Box 
               sx={{ 
                 display: 'flex', 
-                flexDirection: 'row',  // Align horizontally
-                flexWrap: 'wrap',      // Allow wrapping if there's overflow
-                gap: 2,                // Increase the spacing between buttons
+                flexDirection: 'row',  
+                flexWrap: 'wrap',      
+                gap: 2,               
                 justifyContent: 'flex-start',  
                 alignItems: 'flex-end',
-                padding: '8px',        // Add padding around the suggestions area
-                height: 'auto',        // Let suggestions adjust their height
+                padding: '8px',        
+                height: 'auto',        
               }}
             >
               {suggestions.map((suggestion, index) => (
