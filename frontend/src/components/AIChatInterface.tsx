@@ -5,7 +5,7 @@
  * It uses the ChatContent component to render the chat messages, input field, and suggestions.
  * The component ensures smooth transitions and better user experience during expansion and minimization.
  * 
- * @author 
+ * @author Steven Stansberry
  */
 
 import React, { useState } from 'react';
