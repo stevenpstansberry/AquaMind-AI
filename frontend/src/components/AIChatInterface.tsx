@@ -120,28 +120,30 @@ const AIChatInterface: React.FC<AIChatInterfaceProps> = ({ showChat, onClose, aq
     }, 1000);
   };
 
-  /**
-   * @description Simulates a typewriter effect for the AI response, progressively revealing text.
-   * @param {string} text - The AI response text to be revealed.
-   */
-  const typeTextEffect = (text: string) => {
-    setRevealedText('');
-    let index = 0;
+ /**
+ * @description Simulates a typewriter effect for the AI response, progressively revealing text.
+ * @param {string} text - The AI response text to be revealed.
+ */
+const typeTextEffect = (text: string) => {
+  setRevealedText('');  // Clear previously revealed text
+  let index = 0;
 
-    // Add the AI message to the messages only when typing begins
-    setMessages((prev) => [...prev, { sender: 'AI', text: '', timestamp: getCurrentTimestamp() }]);
+  // Ensure message is added before typing starts
+  setMessages((prev) => [...prev, { sender: 'AI', text: '', timestamp: getCurrentTimestamp() }]);
 
-    typingIntervalRef.current = setInterval(() => {
-      if (index < text.length) {
-        setRevealedText((prev) => prev + text[index]);
-        index++;
-        scrollToBottom(); // Ensure the chat scrolls to the newest message
-      } else {
-        clearInterval(typingIntervalRef.current!); // Stop the interval when typing is done
-        setTypewriterCompleted(true); // Mark the typewriter effect as completed
-      }
-    }, 50); // Speed of the typing effect (50ms per character)
-  };
+  typingIntervalRef.current = setInterval(() => {
+    if (index <= text.length) {
+      // Update the revealed text progressively
+      setRevealedText(text.slice(0, index)); // Reveal text up to the current index
+      index++;
+      scrollToBottom(); // Ensure the chat scrolls to the newest message
+    } else {
+      clearInterval(typingIntervalRef.current!); // Stop the interval when done
+      setTypewriterCompleted(true); // Mark typewriter as complete
+    }
+  }, 25); // Speed of the typing effect (50ms per character)
+};
+
 
   useEffect(() => {
     scrollToBottom();
@@ -149,17 +151,18 @@ const AIChatInterface: React.FC<AIChatInterfaceProps> = ({ showChat, onClose, aq
 
   useEffect(() => {
     // Only update the AI message progressively as text reveals
-    if (!loading && revealedText) {
+    if (revealedText) {
       setMessages((prev) => {
         const updatedMessages = prev.map((msg, index) =>
           index === prev.length - 1 && msg.sender === 'AI'
-            ? { ...msg, text: revealedText }
+            ? { ...msg, text: revealedText } // Only update the last AI message
             : msg
         );
         return updatedMessages;
       });
     }
   }, [revealedText]);
+  
 
   /**
    * @description Handles completing the typewriter effect and instantly revealing the full AI response.
