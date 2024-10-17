@@ -1,3 +1,12 @@
+/**
+ * @file AIChatInterface.tsx
+ * @location src/components/AIChatInterface.tsx
+ * @description This component renders a chat interface that allows the user to interact with an AI chatbot.
+ * The AI responses can be tailored based on the user's aquarium details, including its specifications, fish, and plants.
+ * The component also supports chat suggestions and an expandable chat window.
+ * 
+ * @author Steven Stansberry
+ */
 import React, { useState, useRef, useEffect } from 'react';
 import { Box, Typography, TextField, IconButton, Button } from '@mui/material';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
@@ -11,8 +20,17 @@ interface AIChatInterfaceProps {
   showChat: boolean;
   onClose: () => void;
   aquarium?: Aquarium;
-  suggestions?: string[];  // Optional prop for chat suggestions
+  suggestions?: string[];  // Optional array for chat suggestions
 }
+
+/**
+ * AIChatInterface Component
+ * @description Renders a chat interface where users can send messages to an AI and receive simulated responses with typewriter effects.
+ * The chat supports expansion and includes suggestions for user interaction.
+ * 
+ * @param {AIChatInterfaceProps} props - The props for the AIChatInterface component.
+ * @returns {JSX.Element} The rendered chat interface.
+ */
 
 const AIChatInterface: React.FC<AIChatInterfaceProps> = ({ showChat, onClose, aquarium, suggestions: initialSuggestions }) => {
   const [messages, setMessages] = useState<{ sender: string, text: string, timestamp: string }[]>([]);
@@ -27,16 +45,27 @@ const AIChatInterface: React.FC<AIChatInterfaceProps> = ({ showChat, onClose, aq
   const typingIntervalRef = useRef<NodeJS.Timeout | null>(null); // Ref to track and clear typing interval
 
 
+  /**
+   * @description Scrolls the chat container to the bottom when called.
+   */
   const scrollToBottom = () => {
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
     }
   };
 
+  /**
+   * @description Gets the current timestamp in HH:MM format.
+   * @returns {string} The current time formatted as a string.
+   */
   const getCurrentTimestamp = () => {
     return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
 
+  /**
+   * @description Handles sending a user message to the chat and generating an AI response.
+   * @param {string} [inputMessage] - Optional input message. Defaults to user input state.
+   */
   const handleSendMessage = async (inputMessage?: string) => {
     const messageToSend = inputMessage || userInput;
     if (!messageToSend.trim()) return;
@@ -61,7 +90,10 @@ const AIChatInterface: React.FC<AIChatInterfaceProps> = ({ showChat, onClose, aq
     }, 1000);
   };
 
-  // Typewriter effect function
+  /**
+   * @description Simulates a typewriter effect for the AI response, progressively revealing text.
+   * @param {string} text - The AI response text to be revealed.
+   */
   const typeTextEffect = (text: string) => {
     setRevealedText('');
     let index = 0;
@@ -99,6 +131,9 @@ const AIChatInterface: React.FC<AIChatInterfaceProps> = ({ showChat, onClose, aq
     }
   }, [revealedText]);
 
+  /**
+   * @description Handles completing the typewriter effect and instantly revealing the full AI response.
+   */
   const handleAutoCompleteText = () => {
     // Stop the typewriter effect immediately
     if (typingIntervalRef.current) {
@@ -121,6 +156,10 @@ const AIChatInterface: React.FC<AIChatInterfaceProps> = ({ showChat, onClose, aq
     scrollToBottom(); // Ensure chat is scrolled to bottom after completion
   };
 
+  /**
+   * @description Handles the Enter key press to send a message or complete the typewriter effect.
+   * @param {React.KeyboardEvent<HTMLDivElement>} event - The key press event.
+   */
   const handleKeyPress = (event: React.KeyboardEvent<HTMLDivElement>) => {
     if (event.key === 'Enter' && typewriterCompleted) {
       handleSendMessage();
@@ -129,7 +168,11 @@ const AIChatInterface: React.FC<AIChatInterfaceProps> = ({ showChat, onClose, aq
     }
   };
 
-  // Handle selecting a suggestion
+  
+  /**
+   * @description Handles the selection of a suggestion and sends it as a message.
+   * @param {string} suggestion - The selected suggestion text.
+   */
   const handleSuggestionClick = (suggestion: string) => {
     setSuggestions(null);  // Hide suggestions after a click
     handleSendMessage(suggestion);  // Send the suggestion as a message
