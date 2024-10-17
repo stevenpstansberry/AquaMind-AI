@@ -1,17 +1,19 @@
 /**
  * @file AIChatInterface.tsx
- * @location src/components/AIChatInterface.tsx
+ * @location src/components/ai-components/AIChatInterface.tsx
  * @description This component renders the main AI chat interface, handling the expansion, minimization, and overall chat window.
  * It uses the ChatContent component to render the chat messages, input field, and suggestions.
  * The component ensures smooth transitions and better user experience during expansion and minimization.
+ * Provides functionality to clear the chat history.
  * 
  * @author 
  */
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Box, IconButton, Modal } from '@mui/material';
 import FullscreenIcon from '@mui/icons-material/Fullscreen'; // Expand icon
 import FullscreenExitIcon from '@mui/icons-material/FullscreenExit'; // Collapse icon
+import DeleteIcon from '@mui/icons-material/Delete'; // Clear chat icon
 import ChatContent from './ChatContent'; // Import the ChatContent component
 import { Aquarium } from '../../interfaces/Aquarium';
 
@@ -26,12 +28,23 @@ interface AIChatInterfaceProps {
  * AIChatInterface Component
  * @description Manages the overall AI chat interface, including expansion, minimization, and rendering the chat window.
  * Utilizes the ChatContent component to display the chat messages and input area.
+ * Provides functionality to clear the chat history.
  * 
  * @param {AIChatInterfaceProps} props - The props for the AIChatInterface component.
  * @returns {JSX.Element} The rendered AI chat interface.
  */
 const AIChatInterface: React.FC<AIChatInterfaceProps> = ({ showChat, onClose, aquarium, suggestions }) => {
   const [isExpanded, setIsExpanded] = useState(false); // State for chat expansion
+  const chatContentRef = useRef<{ clearChat: () => void }>(null);
+
+  /**
+   * @description Handles the clear chat action.
+   */
+  const handleClearChat = () => {
+    if (window.confirm('Are you sure you want to clear the chat?')) {
+      chatContentRef.current?.clearChat();
+    }
+  };
 
   return (
     <>
@@ -54,29 +67,57 @@ const AIChatInterface: React.FC<AIChatInterfaceProps> = ({ showChat, onClose, aq
               position: 'relative',
             }}
           >
-            {/* Expand Icon */}
-            <IconButton
+            {/* Icons */}
+            <Box
               sx={{
                 position: 'absolute',
                 top: '15px',
                 left: '15px',
                 zIndex: 10,
-                color: '#666',
-                padding: '8px',
-                borderRadius: '50%',
-                backgroundColor: '#fff',
-                boxShadow: '0 2px 5px rgba(0, 0, 0, 0.2)',
-                '&:hover': {
-                  backgroundColor: '#f0f0f0',
-                },
+                display: 'flex',
+                gap: 1,
               }}
-              onClick={() => setIsExpanded(true)}
             >
-              <FullscreenIcon />
-            </IconButton>
+              {/* Expand Icon */}
+              <IconButton
+                sx={{
+                  color: '#666',
+                  padding: '8px',
+                  borderRadius: '50%',
+                  backgroundColor: '#fff',
+                  boxShadow: '0 2px 5px rgba(0, 0, 0, 0.2)',
+                  '&:hover': {
+                    backgroundColor: '#f0f0f0',
+                  },
+                }}
+                onClick={() => setIsExpanded(true)}
+                aria-label="Expand Chat"
+              >
+                <FullscreenIcon />
+              </IconButton>
+
+              {/* Clear Chat Icon */}
+              <IconButton
+                sx={{
+                  color: '#666',
+                  padding: '8px',
+                  borderRadius: '50%',
+                  backgroundColor: '#fff',
+                  boxShadow: '0 2px 5px rgba(0, 0, 0, 0.2)',
+                  '&:hover': {
+                    backgroundColor: '#f0f0f0',
+                  },
+                }}
+                onClick={handleClearChat}
+                aria-label="Clear Chat"
+              >
+                <DeleteIcon />
+              </IconButton>
+            </Box>
 
             {/* Chat Content */}
             <ChatContent
+              ref={chatContentRef}
               aquarium={aquarium}
               suggestions={suggestions}
             />
@@ -107,29 +148,57 @@ const AIChatInterface: React.FC<AIChatInterfaceProps> = ({ showChat, onClose, aq
             outline: 'none',
           }}
         >
-          {/* Collapse Icon */}
-          <IconButton
+          {/* Icons */}
+          <Box
             sx={{
               position: 'absolute',
               top: '15px',
               left: '15px',
               zIndex: 10,
-              color: '#666',
-              padding: '8px',
-              borderRadius: '50%',
-              backgroundColor: '#fff',
-              boxShadow: '0 2px 5px rgba(0, 0, 0, 0.2)',
-              '&:hover': {
-                backgroundColor: '#f0f0f0',
-              },
+              display: 'flex',
+              gap: 1,
             }}
-            onClick={() => setIsExpanded(false)}
           >
-            <FullscreenExitIcon />
-          </IconButton>
+            {/* Collapse Icon */}
+            <IconButton
+              sx={{
+                color: '#666',
+                padding: '8px',
+                borderRadius: '50%',
+                backgroundColor: '#fff',
+                boxShadow: '0 2px 5px rgba(0, 0, 0, 0.2)',
+                '&:hover': {
+                  backgroundColor: '#f0f0f0',
+                },
+              }}
+              onClick={() => setIsExpanded(false)}
+              aria-label="Collapse Chat"
+            >
+              <FullscreenExitIcon />
+            </IconButton>
+
+            {/* Clear Chat Icon */}
+            <IconButton
+              sx={{
+                color: '#666',
+                padding: '8px',
+                borderRadius: '50%',
+                backgroundColor: '#fff',
+                boxShadow: '0 2px 5px rgba(0, 0, 0, 0.2)',
+                '&:hover': {
+                  backgroundColor: '#f0f0f0',
+                },
+              }}
+              onClick={handleClearChat}
+              aria-label="Clear Chat"
+            >
+              <DeleteIcon />
+            </IconButton>
+          </Box>
 
           {/* Chat Content */}
           <ChatContent
+            ref={chatContentRef}
             aquarium={aquarium}
             suggestions={suggestions}
           />
