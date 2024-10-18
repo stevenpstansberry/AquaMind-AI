@@ -1,3 +1,11 @@
+/**
+ * @file AquariumWizard.tsx
+ * @location src/components/aquarium-components/aquarium-wizard-components/AquariumWizard.tsx
+ * @description This component renders the Aquarium Setup Wizard, guiding the user through different setup steps such as choosing the aquarium type, tank size, species, plants, equipment, and providing a summary. It handles navigation between steps, validating inputs, and saving the setup.
+ * 
+ * @author Steven Stansberry
+ */
+
 import React, { useState } from 'react'; 
 import { Card, CardContent, Typography, Button, Box, Backdrop } from '@mui/material';
 import { v4 as uuidv4 } from 'uuid';
@@ -22,15 +30,20 @@ const AquariumWizard: React.FC<AquariumWizardProps> = ({ onClose }) => {
     type: '',
     size: '',
     species: [],  
-    plants: [],   // New array to store selected plants
+    plants: [],   // Array to store selected plants
     equipment: [],
   });
 
   const [isStepValid, setIsStepValid] = useState(false); 
   const [showChat, setShowChat] = useState(false);
 
-  // Reset state when closing the wizard
-  const resetWizard = () => {
+  /**
+   * Resets the state of the wizard when it is closed.
+   * This includes resetting the current step, aquarium data, and validation state.
+   * 
+   * @returns {void}
+   */
+  const resetWizard = (): void => {
     setCurrentStep(0);
     setAquariumData({
       id: '',
@@ -44,20 +57,37 @@ const AquariumWizard: React.FC<AquariumWizardProps> = ({ onClose }) => {
     setIsStepValid(false);
   };
 
-  const handleNext = () => {
+  /**
+   * Advances to the next step in the wizard. 
+   * It also resets the step validation state.
+   * 
+   * @returns {void}
+   */
+  const handleNext = (): void => {
     console.log("next", aquariumData);
     setCurrentStep((prevStep) => prevStep + 1);
     setIsStepValid(false); 
   };
 
-  const handlePrev = () => {
+  /**
+   * Goes back to the previous step in the wizard. 
+   * It also sets the validation state to true to allow navigation.
+   * 
+   * @returns {void}
+   */
+  const handlePrev = (): void => {
     console.log("back", aquariumData);
     setCurrentStep((prevStep) => prevStep - 1);
     setIsStepValid(true); 
   };
 
-  // Function to handle "Finish" step
-  const handleFinish = () => {
+  /**
+   * Handles the final step of the wizard, generating a unique ID if necessary,
+   * saving the aquarium data, and closing the wizard.
+   * 
+   * @returns {void}
+   */
+  const handleFinish = (): void => {
     const id = aquariumData.id || uuidv4();
     const finalAquariumData = { ...aquariumData, id };
 

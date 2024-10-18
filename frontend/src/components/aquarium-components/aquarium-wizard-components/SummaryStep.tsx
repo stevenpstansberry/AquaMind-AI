@@ -1,3 +1,11 @@
+/**
+ * @file SummaryStep.tsx
+ * @location src/components/aquarium-components/aquarium-wizard-components/SummaryStep.tsx
+ * @description This component renders the summary step in the aquarium setup wizard. It displays a summary of the aquarium's name, type, size, selected species, plants, and equipment. It also allows the user to update the aquarium name.
+ * 
+ * @author Steven Stansberry
+ */
+
 import React, { useState, useEffect } from 'react';
 import { TextField, Box, Typography } from '@mui/material';
 
@@ -17,7 +25,11 @@ interface SummaryStepProps {
 const SummaryStep: React.FC<SummaryStepProps> = ({ aquariumData, setAquariumData }) => {
   const [aquariumName, setAquariumName] = useState(aquariumData.name);
 
-  // Update aquarium name in parent state whenever it changes
+  /**
+   * Updates the aquarium name in the parent state whenever the local aquarium name state changes.
+   * 
+   * @returns {void}
+   */
   useEffect(() => {
     setAquariumData((prevData: any) => ({ ...prevData, name: aquariumName }));
   }, [aquariumName, setAquariumData]);

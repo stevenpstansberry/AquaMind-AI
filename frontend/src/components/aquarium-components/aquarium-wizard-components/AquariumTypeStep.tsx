@@ -1,16 +1,30 @@
+/**
+ * @file AquariumTypeStep.tsx
+ * @location src/components/aquarium-components/aquarium-wizard-components/AquariumTypeStep.tsx
+ * @description This component renders the Aquarium Type selection step in the aquarium setup wizard. It allows the user to select between 'Freshwater' and 'Saltwater' types and updates the state accordingly.
+ * 
+ * @author Steven Stansberry
+ */
+
 import React, { useState } from 'react';
 import { Button, Typography, Grid, Box } from '@mui/material';
 
 interface AquariumTypeStepProps {
   setAquariumData: React.Dispatch<React.SetStateAction<any>>;
   setIsStepValid: React.Dispatch<React.SetStateAction<boolean>>;
-  aquariumData: { name: string; id: string; type: string; size: string;  species: { name: string; count: number }[]; equipment: string[] };
+  aquariumData: { name: string; id: string; type: string; size: string; species: { name: string; count: number }[]; equipment: string[] };
 }
 
 const AquariumTypeStep: React.FC<AquariumTypeStepProps> = ({ setAquariumData, setIsStepValid, aquariumData }) => {
   const [selectedType, setSelectedType] = useState<string | null>(aquariumData.type || null); // Initialize from aquariumData
 
-  const handleTypeSelection = (type: string) => {
+  /**
+   * Handles the selection of an aquarium type (Freshwater or Saltwater). Updates the local state and the parent state.
+   * 
+   * @param {string} type - The type of aquarium selected by the user ('Freshwater' or 'Saltwater').
+   * @returns {void}
+   */
+  const handleTypeSelection = (type: string): void => {
     setSelectedType(type); // Set the selected type
     setAquariumData((prevData: any) => ({ ...prevData, type })); // Update the aquarium data
     setIsStepValid(true); // Mark the step as valid once a type is selected
