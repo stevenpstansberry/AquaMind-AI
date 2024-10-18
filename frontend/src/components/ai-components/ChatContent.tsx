@@ -71,6 +71,23 @@ const ChatContent = forwardRef<{ clearChat: () => void }, ChatContentProps>(
     const chatContainerRef = useRef<HTMLDivElement>(null);
     const typingIntervalRef = useRef<NodeJS.Timeout | null>(null); // Ref to track and clear typing interval
 
+    // Function to generate aquarium description
+    const getAquariumDescription = (aquarium: Aquarium): string => {
+      let description = `You are an assistant helping with an aquarium. The aquarium details are as follows:\n`;
+
+      if (aquarium.name) {
+        description += `Name: ${aquarium.name}\n`;
+      }
+      if (aquarium.size) {
+        description += `Size: ${aquarium.size}\n`;
+      }
+      if (aquarium.species && aquarium.species.length > 0) {
+        description += `Fish: ${aquarium.species.map(f => f.name).join(', ')}\n`;
+      }
+
+      return description;
+    };
+
     /**
      * @description Clears the chat messages.
      */
@@ -137,10 +154,22 @@ const ChatContent = forwardRef<{ clearChat: () => void }, ChatContentProps>(
     
       try {
         // Prepare chat history in OpenAI format
-        const chatHistory = updatedMessages.map(msg => ({
-          role: msg.sender === 'User' ? 'user' : 'assistant',
-          content: msg.text
-        }));
+        let chatHistory: { role: string; content: string }[] = [];
+    
+        if (aquarium) {
+          // Include the aquarium content as a system message
+          const aquariumContent = getAquariumDescription(aquarium);
+          chatHistory.push({ role: 'system', content: aquariumContent });
+        }
+    
+        // Add the chat history messages
+        chatHistory = [
+          ...chatHistory,
+          ...updatedMessages.map(msg => ({
+            role: msg.sender === 'User' ? 'user' : 'assistant',
+            content: msg.text
+          }))
+        ];
     
         // Make the API call using the sendMessageToOpenAI function
         console.log("Sending message to OpenAI...");
@@ -148,7 +177,7 @@ const ChatContent = forwardRef<{ clearChat: () => void }, ChatContentProps>(
         console.log("AI Response:", aiResponse);
     
         // Extract the AI response text
-        const aiResponseText = typeof aiResponse === 'string' ? aiResponse : (aiResponse as { content: string }).content; // Ensure aiResponseText is always a string
+        const aiResponseText = (aiResponse as { content: string }).content;
     
         // Store the full AI response
         setFullResponseText(aiResponseText);
@@ -168,6 +197,7 @@ const ChatContent = forwardRef<{ clearChat: () => void }, ChatContentProps>(
         setLoading(false);
       }
     };
+
 
 
     /**
