@@ -285,7 +285,7 @@ const ChatContent = forwardRef<{ clearChat: () => void }, ChatContentProps>(
               ...prev,
               {
                 sender: 'System',
-                text: `${matchingItem.name} (${matchingItem.type}) has been added to your aquarium.`,
+                text: `${matchingItem.name} (${matchingItem.type}) has been added to your selection. You will still need to confirm the changes manually.`,
                 timestamp: getCurrentTimestamp(),
               },
             ]);
@@ -553,7 +553,7 @@ const ChatContent = forwardRef<{ clearChat: () => void }, ChatContentProps>(
                           ...prev,
                           {
                             sender: 'System',
-                            text: `${item.name} (${item.type}) has been added to your aquarium.`,
+                            text: `${item.name} (${item.type}) has been added to your selection. You will still need to confirm the changes manually`,
                             timestamp: getCurrentTimestamp(),
                           },
                         ]);
