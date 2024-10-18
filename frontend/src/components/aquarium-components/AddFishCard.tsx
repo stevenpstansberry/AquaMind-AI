@@ -191,7 +191,7 @@ const AddFishCard: React.FC<AddFishCardProps> = ({ open, onClose, aquarium, onAd
     setPage(newPage);
   };
 
-    /**
+  /**
    * @function handleChangeRowsPerPage
    * @description Adjusts the number of rows per page in the fish table.
    * 
@@ -201,6 +201,27 @@ const AddFishCard: React.FC<AddFishCardProps> = ({ open, onClose, aquarium, onAd
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
+
+  /**
+   * @function handleAddItem
+   * @description Allows the GPT chatbot to add an item to the aquarium.
+   * 
+   * @param {string} itemType - The type of item to add.
+   * @param {string} itemName - The name of the item to add.
+   */
+  const handleAddFishGPT = (itemType: string, itemName: string) => {
+    if (itemType.toLowerCase() === 'fish') {
+      const fishToAdd = fishList.find(fish => fish.name.toLowerCase() === itemName.toLowerCase());
+      if (fishToAdd) {
+        handleSelectFish(fishToAdd); // Add the fish to selectedFishList
+      } else {
+        console.warn(`Fish ${itemName} not found in fish list.`);
+      }
+    } else {
+      console.warn(`Item type ${itemType} is not handled in AddFishCard.`);
+    }
+  };
+  console.log("Passing handleAddFishGPT to AIChatInterface:", handleAddFishGPT);
 
   return (
     <>
@@ -345,10 +366,16 @@ const AddFishCard: React.FC<AddFishCardProps> = ({ open, onClose, aquarium, onAd
             <Button variant="outlined" onClick={() => setShowChat(!showChat)}>
               {showChat ? 'Hide' : 'Show'} AI Suggestions
             </Button>
-            <AIChatInterface showChat={showChat} onClose={() => setShowChat(false)} aquarium={aquarium}  suggestions={[
-              "What fish can I add to this tank?", 
-              "Do the fish in my tank need any special care?",
-            ]} />
+            <AIChatInterface
+              showChat={showChat}
+              onClose={() => setShowChat(false)}
+              aquarium={aquarium}
+              suggestions={[
+                "What fish can I add to this tank?", 
+                "Do the fish in my tank need any special care?",
+              ]}
+              onAddItem={handleAddFishGPT} 
+            />
           </Box>
         </DialogContent>
 
