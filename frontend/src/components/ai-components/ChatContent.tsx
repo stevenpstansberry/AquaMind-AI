@@ -21,6 +21,7 @@ import ReactMarkdown from 'react-markdown';
 interface ChatContentProps {
   aquarium?: Aquarium;
   suggestions?: string[];
+  onAddItem?: (itemType: string, itemName: string) => void;
 }
 
 const typingAnimation = keyframes`
@@ -51,6 +52,20 @@ const TypingIndicator: React.FC = () => (
 
 const MAX_CHARACTERS = 500; // Maximum characters allowed in the input field
 
+type SuggestedItem = {
+  type: string;
+  name: string;
+};
+
+const parseItemSuggestion = (text: string): SuggestedItem | null => {
+  const regex = /\[ADD_ITEM type="(.*?)"\](.*?)\[\/ADD_ITEM\]/;
+  const match = text.match(regex);
+  if (match && match[1] && match[2]) {
+    return { type: match[1].trim().toLowerCase(), name: match[2].trim() };
+  }
+  return null;
+};
+
 /**
  * ChatContent Component
  * @description Handles the chat content, including displaying messages, handling user input, and showing suggestions.
@@ -61,7 +76,7 @@ const MAX_CHARACTERS = 500; // Maximum characters allowed in the input field
  * @returns {JSX.Element} The rendered chat content.
  */
 const ChatContent = forwardRef<{ clearChat: () => void }, ChatContentProps>(
-  ({ aquarium, suggestions: initialSuggestions }, ref) => {
+  ({ aquarium, suggestions: initialSuggestions, onAddItem }, ref) => {
     const [messages, setMessages] = useState<{ sender: string; text: string; timestamp: string }[]>([]);
     const [userInput, setUserInput] = useState('');
     const [loading, setLoading] = useState(false);
@@ -72,11 +87,13 @@ const ChatContent = forwardRef<{ clearChat: () => void }, ChatContentProps>(
     const [isMessageAdding, setIsMessageAdding] = useState(false);  // New state to block stop button during message adding  
     const chatContainerRef = useRef<HTMLDivElement>(null);
     const typingIntervalRef = useRef<NodeJS.Timeout | null>(null); // Ref to track and clear typing interval
+    const [suggestedItem, setSuggestedItem] = useState<SuggestedItem | null>(null);
+
 
     // Function to generate aquarium description
     const getAquariumDescription = (aquarium: Aquarium): string => {
-      let description = `You are an assistant helping with an aquarium. The aquarium details are as follows:\n`;
-
+      let description = `You are an assistant helping with an aquarium management application. The aquarium details are as follows:\n`;
+    
       if (aquarium.name) {
         description += `Name: ${aquarium.name}\n`;
       }
@@ -86,9 +103,44 @@ const ChatContent = forwardRef<{ clearChat: () => void }, ChatContentProps>(
       if (aquarium.species && aquarium.species.length > 0) {
         description += `Fish: ${aquarium.species.map(f => f.name).join(', ')}\n`;
       }
-
+      if (aquarium.plants && aquarium.plants.length > 0) {
+        description += `Plants: ${aquarium.plants.map(p => p.name).join(', ')}\n`;
+      }
+      if (aquarium.equipment && aquarium.equipment.length > 0) {
+        description += `Equipment: ${aquarium.equipment.map(e => e.name).join(', ')}\n`;
+      }
+    
+      // Add generic instructions for the assistant
+      description += `
+    When suggesting an item to add, please provide the item type and name in the following format:
+    
+    [ADD_ITEM type="item_type"]Item Name[/ADD_ITEM]
+    
+    Replace "item_type" with "fish", "plant", "equipment", or other appropriate type.
+    After the user confirms, do not ask again, and wait for the application to handle the addition.
+    `;
+    
       return description;
     };
+
+
+    const handleAIResponse = (aiResponseText: string) => {
+      setFullResponseText(aiResponseText);
+      typeTextEffect(aiResponseText);
+    
+      const itemSuggestion = parseItemSuggestion(aiResponseText);
+    
+      if (itemSuggestion) {
+        setMessages((prev) => [
+          ...prev,
+          { sender: 'AI', text: `Would you like to add ${itemSuggestion.name} (${itemSuggestion.type}) to your tank?`, timestamp: getCurrentTimestamp() },
+        ]);
+    
+        setSuggestedItem(itemSuggestion);
+      }
+    };
+    
+    
 
     /**
      * @description Clears the chat messages.
@@ -129,6 +181,18 @@ const ChatContent = forwardRef<{ clearChat: () => void }, ChatContentProps>(
       return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     };
 
+    const addItemToAquarium = (item: SuggestedItem) => {
+      if (onAddItem) {
+        onAddItem(item.type, item.name);
+      }
+    };
+
+
+    const isAffirmative = (text: string): boolean => {
+      const affirmativeResponses = ["yes", "yeah", "yep", "sure", "please do", "absolutely", "of course"];
+      return affirmativeResponses.includes(text.toLowerCase().trim());
+    };
+
     /**
      * @description Handles sending a user message to the chat and generating an AI response.
      * @param {string} [inputMessage] - Optional input message. Defaults to user input state.
@@ -155,6 +219,22 @@ const ChatContent = forwardRef<{ clearChat: () => void }, ChatContentProps>(
       setTypewriterCompleted(false);
     
       try {
+        // Check if the user is confirming the addition of an item
+        if (suggestedItem && isAffirmative(messageToSend)) {
+          addItemToAquarium(suggestedItem);
+          setSuggestedItem(null);
+          setMessages((prev) => [
+            ...prev,
+            {
+              sender: 'AI',
+              text: `${suggestedItem.name} (${suggestedItem.type}) has been added to your tank.`,
+              timestamp: getCurrentTimestamp(),
+            },
+          ]);
+          setTypewriterCompleted(true);
+          setLoading(false);
+          return;
+        }
         // Prepare chat history in OpenAI format
         let chatHistory: { role: string; content: string }[] = [];
     

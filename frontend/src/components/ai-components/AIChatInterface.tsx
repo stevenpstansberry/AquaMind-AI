@@ -24,6 +24,7 @@ interface AIChatInterfaceProps {
   onClose: () => void;
   aquarium?: Aquarium;
   suggestions?: string[];  // Optional array for chat suggestions
+  onAddItem?: (itemType: string, itemName: string) => void;
 }
 
 /**
@@ -35,7 +36,7 @@ interface AIChatInterfaceProps {
  * @param {AIChatInterfaceProps} props - The props for the AIChatInterface component.
  * @returns {JSX.Element} The rendered AI chat interface.
  */
-const AIChatInterface: React.FC<AIChatInterfaceProps> = ({ showChat, onClose, aquarium, suggestions }) => {
+const AIChatInterface: React.FC<AIChatInterfaceProps> = ({ showChat, onClose, aquarium, suggestions, onAddItem }) => {
   const [isExpanded, setIsExpanded] = useState(false); // State for chat expansion
   const chatContentRef = useRef<{ clearChat: () => void }>(null);
 
@@ -203,6 +204,7 @@ const AIChatInterface: React.FC<AIChatInterfaceProps> = ({ showChat, onClose, aq
             ref={chatContentRef}
             aquarium={aquarium}
             suggestions={suggestions}
+            onAddItem={onAddItem}
           />
         </Box>
       </Modal>
