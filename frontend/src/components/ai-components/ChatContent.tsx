@@ -17,7 +17,6 @@ import { keyframes } from '@mui/system';
 import { sendMessageToOpenAI } from '../../services/APIServices';
 import ReactMarkdown from 'react-markdown';
 
-
 interface ChatContentProps {
   aquarium?: Aquarium;
   suggestions?: string[];
@@ -49,7 +48,6 @@ const TypingIndicator: React.FC = () => (
   </Box>
 );
 
-
 const MAX_CHARACTERS = 500; // Maximum characters allowed in the input field
 
 type SuggestedItem = {
@@ -65,7 +63,6 @@ const parseItemSuggestion = (text: string): SuggestedItem | null => {
   }
   return null;
 };
-
 
 /**
  * ChatContent Component
@@ -88,8 +85,9 @@ const ChatContent = forwardRef<{ clearChat: () => void }, ChatContentProps>(
     const [isMessageAdding, setIsMessageAdding] = useState(false);  // New state to block stop button during message adding  
     const chatContainerRef = useRef<HTMLDivElement>(null);
     const typingIntervalRef = useRef<NodeJS.Timeout | null>(null); // Ref to track and clear typing interval
-    const [suggestedItem, setSuggestedItem] = useState<SuggestedItem | null>(null);
 
+    // Updated to store multiple suggested items
+    const [suggestedItems, setSuggestedItems] = useState<SuggestedItem[]>([]);
 
     // Function to generate aquarium description
     const getAquariumDescription = (aquarium: Aquarium): string => {
@@ -146,13 +144,12 @@ const ChatContent = forwardRef<{ clearChat: () => void }, ChatContentProps>(
     
       // Process the commands if any exist
       if (commands.length > 0) {
-        // Only set the suggested item without adding a message immediately
-        const itemSuggestion = commands[0];
-        setSuggestedItem(itemSuggestion);
-        console.log("Suggested item:", itemSuggestion);
-        
-        // Instead of sending the message immediately, wait for the user to confirm
-        // The suggestion can be processed in the handleSendMessage function if the user confirms
+        // Set the suggested items without adding messages immediately
+        setSuggestedItems(commands);
+        console.log("Suggested items:", commands);
+      } else {
+        // Clear suggested items if no commands
+        setSuggestedItems([]);
       }
     };
 
@@ -184,11 +181,6 @@ const ChatContent = forwardRef<{ clearChat: () => void }, ChatContentProps>(
     
       return { visibleText, commands };
     };
-    
-    
-    
-    
-    
 
     /**
      * @description Clears the chat messages.
@@ -202,6 +194,7 @@ const ChatContent = forwardRef<{ clearChat: () => void }, ChatContentProps>(
       setLoading(false);
       setIsMessageAdding(false);
       setSuggestions(initialSuggestions || null);
+      setSuggestedItems([]); // Clear suggested items
       if (typingIntervalRef.current) {
         clearInterval(typingIntervalRef.current);
         typingIntervalRef.current = null;
@@ -237,12 +230,6 @@ const ChatContent = forwardRef<{ clearChat: () => void }, ChatContentProps>(
       }
     };
 
-
-    const isAffirmative = (text: string): boolean => {
-      const affirmativeResponses = ["yes", "yeah", "yep", "sure", "please do", "absolutely", "of course"];
-      return affirmativeResponses.includes(text.toLowerCase().trim());
-    };
-
     /**
      * @description Handles sending a user message to the chat and generating an AI response.
      * @param {string} [inputMessage] - Optional input message. Defaults to user input state.
@@ -260,22 +247,28 @@ const ChatContent = forwardRef<{ clearChat: () => void }, ChatContentProps>(
       setTypewriterCompleted(false);
     
       try {
-        // If the user is confirming the addition of an item, proceed accordingly
-        if (suggestedItem && isAffirmative(messageToSend)) {
-          console.log("User confirmed adding item:", suggestedItem);
-          addItemToAquarium(suggestedItem);
-          setSuggestedItem(null);
-          setMessages((prev) => [
-            ...prev,
-            {
-              sender: 'AI',
-              text: `${suggestedItem.name} (${suggestedItem.type}) has been added to your tank.`,
-              timestamp: getCurrentTimestamp(),
-            },
-          ]);
-          setTypewriterCompleted(true);
-          setLoading(false);
-          return;
+        // Check if the user is confirming a suggested item by typing its name
+        if (suggestedItems.length > 0) {
+          const matchingItem = suggestedItems.find(
+            (item) => item.name.toLowerCase() === messageToSend.toLowerCase().trim()
+          );
+          if (matchingItem) {
+            // User confirmed adding item by typing the name
+            addItemToAquarium(matchingItem);
+            // Remove this item from the suggestedItems list
+            setSuggestedItems(suggestedItems.filter((item) => item !== matchingItem));
+            setMessages((prev) => [
+              ...prev,
+              {
+                sender: 'System',
+                text: `${matchingItem.name} (${matchingItem.type}) has been added to your aquarium.`,
+                timestamp: getCurrentTimestamp(),
+              },
+            ]);
+            setTypewriterCompleted(true);
+            setLoading(false);
+            return;
+          }
         }
     
         // Prepare chat history in OpenAI format
@@ -308,8 +301,6 @@ const ChatContent = forwardRef<{ clearChat: () => void }, ChatContentProps>(
         setLoading(false);
       }
     };
-
-
 
     /**
      * @description Simulates a typewriter effect for the AI response, progressively revealing text.
@@ -350,8 +341,6 @@ const ChatContent = forwardRef<{ clearChat: () => void }, ChatContentProps>(
         }
       }, 25); // Speed of the typing effect (25ms per character)
     };
-    
-    
 
     useEffect(() => {
       scrollToBottom();
@@ -370,7 +359,7 @@ const ChatContent = forwardRef<{ clearChat: () => void }, ChatContentProps>(
         });
       }
     }, [revealedText]);
-    
+
     /**
      * @description Handles completing the typewriter effect and instantly revealing the full AI response.
      */
@@ -469,7 +458,7 @@ const ChatContent = forwardRef<{ clearChat: () => void }, ChatContentProps>(
                     transition: 'all 0.3s ease',
                   }}
                 >
-                  {message.sender === 'AI' ? (
+                  {message.sender === 'AI' || message.sender === 'System' ? (
                     <ReactMarkdown skipHtml={true}>
                       {message.text}
                     </ReactMarkdown>
@@ -487,6 +476,57 @@ const ChatContent = forwardRef<{ clearChat: () => void }, ChatContentProps>(
           {loading && !typewriterCompleted && (
             <Box display="flex" justifyContent="flex-start" mb={1}>
               <TypingIndicator />
+            </Box>
+          )}
+
+          {/* Add buttons for suggested items */}
+          {suggestedItems && suggestedItems.length > 0 && (
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'row',
+                flexWrap: 'wrap',
+                gap: 2,
+                justifyContent: 'flex-start',
+                alignItems: 'flex-end',
+                padding: '8px',
+                height: 'auto',
+              }}
+            >
+              {suggestedItems.map((item, index) => (
+                <Button
+                  key={index}
+                  variant="contained"
+                  sx={{
+                    borderRadius: '24px',
+                    backgroundColor: '#f0f0f0',
+                    color: '#000',
+                    boxShadow: '0 2px 5px rgba(0,0,0,0.2)',
+                    padding: '6px 12px',
+                    margin: '4px',
+                    textTransform: 'none',
+                    '&:hover': {
+                      backgroundColor: '#e0e0e0',
+                    },
+                  }}
+                  onClick={() => {
+                    addItemToAquarium(item);
+                    // Remove this item from the suggestedItems list
+                    setSuggestedItems(suggestedItems.filter((_, i) => i !== index));
+                    // Inform the user that the item has been added
+                    setMessages((prev) => [
+                      ...prev,
+                      {
+                        sender: 'System',
+                        text: `${item.name} (${item.type}) has been added to your aquarium.`,
+                        timestamp: getCurrentTimestamp(),
+                      },
+                    ]);
+                  }}
+                >
+                  Add {item.name}
+                </Button>
+              ))}
             </Box>
           )}
         </Box>
