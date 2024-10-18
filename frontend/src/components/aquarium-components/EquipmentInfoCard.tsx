@@ -1,10 +1,15 @@
+/**
+ * @file EquipmentInfoCard.tsx
+ * @location src/components/aquarium-components/aquarium-wizard-components/EquipmentInfoCard.tsx
+ * @description This component renders a detailed information card for a selected piece of equipment in the aquarium setup wizard. The card displays information such as the equipment's role, importance, usage, and any special considerations.
+ * 
+ * @author Steven Stansberry
+ */
+
 import React from 'react';
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Typography, Box, Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { Equipment } from '../../interfaces/Aquarium';
-
-//Todo test
-// export
 
 interface EquipmentInfoCardProps {
   open: boolean;
