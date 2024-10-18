@@ -1,10 +1,11 @@
 /**
- * @fileoverview This component renders a detailed information card for an aquarium plant, displaying its
+ * @file PlantInfoCard.tsx
+ * @location src/components/aquarium-components/PlantInfoCard.tsx
+ * @description This component renders a detailed information card for an aquarium plant, displaying its
  * attributes such as general information, tank and water requirements, growth, care, propagation,
  * lifespan, and compatibility.
- *
+ * 
  * @author Steven Stansberry
- * @file src/components/aquarium-components/PlantInfoCard.tsx
  */
 import React from 'react';
 import {

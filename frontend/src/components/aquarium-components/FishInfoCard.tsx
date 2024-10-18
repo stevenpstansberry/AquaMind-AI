@@ -1,3 +1,11 @@
+/**
+ * @file FishInfoCard.tsx
+ * @location src/components/aquarium-components/aquarium-wizard-components/FishInfoCard.tsx
+ * @description This component renders a detailed information card for a selected fish in the aquarium setup wizard. The card provides details about the fish, including general information, tank and water requirements, care and behavior, breeding, lifespan, stocking recommendations, and habitat information.
+ * 
+ * @author Steven Stansberry
+ */
+
 import React from 'react';
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Typography, Box, Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';

@@ -1,9 +1,29 @@
+/**
+ * @fileoverview The Aquariums component displays the list of aquariums and their details.
+ * It allows users to view and edit aquarium parameters, add new aquariums, and displays a summary
+ * of each selected aquarium, including fish, plants, and equipment information.
+ * 
+ * @file src/pages/Aquariums.tsx
+ * @component
+ * @requires ../util/AuthContext
+ * @requires ../components/aquarium-components/AquariumSidebar
+ * @requires ../components/aquarium-components/aquarium-wizard-components/AquariumWizard
+ * @requires ../interfaces/Aquarium
+ * @requires ../util/MockAquariums.json
+ * 
+ * @description The main page for displaying aquariums and their details. Fetches mock aquarium data and
+ * displays it with various components like the sidebar, fish, plant, and equipment cards, and a wizard for creating new aquariums.
+ * 
+ * @returns {React.ReactElement} The rendered Aquariums component.
+ * @function
+ * @exports Aquariums
+ */
+
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../util/AuthContext';
 import AquariumSidebar from '../components/aquarium-components/AquariumSidebar';
 import AquariumWizard from '../components/aquarium-components/aquarium-wizard-components/AquariumWizard';
-import { Box, AppBar, Toolbar, Typography, Grid, IconButton, CardContent, Card } from '@mui/material';
-import EditIcon from '@mui/icons-material/Edit';
+import { Box, AppBar, Toolbar, Typography, Grid, CardContent, Card } from '@mui/material';
 import AquariumParameters from '../components/aquarium-components/AquariumParameters';
 import { Aquarium } from '../interfaces/Aquarium';
 import mockAquaData from '../util/MockAquariums.json';
@@ -14,35 +34,44 @@ import PlantCard from '../components/aquarium-components/PlantCard';
 import EquipmentCard from '../components/aquarium-components/EquipmentCard';
 import ParametersCard from '../components/aquarium-components/ParametersCard';
 
-
 const Aquariums: React.FC = () => {
   const [aquariums, setAquariums] = useState<Aquarium[]>([]);
   const [showWizard, setShowWizard] = useState(false);
   const [currentAquarium, setCurrentAquarium] = useState<Aquarium | null>(null);
 
-  const handleOpenWizard = () => {
+  /**
+   * Opens the aquarium setup wizard.
+   * 
+   * @returns {void}
+   */
+  const handleOpenWizard = (): void => {
     setShowWizard(true);
   };
 
-// Fetch aquarium data (mock)
-useEffect(() => {
-  const fetchAquariums = async () => {
-    const mockAquariums: Aquarium[] = mockAquaData as Aquarium[];
+  /**
+   * Fetches aquarium data (mock data used here) and sets it to the component state.
+   * 
+   * @returns {void}
+   */
+  useEffect(() => {
+    const fetchAquariums = async () => {
+      const mockAquariums: Aquarium[] = mockAquaData as Aquarium[];
+      setAquariums(mockAquariums);
+    };
 
-    setAquariums(mockAquariums);
-  };
+    fetchAquariums();
+  }, []);
 
-  fetchAquariums();
-}, []);
-
-
-
-
-
-
-
-
-  const handleUpdateParameters = (newParams: { temperature: number; ph: number; ammonia: number }) => {
+  /**
+   * Updates the parameters of the currently selected aquarium.
+   * 
+   * @param {Object} newParams - The new parameters to update the current aquarium with.
+   * @param {number} newParams.temperature - The temperature of the water.
+   * @param {number} newParams.ph - The pH level of the water.
+   * @param {number} newParams.ammonia - The ammonia level of the water.
+   * @returns {void}
+   */
+  const handleUpdateParameters = (newParams: { temperature: number; ph: number; ammonia: number }): void => {
     if (currentAquarium) {
       setCurrentAquarium({
         ...currentAquarium,
@@ -119,11 +148,11 @@ useEffect(() => {
                 <Grid item xs={12} md={6} lg={8}>
                   <ParametersCard
                     parameters={{
-                      temperature: currentAquarium.parameters?.temperature ?? 0,  // Fallback to 0 if undefined
-                      ph: currentAquarium.parameters?.ph ?? 0,                   // Fallback to 0 if undefined
-                      ammonia: currentAquarium.parameters?.ammonia ?? 0,          // Fallback to 0 if undefined
-                      nitrite: currentAquarium.parameters?.nitrite,               // Leave undefined if not present
-                      nitrate: currentAquarium.parameters?.nitrate,               // Leave undefined if not present
+                      temperature: currentAquarium.parameters?.temperature ?? 0,
+                      ph: currentAquarium.parameters?.ph ?? 0,
+                      ammonia: currentAquarium.parameters?.ammonia ?? 0,
+                      nitrite: currentAquarium.parameters?.nitrite,
+                      nitrate: currentAquarium.parameters?.nitrate,
                       gh: currentAquarium.parameters?.gh,
                       kh: currentAquarium.parameters?.kh,
                       co2: currentAquarium.parameters?.co2,
@@ -131,10 +160,10 @@ useEffect(() => {
                       calcium: currentAquarium.parameters?.calcium,
                       magnesium: currentAquarium.parameters?.magnesium,
                       alkalinity: currentAquarium.parameters?.alkalinity,
-                      phosphate: currentAquarium.parameters?.phosphate
+                      phosphate: currentAquarium.parameters?.phosphate,
                     }}
                     onUpdateParameters={handleUpdateParameters}
-                    aquariumData={currentAquarium}  // Pass the whole aquarium data for suggested parameters
+                    aquariumData={currentAquarium}
                   />
                 </Grid>
               </Grid>

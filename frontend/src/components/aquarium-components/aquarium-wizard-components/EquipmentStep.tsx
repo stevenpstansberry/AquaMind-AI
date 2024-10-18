@@ -1,3 +1,11 @@
+/**
+ * @file EquipmentStep.tsx
+ * @location src/components/aquarium-components/aquarium-wizard-components/EquipmentStep.tsx
+ * @description This component renders the equipment selection step in the aquarium setup wizard. It allows the user to choose essential and non-essential equipment, view detailed information, and input specific details for each selected equipment item.
+ * 
+ * @author Steven Stansberry
+ */
+
 import React, { useState, useEffect } from 'react';
 import { Typography, Grid, Box, TextField, Checkbox, FormControlLabel, Collapse, IconButton, Dialog, DialogTitle, DialogContent, DialogActions, Button } from '@mui/material';
 import { ExpandMore, Add as AddIcon } from '@mui/icons-material';
@@ -207,6 +215,12 @@ const EquipmentStep: React.FC<EquipmentStepProps> = ({
   const [infoCardOpen, setInfoCardOpen] = useState<boolean>(false);
   const [selectedEquipmentInfo, setSelectedEquipmentInfo] = useState<any | null>(null);
 
+  /**
+   * Toggles the selection of equipment. If the equipment is already selected, it will be removed; otherwise, it will be added.
+   * 
+   * @param {string} equipmentName - The name of the equipment to toggle.
+   * @returns {void}
+   */
   const handleEquipmentToggle = (equipmentName: string) => {
     if (selectedEquipment.some(e => e.name === equipmentName)) {
       setSelectedEquipment(prev => prev.filter(item => item.name !== equipmentName));
@@ -215,27 +229,59 @@ const EquipmentStep: React.FC<EquipmentStepProps> = ({
     }
   };
 
+  /**
+   * Opens the information card dialog for a specific piece of equipment.
+   * 
+   * @param {any} equipment - The equipment object containing details to display in the info card.
+   * @returns {void}
+   */
   const handleOpenInfoCard = (equipment: any) => {
     setSelectedEquipmentInfo(equipment);
     setInfoCardOpen(true);
   };
 
+  /**
+   * Closes the information card dialog.
+   * 
+   * @returns {void}
+   */
   const handleCloseInfoCard = () => {
     setInfoCardOpen(false);
     setSelectedEquipmentInfo(null);
   };
 
+  /**
+   * Updates the details of a selected piece of equipment when the user changes input fields.
+   * 
+   * @param {string} equipmentName - The name of the equipment whose details are being updated.
+   * @param {string} field - The specific field being updated (e.g., "Brand", "Model Name").
+   * @param {string} value - The new value input by the user.
+   * @returns {void}
+   */
   const handleDetailChange = (equipmentName: string, field: string, value: string) => {
     setSelectedEquipment(prev =>
       prev.map(e => (e.name === equipmentName ? { ...e, details: { ...e.details, [field]: value } } : e))
     );
   };
 
+  /**
+   * Updates the aquarium data state and sets the step validation based on the selected equipment.
+   * This useEffect runs whenever the selected equipment changes.
+   */
   useEffect(() => {
     setAquariumData((prevData: any) => ({ ...prevData, equipment: selectedEquipment }));
     setIsStepValid(selectedEquipment.length > 0);
   }, [selectedEquipment, setAquariumData, setIsStepValid]);
 
+  /**
+   * Renders the equipment categories with their respective items. Allows expanding/collapsing categories
+   * and selecting individual equipment items.
+   * 
+   * @param {any[]} categories - Array of equipment categories to render.
+   * @param {boolean[]} expandedCategories - State array indicating whether each category is expanded.
+   * @param {React.Dispatch<React.SetStateAction<boolean[]>>} setExpandedCategories - Function to toggle the expanded state of categories.
+   * @returns {JSX.Element} The rendered grid containing categories and their equipment items.
+   */
   const renderEquipmentCategory = (
     categories: any[],
     expandedCategories: boolean[],

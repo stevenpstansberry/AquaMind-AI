@@ -1,3 +1,11 @@
+/**
+ * @file TankSizeStep.tsx
+ * @location src/components/aquarium-components/aquarium-wizard-components/TankSizeStep.tsx
+ * @description This component renders the tank size input step in the aquarium setup wizard. It allows the user to enter the tank size and validates the input to ensure it's a valid number. Updates the parent state with the tank size value.
+ * 
+ * @author Steven Stansberry
+ */
+
 import React, { useState, useEffect } from 'react';
 import { Typography, TextField, Box, InputAdornment } from '@mui/material';
 
@@ -12,7 +20,13 @@ const TankSizeStep: React.FC<TankSizeStepProps> = ({ setAquariumData, setIsStepV
   const [customSize, setCustomSize] =  useState<string | string>(aquariumData.size || ''); // Initialize from aquariumData
   const [sizeError, setSizeError] = useState(false);
 
-  // Handle changes in the text field and update state
+  /**
+   * Handles changes in the tank size input field. Validates the input to ensure only numeric values are allowed.
+   * If valid, updates the tank size in the parent state.
+   * 
+   * @param {React.ChangeEvent<HTMLInputElement>} event - The change event for the input field.
+   * @returns {void}
+   */
   const handleCustomSizeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
     setCustomSize(value);
@@ -30,7 +44,12 @@ const TankSizeStep: React.FC<TankSizeStepProps> = ({ setAquariumData, setIsStepV
     }
   };
 
-  // When exiting this step, the parent will handle navigation via onNext
+  /**
+   * Effect that updates the parent state and validates the step when the custom size changes.
+   * This effect runs whenever the `customSize` or `sizeError` state variables change.
+   * 
+   * @returns {void}
+   */
   useEffect(() => {
     if (!sizeError && customSize) {
       setAquariumData((prevData: any) => ({ ...prevData, size: `${customSize}` }));
