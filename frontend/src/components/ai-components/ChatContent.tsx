@@ -68,14 +68,6 @@ type SuggestedItem = {
   name: string;
 };
 
-const parseItemSuggestion = (text: string): SuggestedItem | null => {
-  const regex = /\[ADD_ITEM type="(.*?)"\](.*?)\[\/ADD_ITEM\]/s;
-  const match = text.match(regex);
-  if (match && match[1] && match[2]) {
-    return { type: match[1].trim().toLowerCase(), name: match[2].trim() };
-  }
-  return null;
-};
 
 /**
  * ChatContent Component
@@ -143,6 +135,8 @@ const ChatContent = forwardRef<{ clearChat: () => void }, ChatContentProps>(
     The item type can only be "fish", "plant", or "equipment".
 
     You can not suggest items already in the aquarium. If you do, the application will ignore the suggestion.
+
+    If it doesn't make sense to, you don't have to suggest an item to add. Only add a suggestion if it makes sense in the context of the conversation. i.e. the user asks you
     `;
     
       return description;
