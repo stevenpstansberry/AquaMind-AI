@@ -139,6 +139,10 @@ const ChatContent = forwardRef<{ clearChat: () => void }, ChatContentProps>(
     You are able to suggest up to three items at a time.
 
     You MUST include the item type and name in the correct format for the application to process the suggestion. 
+
+    The item type can only be "fish", "plant", or "equipment".
+
+    You can not suggest items already in the aquarium. If you do, the application will ignore the suggestion.
     `;
     
       return description;
@@ -241,11 +245,14 @@ const ChatContent = forwardRef<{ clearChat: () => void }, ChatContentProps>(
     };
 
     const addItemToAquarium = (item: SuggestedItem) => {
+      console.log("attempting to add item:", item);
       if (onAddItem) {
-        onAddItem(item.type, item.name);
-        console.log(item);
+          onAddItem(item.type, item.name);
+          console.log(item);
+      } else {
+          console.error("onAddItem is not defined");
       }
-    };
+  };
 
     /**
      * @description Handles sending a user message to the chat and generating an AI response.
@@ -425,7 +432,7 @@ const ChatContent = forwardRef<{ clearChat: () => void }, ChatContentProps>(
       setSuggestions(null);  // Hide suggestions after a click
       handleSendMessage(suggestion);  // Send the suggestion as a message
     };
-
+    console.log("Received onAddItem in ChatContent:", onAddItem);
     return (
       <Box
         display="flex"
@@ -538,6 +545,7 @@ const ChatContent = forwardRef<{ clearChat: () => void }, ChatContentProps>(
                       button.classList.add('fade-out');
                       setTimeout(() => {
                         addItemToAquarium(item);
+                        console.log("Adding item:", item);
                         // Remove this item from the suggestedItems list
                         setSuggestedItems(suggestedItems.filter((_, i) => i !== index));
                         // Inform the user that the item has been added

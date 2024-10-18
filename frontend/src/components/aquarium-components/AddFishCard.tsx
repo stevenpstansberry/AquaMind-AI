@@ -221,6 +221,7 @@ const AddFishCard: React.FC<AddFishCardProps> = ({ open, onClose, aquarium, onAd
       console.warn(`Item type ${itemType} is not handled in AddFishCard.`);
     }
   };
+  console.log("Passing handleAddFishGPT to AIChatInterface:", handleAddFishGPT);
 
   return (
     <>
@@ -373,7 +374,7 @@ const AddFishCard: React.FC<AddFishCardProps> = ({ open, onClose, aquarium, onAd
                 "What fish can I add to this tank?", 
                 "Do the fish in my tank need any special care?",
               ]}
-              onAddItem={handleAddFishGPT} // Pass onAddItem
+              onAddItem={handleAddFishGPT} 
             />
           </Box>
         </DialogContent>

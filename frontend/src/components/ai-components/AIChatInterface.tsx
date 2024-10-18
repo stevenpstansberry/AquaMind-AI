@@ -48,6 +48,7 @@ const AIChatInterface: React.FC<AIChatInterfaceProps> = ({ showChat, onClose, aq
       chatContentRef.current?.clearChat();
     }
   };
+  console.log("Passing onAddItem to ChatContent:", onAddItem);
 
   return (
     <>
@@ -123,6 +124,7 @@ const AIChatInterface: React.FC<AIChatInterfaceProps> = ({ showChat, onClose, aq
               ref={chatContentRef}
               aquarium={aquarium}
               suggestions={suggestions}
+              onAddItem={onAddItem}
             />
           </Box>
         </Box>
