@@ -6,16 +6,18 @@
  * The component ensures smooth transitions and better user experience during expansion and minimization.
  * Provides functionality to clear the chat history.
  * 
- * @author 
+ * @author Steven Stansberry
  */
 
 import React, { useState, useRef } from 'react';
 import { Box, IconButton, Modal } from '@mui/material';
-import FullscreenIcon from '@mui/icons-material/Fullscreen'; // Expand icon
-import FullscreenExitIcon from '@mui/icons-material/FullscreenExit'; // Collapse icon
-import DeleteIcon from '@mui/icons-material/Delete'; // Clear chat icon
-import ChatContent from './ChatContent'; // Import the ChatContent component
+import FullscreenIcon from '@mui/icons-material/Fullscreen'; 
+import FullscreenExitIcon from '@mui/icons-material/FullscreenExit'; 
+import DeleteIcon from '@mui/icons-material/Delete'; 
+import ChatContent from './ChatContent'; 
 import { Aquarium } from '../../interfaces/Aquarium';
+
+
 
 interface AIChatInterfaceProps {
   showChat: boolean;

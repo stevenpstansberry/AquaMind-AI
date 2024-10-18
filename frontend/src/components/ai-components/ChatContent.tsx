@@ -5,7 +5,7 @@
  * It handles the message sending, typewriter effect, and displays chat messages between the user and the AI.
  * Provides a method to clear the chat messages.
  * 
- * @author 
+ * @author Steven Stansberry
  */
 
 import React, { useState, useRef, useEffect, forwardRef, useImperativeHandle } from 'react';
@@ -14,6 +14,9 @@ import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import SquareIcon from '@mui/icons-material/Square';
 import { Aquarium } from '../../interfaces/Aquarium';
 import { keyframes } from '@mui/system';
+import { sendMessageToOpenAI } from '../../services/APIServices';
+import ReactMarkdown from 'react-markdown';
+
 
 interface ChatContentProps {
   aquarium?: Aquarium;
@@ -45,6 +48,9 @@ const TypingIndicator: React.FC = () => (
   </Box>
 );
 
+
+const MAX_CHARACTERS = 500; // Maximum characters allowed in the input field
+
 /**
  * ChatContent Component
  * @description Handles the chat content, including displaying messages, handling user input, and showing suggestions.
@@ -66,6 +72,23 @@ const ChatContent = forwardRef<{ clearChat: () => void }, ChatContentProps>(
     const [isMessageAdding, setIsMessageAdding] = useState(false);  // New state to block stop button during message adding  
     const chatContainerRef = useRef<HTMLDivElement>(null);
     const typingIntervalRef = useRef<NodeJS.Timeout | null>(null); // Ref to track and clear typing interval
+
+    // Function to generate aquarium description
+    const getAquariumDescription = (aquarium: Aquarium): string => {
+      let description = `You are an assistant helping with an aquarium. The aquarium details are as follows:\n`;
+
+      if (aquarium.name) {
+        description += `Name: ${aquarium.name}\n`;
+      }
+      if (aquarium.size) {
+        description += `Size: ${aquarium.size}\n`;
+      }
+      if (aquarium.species && aquarium.species.length > 0) {
+        description += `Fish: ${aquarium.species.map(f => f.name).join(', ')}\n`;
+      }
+
+      return description;
+    };
 
     /**
      * @description Clears the chat messages.
@@ -113,52 +136,102 @@ const ChatContent = forwardRef<{ clearChat: () => void }, ChatContentProps>(
     const handleSendMessage = async (inputMessage?: string) => {
       const messageToSend = inputMessage || userInput;
       if (!messageToSend.trim()) return;
-      
+    
+      console.log("User message:", messageToSend);
+    
       const newMessage = { sender: 'User', text: messageToSend, timestamp: getCurrentTimestamp() };
-      setMessages((prev) => [...prev, newMessage]);
-      setUserInput('');  // Clear the input field
-
+      const updatedMessages = [...messages, newMessage];
+    
+      setMessages(updatedMessages);
+      setUserInput(''); // Clear the input field
+    
       // Hide suggestions when a message is sent
       setSuggestions(null);
-      
+    
       // Set isMessageAdding to true to block the stop button temporarily
       setIsMessageAdding(true);
-
+    
       setLoading(true);
       setTypewriterCompleted(false);
-
-      setTimeout(() => {
-        let aiResponseText = `Simulated response to: "${newMessage.text}"`;
-
+    
+      try {
+        // Prepare chat history in OpenAI format
+        let chatHistory: { role: string; content: string }[] = [];
+    
         if (aquarium) {
-          aiResponseText += ` Considering your ${aquarium.name}`;
+          // Include the aquarium content as a system message
+          const aquariumContent = getAquariumDescription(aquarium);
+          chatHistory.push({ role: 'system', content: aquariumContent });
         }
-
-        setFullResponseText(aiResponseText);  // Store the full AI response
-        typeTextEffect(aiResponseText);       // Start the typewriter effect
+    
+        // Add the chat history messages
+        chatHistory = [
+          ...chatHistory,
+          ...updatedMessages.map(msg => ({
+            role: msg.sender === 'User' ? 'user' : 'assistant',
+            content: msg.text
+          }))
+        ];
+    
+        // Make the API call using the sendMessageToOpenAI function
+        console.log("Sending message to OpenAI...");
+        const aiResponse = await sendMessageToOpenAI(chatHistory);
+        console.log("AI Response:", aiResponse);
+    
+        // Extract the AI response text
+        const aiResponseText = (aiResponse as { content: string }).content;
+    
+        // Store the full AI response
+        setFullResponseText(aiResponseText);
+    
+        // Start the typewriter effect with the AI response
+        typeTextEffect(aiResponseText);
+    
+      } catch (error) {
+        console.error("Error communicating with OpenAI:", error);
+        setMessages((prev) => [
+          ...prev,
+          { sender: 'AI', text: 'Sorry, there was an error with the response.', timestamp: getCurrentTimestamp() },
+        ]);
         setLoading(false);
-      }, 1000);
+        setTypewriterCompleted(true);
+      } finally {
+        setLoading(false);
+      }
     };
+
+
 
     /**
      * @description Simulates a typewriter effect for the AI response, progressively revealing text.
      * @param {string} text - The AI response text to be revealed.
      */
     const typeTextEffect = (text: string) => {
-      setRevealedText('');  // Clear previously revealed text
+      setRevealedText(''); // Clear previously revealed text
       let index = 0;
-
+    
       // Ensure message is added before typing starts
       setMessages((prev) => [...prev, { sender: 'AI', text: '', timestamp: getCurrentTimestamp() }]);
-
+    
       // Reset isMessageAdding to false once the typewriter effect begins
       setIsMessageAdding(false);
-
+    
       typingIntervalRef.current = setInterval(() => {
         if (index <= text.length) {
-          // Update the revealed text progressively
-          setRevealedText(text.slice(0, index)); // Reveal text up to the current index
           index++;
+          const currentText = text.slice(0, index); // Get the current text up to the current index
+    
+          // Update the revealed text progressively
+          setRevealedText(currentText);
+    
+          // Update the last message with the current text
+          setMessages((prev) => {
+            const updatedMessages = prev.map((msg, idx) =>
+              idx === prev.length - 1 && msg.sender === 'AI' ? { ...msg, text: currentText } : msg
+            );
+            return updatedMessages;
+          });
+    
           scrollToBottom(); // Ensure the chat scrolls to the newest message
         } else {
           clearInterval(typingIntervalRef.current!); // Stop the interval when done
@@ -167,6 +240,8 @@ const ChatContent = forwardRef<{ clearChat: () => void }, ChatContentProps>(
         }
       }, 25); // Speed of the typing effect (25ms per character)
     };
+    
+    
 
     useEffect(() => {
       scrollToBottom();
@@ -273,7 +348,7 @@ const ChatContent = forwardRef<{ clearChat: () => void }, ChatContentProps>(
 
               {/* Message */}
               <Box display="flex" justifyContent={message.sender === 'User' ? 'flex-end' : 'flex-start'}>
-                <Typography
+                <Box
                   sx={{
                     bgcolor: message.sender === 'User' ? '#007bff' : '#e0e0e0',
                     color: message.sender === 'User' ? '#fff' : '#000',
@@ -284,8 +359,16 @@ const ChatContent = forwardRef<{ clearChat: () => void }, ChatContentProps>(
                     transition: 'all 0.3s ease',
                   }}
                 >
-                  {message.text || (message.sender === 'AI' && loading ? revealedText : message.text)}
-                </Typography>
+                  {message.sender === 'AI' ? (
+                    <ReactMarkdown skipHtml={true}>
+                      {message.text}
+                    </ReactMarkdown>
+                  ) : (
+                    <Typography>
+                      {message.text}
+                    </Typography>
+                  )}
+                </Box>
               </Box>
             </Box>
           ))}
@@ -307,9 +390,9 @@ const ChatContent = forwardRef<{ clearChat: () => void }, ChatContentProps>(
         >
           <TextField
             value={userInput}
-            onChange={(e) => setUserInput(e.target.value)}
+            onChange={(e) => setUserInput(e.target.value.slice(0, MAX_CHARACTERS))}
             onKeyUp={handleKeyPress}
-            placeholder="Message AI..."
+            placeholder={`Message AI... (Max ${MAX_CHARACTERS} characters)`}
             variant="standard"
             fullWidth
             InputProps={{
