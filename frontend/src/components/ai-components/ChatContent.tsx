@@ -23,11 +23,24 @@ interface ChatContentProps {
   onAddItem?: (itemType: string, itemName: string) => void;
 }
 
+
+// Define fade-in and fade-out keyframes
+const fadeIn = keyframes`
+  from { opacity: 0; }
+  to { opacity: 1; }
+`;
+
+const fadeOut = keyframes`
+  from { opacity: 1; }
+  to { opacity: 0; }
+`;
+
 const typingAnimation = keyframes`
   0% { opacity: 0.2; }
   20% { opacity: 1; }
   100% { opacity: 0.2; }
 `;
+
 
 const TypingIndicator: React.FC = () => (
   <Box sx={{ display: 'flex', alignItems: 'center' }}>
@@ -122,6 +135,10 @@ const ChatContent = forwardRef<{ clearChat: () => void }, ChatContentProps>(
     Do not include the command tags in your message to the user; only include them after the separator for the application to parse.
 
     After suggesting an item to add, do not ask for confirmation; the application will handle that.
+
+    You are able to suggest up to three items at a time.
+
+    You MUST include the item type and name in the correct format for the application to process the suggestion. 
     `;
     
       return description;
@@ -284,7 +301,7 @@ const ChatContent = forwardRef<{ clearChat: () => void }, ChatContentProps>(
             content: msg.text,
           })),
         ];
-    
+        setSuggestions(null); // Clear suggestions after sending a message
         const aiResponse = await sendMessageToOpenAI(chatHistory);
         const aiResponseText = (aiResponse as { content: string }).content;
     
@@ -505,30 +522,44 @@ const ChatContent = forwardRef<{ clearChat: () => void }, ChatContentProps>(
                     padding: '6px 12px',
                     margin: '4px',
                     textTransform: 'none',
+                    animation: `${fadeIn} 0.5s ease-in-out`,
+                    transition: 'opacity 0.5s ease-in-out',
+                    '&.fade-out': {
+                      animation: `${fadeOut} 0.5s ease-in-out`,
+                    },
                     '&:hover': {
                       backgroundColor: '#e0e0e0',
                     },
                   }}
                   onClick={() => {
-                    addItemToAquarium(item);
-                    // Remove this item from the suggestedItems list
-                    setSuggestedItems(suggestedItems.filter((_, i) => i !== index));
-                    // Inform the user that the item has been added
-                    setMessages((prev) => [
-                      ...prev,
-                      {
-                        sender: 'System',
-                        text: `${item.name} (${item.type}) has been added to your aquarium.`,
-                        timestamp: getCurrentTimestamp(),
-                      },
-                    ]);
+                    // Apply the fade-out effect before removing the button
+                    const button = document.getElementById(`suggested-item-${index}`);
+                    if (button) {
+                      button.classList.add('fade-out');
+                      setTimeout(() => {
+                        addItemToAquarium(item);
+                        // Remove this item from the suggestedItems list
+                        setSuggestedItems(suggestedItems.filter((_, i) => i !== index));
+                        // Inform the user that the item has been added
+                        setMessages((prev) => [
+                          ...prev,
+                          {
+                            sender: 'System',
+                            text: `${item.name} (${item.type}) has been added to your aquarium.`,
+                            timestamp: getCurrentTimestamp(),
+                          },
+                        ]);
+                      }, 500); // Delay to match the duration of the fade-out animation
+                    }
                   }}
+                  id={`suggested-item-${index}`}
                 >
                   Add {item.name}
                 </Button>
               ))}
             </Box>
           )}
+
         </Box>
 
         {/* Input area */}
