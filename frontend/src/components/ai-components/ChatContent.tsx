@@ -58,13 +58,14 @@ type SuggestedItem = {
 };
 
 const parseItemSuggestion = (text: string): SuggestedItem | null => {
-  const regex = /\[ADD_ITEM type="(.*?)"\](.*?)\[\/ADD_ITEM\]/;
+  const regex = /\[ADD_ITEM type="(.*?)"\](.*?)\[\/ADD_ITEM\]/s;
   const match = text.match(regex);
   if (match && match[1] && match[2]) {
     return { type: match[1].trim().toLowerCase(), name: match[2].trim() };
   }
   return null;
 };
+
 
 /**
  * ChatContent Component
@@ -112,33 +113,80 @@ const ChatContent = forwardRef<{ clearChat: () => void }, ChatContentProps>(
     
       // Add generic instructions for the assistant
       description += `
-    When suggesting an item to add, please provide the item type and name in the following format:
-    
+    When suggesting an item to add, include the item type and name in the following format at the end of your message, separated by a line with three hashes (###):
+
+    Your message to the user.
+
+    ###
+
     [ADD_ITEM type="item_type"]Item Name[/ADD_ITEM]
-    
-    Replace "item_type" with "fish", "plant", "equipment", or other appropriate type.
-    After the user confirms, do not ask again, and wait for the application to handle the addition.
+
+    Do not include the command tags in your message to the user; only include them after the separator for the application to parse.
+
+    After suggesting an item to add, do not ask for confirmation; the application will handle that.
     `;
     
       return description;
     };
 
-
     const handleAIResponse = (aiResponseText: string) => {
-      setFullResponseText(aiResponseText);
-      typeTextEffect(aiResponseText);
+      // Parse the AI response to get visible text and commands
+      const { visibleText, commands } = parseAIResponse(aiResponseText);
     
-      const itemSuggestion = parseItemSuggestion(aiResponseText);
+      // Store the cleaned AI response text
+      setFullResponseText(visibleText);
     
-      if (itemSuggestion) {
-        setMessages((prev) => [
-          ...prev,
-          { sender: 'AI', text: `Would you like to add ${itemSuggestion.name} (${itemSuggestion.type}) to your tank?`, timestamp: getCurrentTimestamp() },
-        ]);
+      if (visibleText) {
+        // Start the typewriter effect with the cleaned AI response
+        typeTextEffect(visibleText);
+      } else {
+        // If the visible text is empty, set typewriter as completed
+        setTypewriterCompleted(true);
+      }
     
+      // Process the commands if any exist
+      if (commands.length > 0) {
+        // Only set the suggested item without adding a message immediately
+        const itemSuggestion = commands[0];
         setSuggestedItem(itemSuggestion);
+        console.log("Suggested item:", itemSuggestion);
+        
+        // Instead of sending the message immediately, wait for the user to confirm
+        // The suggestion can be processed in the handleSendMessage function if the user confirms
       }
     };
+
+    const parseAIResponse = (text: string): { visibleText: string; commands: SuggestedItem[] } => {
+      let visibleText = text;
+      const commands: SuggestedItem[] = [];
+    
+      // Split the response at the separator '###'
+      const parts = text.split('###');
+    
+      if (parts.length > 1) {
+        visibleText = parts[0].trim(); // Text before '###'
+        const commandsText = parts.slice(1).join('###'); // Text after '###'
+    
+        // Regular expression to match all [ADD_ITEM ...][/ADD_ITEM] tags
+        const regex = /\[ADD_ITEM type="(.*?)"\](.*?)\[\/ADD_ITEM\]/gs;
+    
+        let match;
+        while ((match = regex.exec(commandsText)) !== null) {
+          commands.push({
+            type: match[1].trim().toLowerCase(),
+            name: match[2].trim(),
+          });
+        }
+      } else {
+        // If no separator is found, treat the entire text as visible text
+        visibleText = text.trim();
+      }
+    
+      return { visibleText, commands };
+    };
+    
+    
+    
     
     
 
@@ -153,6 +201,7 @@ const ChatContent = forwardRef<{ clearChat: () => void }, ChatContentProps>(
       setFullResponseText('');
       setLoading(false);
       setIsMessageAdding(false);
+      setSuggestions(initialSuggestions || null);
       if (typingIntervalRef.current) {
         clearInterval(typingIntervalRef.current);
         typingIntervalRef.current = null;
@@ -184,6 +233,7 @@ const ChatContent = forwardRef<{ clearChat: () => void }, ChatContentProps>(
     const addItemToAquarium = (item: SuggestedItem) => {
       if (onAddItem) {
         onAddItem(item.type, item.name);
+        console.log(item);
       }
     };
 
@@ -201,26 +251,18 @@ const ChatContent = forwardRef<{ clearChat: () => void }, ChatContentProps>(
       const messageToSend = inputMessage || userInput;
       if (!messageToSend.trim()) return;
     
-      console.log("User message:", messageToSend);
-    
       const newMessage = { sender: 'User', text: messageToSend, timestamp: getCurrentTimestamp() };
       const updatedMessages = [...messages, newMessage];
     
       setMessages(updatedMessages);
       setUserInput(''); // Clear the input field
-    
-      // Hide suggestions when a message is sent
-      setSuggestions(null);
-    
-      // Set isMessageAdding to true to block the stop button temporarily
-      setIsMessageAdding(true);
-    
       setLoading(true);
       setTypewriterCompleted(false);
     
       try {
-        // Check if the user is confirming the addition of an item
+        // If the user is confirming the addition of an item, proceed accordingly
         if (suggestedItem && isAffirmative(messageToSend)) {
+          console.log("User confirmed adding item:", suggestedItem);
           addItemToAquarium(suggestedItem);
           setSuggestedItem(null);
           setMessages((prev) => [
@@ -235,38 +277,25 @@ const ChatContent = forwardRef<{ clearChat: () => void }, ChatContentProps>(
           setLoading(false);
           return;
         }
+    
         // Prepare chat history in OpenAI format
         let chatHistory: { role: string; content: string }[] = [];
-    
         if (aquarium) {
-          // Include the aquarium content as a system message
           const aquariumContent = getAquariumDescription(aquarium);
           chatHistory.push({ role: 'system', content: aquariumContent });
         }
-    
-        // Add the chat history messages
         chatHistory = [
           ...chatHistory,
-          ...updatedMessages.map(msg => ({
+          ...updatedMessages.map((msg) => ({
             role: msg.sender === 'User' ? 'user' : 'assistant',
-            content: msg.text
-          }))
+            content: msg.text,
+          })),
         ];
     
-        // Make the API call using the sendMessageToOpenAI function
-        console.log("Sending message to OpenAI...");
         const aiResponse = await sendMessageToOpenAI(chatHistory);
-        console.log("AI Response:", aiResponse);
-    
-        // Extract the AI response text
         const aiResponseText = (aiResponse as { content: string }).content;
     
-        // Store the full AI response
-        setFullResponseText(aiResponseText);
-    
-        // Start the typewriter effect with the AI response
-        typeTextEffect(aiResponseText);
-    
+        handleAIResponse(aiResponseText);
       } catch (error) {
         console.error("Error communicating with OpenAI:", error);
         setMessages((prev) => [
@@ -287,6 +316,7 @@ const ChatContent = forwardRef<{ clearChat: () => void }, ChatContentProps>(
      * @param {string} text - The AI response text to be revealed.
      */
     const typeTextEffect = (text: string) => {
+      if (!text) return;
       setRevealedText(''); // Clear previously revealed text
       let index = 0;
     
