@@ -15,6 +15,8 @@ import SquareIcon from '@mui/icons-material/Square';
 import { Aquarium } from '../../interfaces/Aquarium';
 import { keyframes } from '@mui/system';
 import { sendMessageToOpenAI } from '../../services/APIServices';
+import ReactMarkdown from 'react-markdown';
+
 
 interface ChatContentProps {
   aquarium?: Aquarium;
@@ -205,20 +207,31 @@ const ChatContent = forwardRef<{ clearChat: () => void }, ChatContentProps>(
      * @param {string} text - The AI response text to be revealed.
      */
     const typeTextEffect = (text: string) => {
-      setRevealedText('');  // Clear previously revealed text
+      setRevealedText(''); // Clear previously revealed text
       let index = 0;
-
+    
       // Ensure message is added before typing starts
       setMessages((prev) => [...prev, { sender: 'AI', text: '', timestamp: getCurrentTimestamp() }]);
-
+    
       // Reset isMessageAdding to false once the typewriter effect begins
       setIsMessageAdding(false);
-
+    
       typingIntervalRef.current = setInterval(() => {
         if (index <= text.length) {
-          // Update the revealed text progressively
-          setRevealedText(text.slice(0, index)); // Reveal text up to the current index
           index++;
+          const currentText = text.slice(0, index); // Get the current text up to the current index
+    
+          // Update the revealed text progressively
+          setRevealedText(currentText);
+    
+          // Update the last message with the current text
+          setMessages((prev) => {
+            const updatedMessages = prev.map((msg, idx) =>
+              idx === prev.length - 1 && msg.sender === 'AI' ? { ...msg, text: currentText } : msg
+            );
+            return updatedMessages;
+          });
+    
           scrollToBottom(); // Ensure the chat scrolls to the newest message
         } else {
           clearInterval(typingIntervalRef.current!); // Stop the interval when done
@@ -227,6 +240,8 @@ const ChatContent = forwardRef<{ clearChat: () => void }, ChatContentProps>(
         }
       }, 25); // Speed of the typing effect (25ms per character)
     };
+    
+    
 
     useEffect(() => {
       scrollToBottom();
@@ -333,7 +348,7 @@ const ChatContent = forwardRef<{ clearChat: () => void }, ChatContentProps>(
 
               {/* Message */}
               <Box display="flex" justifyContent={message.sender === 'User' ? 'flex-end' : 'flex-start'}>
-                <Typography
+                <Box
                   sx={{
                     bgcolor: message.sender === 'User' ? '#007bff' : '#e0e0e0',
                     color: message.sender === 'User' ? '#fff' : '#000',
@@ -344,8 +359,16 @@ const ChatContent = forwardRef<{ clearChat: () => void }, ChatContentProps>(
                     transition: 'all 0.3s ease',
                   }}
                 >
-                  {message.text || (message.sender === 'AI' && loading ? revealedText : message.text)}
-                </Typography>
+                  {message.sender === 'AI' ? (
+                    <ReactMarkdown skipHtml={true}>
+                      {message.text}
+                    </ReactMarkdown>
+                  ) : (
+                    <Typography>
+                      {message.text}
+                    </Typography>
+                  )}
+                </Box>
               </Box>
             </Box>
           ))}
