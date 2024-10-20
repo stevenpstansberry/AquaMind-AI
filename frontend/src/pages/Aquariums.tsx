@@ -38,6 +38,7 @@ const Aquariums: React.FC = () => {
   const [aquariums, setAquariums] = useState<Aquarium[]>([]);
   const [showWizard, setShowWizard] = useState(false);
   const [currentAquarium, setCurrentAquarium] = useState<Aquarium | null>(null);
+  const [collapsed, setCollapsed] = useState<boolean>(false);
 
   /**
    * Opens the aquarium setup wizard.
@@ -82,16 +83,26 @@ const Aquariums: React.FC = () => {
   
   return (
     <div style={{ display: 'flex', height: '100vh' }}>
-      {aquariums.length > 0 && (
-        <AquariumSidebar
-          aquariums={aquariums}
-          onOpenWizard={handleOpenWizard}
-          setCurrentAquarium={setCurrentAquarium}
-          currentAquarium={currentAquarium}
-        />
-      )}
-
-      <div style={{ marginLeft: aquariums.length > 0 ? '250px' : '0', padding: '20px', width: '100%', display: 'flex', flexDirection: 'column' }}>
+    {aquariums.length > 0 && (
+      <AquariumSidebar
+        aquariums={aquariums}
+        onOpenWizard={handleOpenWizard}
+        setCurrentAquarium={setCurrentAquarium}
+        currentAquarium={currentAquarium}
+        collapsed={collapsed}
+        setCollapsed={setCollapsed}
+      />
+    )}
+      <div
+        style={{
+          marginLeft: aquariums.length > 0 ? (collapsed ? '60px' : '250px') : '0px',
+          transition: 'margin-left 0.3s',
+          padding: '20px',
+          width: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+        }}
+      >
         <Box sx={{ flexGrow: 1 }}>
           {showWizard && <AquariumWizard onClose={() => setShowWizard(false)} />}
 

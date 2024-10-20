@@ -7,15 +7,17 @@
  * and allows users to edit existing aquariums through the edit icon next to each aquarium entry.
  */
 
-import React from 'react';
-import { List, ListItem, Typography, Button, Box, IconButton } from '@mui/material';
+import React, { useState } from 'react';
+import { List, ListItem, Typography, Button, Box, IconButton, Tooltip } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
+import MenuIcon from '@mui/icons-material/Menu';
+import AquariumIcon from '@mui/icons-material/AcUnit'; 
 import { useTheme } from '@mui/material/styles';
 import { Aquarium } from '../../interfaces/Aquarium';
 
 
 
-
+// add collapse icon, have the state managed by the parent component, and in the parent component conditonally render the sidebar or the collapse icon.
 
 
 
@@ -23,19 +25,21 @@ interface AquariumSidebarProps {
   aquariums: Aquarium[];
   onOpenWizard: () => void;
   setCurrentAquarium: (aquarium: Aquarium) => void;
-  currentAquarium: Aquarium | null; // Track the currently selected aquarium
+  currentAquarium: Aquarium | null;
+  collapsed: boolean;
+  setCollapsed: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const AquariumSidebar: React.FC<AquariumSidebarProps> = ({ aquariums, onOpenWizard, setCurrentAquarium, currentAquarium }) => {
+const AquariumSidebar: React.FC<AquariumSidebarProps> = ({ aquariums, onOpenWizard, setCurrentAquarium, currentAquarium, collapsed, setCollapsed }) => {
   const theme = useTheme();
 
   return (
     <Box
       sx={{
-        width: '250px',
+        width: collapsed ? '60px' : '250px',
         height: '100vh',
         backgroundColor: theme.palette.background.default,
-        padding: '20px',
+        padding: '20px 10px',
         position: 'fixed',
         top: 0,
         left: 0,
@@ -45,12 +49,20 @@ const AquariumSidebar: React.FC<AquariumSidebarProps> = ({ aquariums, onOpenWiza
         justifyContent: 'space-between',
         borderTop: `4px solid ${theme.palette.primary.main}`,
         color: theme.palette.text.primary,
+        transition: 'width 0.3s',
+        overflowX: 'hidden',
       }}
     >
       <div>
-        <Typography variant="h6" gutterBottom>
-          Your Aquariums
-        </Typography>
+        <IconButton onClick={() => setCollapsed(!collapsed)} sx={{ mb: 2 }}>
+          <MenuIcon />
+        </IconButton>
+
+        {!collapsed && (
+          <Typography variant="h6" gutterBottom>
+            Your Aquariums
+          </Typography>
+        )}
 
         {aquariums.length > 0 ? (
           <List>
@@ -59,33 +71,43 @@ const AquariumSidebar: React.FC<AquariumSidebarProps> = ({ aquariums, onOpenWiza
                 key={aquarium.id}
                 sx={{
                   display: 'flex',
-                  justifyContent: 'space-between',
+                  justifyContent: collapsed ? 'center' : 'space-between',
                   alignItems: 'center',
                   paddingRight: 0,
                   cursor: 'pointer',
-                  // Apply a different background color if this aquarium is selected
                   backgroundColor: currentAquarium?.id === aquarium.id ? theme.palette.action.selected : 'inherit',
-                  borderRadius: '4px', // Add border-radius to look neat
+                  borderRadius: '4px',
                   padding: '8px',
                 }}
-                onClick={() => setCurrentAquarium(aquarium) } // Select aquarium on click
+                onClick={() => setCurrentAquarium(aquarium)}
               >
-                <Typography>{aquarium.name}</Typography>
-                <IconButton
-                  edge="end"
-                  aria-label="edit"
-                  onClick={() => console.log(`Editing aquarium with id: ${aquarium.id}`)}
-                  size="small"
-                >
-                  <EditIcon fontSize="small" />
-                </IconButton>
+                <Tooltip title={aquarium.name} placement="right">
+                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                    <AquariumIcon fontSize="small" />
+                    {!collapsed && (
+                      <Typography noWrap sx={{ ml: 1 }}>{aquarium.name}</Typography>
+                    )}
+                  </Box>
+                </Tooltip>
+                {!collapsed && (
+                  <IconButton
+                    edge="end"
+                    aria-label="edit"
+                    onClick={() => console.log(`Editing aquarium with id: ${aquarium.id}`)}
+                    size="small"
+                  >
+                    <EditIcon fontSize="small" />
+                  </IconButton>
+                )}
               </ListItem>
             ))}
           </List>
         ) : (
-          <Typography>
-            You have no aquariums. Get started by adding one!
-          </Typography>
+          !collapsed && (
+            <Typography>
+              You have no aquariums. Get started by adding one!
+            </Typography>
+          )
         )}
       </div>
 
@@ -96,6 +118,7 @@ const AquariumSidebar: React.FC<AquariumSidebarProps> = ({ aquariums, onOpenWiza
         sx={{
           width: '100%',
           marginTop: 'auto',
+          display: collapsed ? 'none' : 'block',
         }}
       >
         + Add New Aquarium
