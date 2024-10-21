@@ -19,7 +19,7 @@ import { Aquarium } from '../../interfaces/Aquarium';
 
 // add collapse icon, have the state managed by the parent component, and in the parent component conditonally render the sidebar or the collapse icon.
 //tt
-
+//tt
 
 interface AquariumSidebarProps {
   aquariums: Aquarium[];
