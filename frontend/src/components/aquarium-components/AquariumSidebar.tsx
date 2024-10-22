@@ -11,15 +11,10 @@ import React, { useState } from 'react';
 import { List, ListItem, Typography, Button, Box, IconButton, Tooltip } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import MenuIcon from '@mui/icons-material/Menu';
-import AquariumIcon from '@mui/icons-material/AcUnit'; 
+import AquariumIcon from '../../../assets/'
 import { useTheme } from '@mui/material/styles';
 import { Aquarium } from '../../interfaces/Aquarium';
 
-
-
-// add collapse icon, have the state managed by the parent component, and in the parent component conditonally render the sidebar or the collapse icon.
-//tt
-//tt
 
 interface AquariumSidebarProps {
   aquariums: Aquarium[];
@@ -54,7 +49,7 @@ const AquariumSidebar: React.FC<AquariumSidebarProps> = ({ aquariums, onOpenWiza
       }}
     >
       <div>
-        <IconButton onClick={() => setCollapsed(!collapsed)} sx={{ mb: 2 }}>
+        <IconButton>
           <MenuIcon />
         </IconButton>
 
@@ -78,6 +73,9 @@ const AquariumSidebar: React.FC<AquariumSidebarProps> = ({ aquariums, onOpenWiza
                   backgroundColor: currentAquarium?.id === aquarium.id ? theme.palette.action.selected : 'inherit',
                   borderRadius: '4px',
                   padding: '8px',
+                  '&:hover': {
+                    transform: 'scale(1.05)',
+                  },
                 }}
                 onClick={() => setCurrentAquarium(aquarium)}
               >
