@@ -22,7 +22,7 @@ func InitDB(database *sql.DB) {
 
 // User represents a user in the system with their ID, email, password, and first name.
 type User struct {
-    ID       int    // Unique identifier of the user
+    ID       string    // Unique identifier of the user
     Email    string // Email address of the user
     Password string // Hashed password of the user
     FirstName string // First name of the user
@@ -81,6 +81,7 @@ func UserExists(email string) bool {
 // Aquarium represents an aquarium in the system.
 type Aquarium struct {
     ID        string   // UUID
+    UserID    string      // Owner's user ID
     Name      string
     Type      string
     Size      string
@@ -91,7 +92,6 @@ type Aquarium struct {
 
 // CreateAquarium inserts a new aquarium into the database.
 func CreateAquarium(aquarium *Aquarium) error {
-    // Convert slices to JSON for storage
     speciesJSON, err := json.Marshal(aquarium.Species)
     if err != nil {
         return err
@@ -106,18 +106,21 @@ func CreateAquarium(aquarium *Aquarium) error {
     }
 
     query := `
-        INSERT INTO aquariums (id, name, type, size, species, plants, equipment)
-        VALUES ($1, $2, $3, $4, $5::jsonb, $6::jsonb, $7::jsonb)
+        INSERT INTO aquariums (id, user_id, name, type, size, species, plants, equipment)
+        VALUES ($1, $2, $3, $4, $5, $6::jsonb, $7::jsonb, $8::jsonb)
     `
-    _, err = db.Exec(query, aquarium.ID, aquarium.Name, aquarium.Type, aquarium.Size, speciesJSON, plantsJSON, equipmentJSON)
+    _, err = db.Exec(query, aquarium.ID, aquarium.UserID, aquarium.Name, aquarium.Type, aquarium.Size, speciesJSON, plantsJSON, equipmentJSON)
     return err
 }
 
-
-// GetAllAquariums retrieves all aquariums from the database.
-func GetAllAquariums() ([]Aquarium, error) {
-    query := `SELECT id, name, type, size, species, plants, equipment FROM aquariums`
-    rows, err := db.Query(query)
+// GetAquariumsByUserID retrieves all aquariums owned by a user.
+func GetAquariumsByUserID(userID string) ([]Aquarium, error) {
+    query := `
+        SELECT id, user_id, name, type, size, species, plants, equipment
+        FROM aquariums
+        WHERE user_id = $1
+    `
+    rows, err := db.Query(query, userID)
     if err != nil {
         return nil, err
     }
@@ -129,12 +132,11 @@ func GetAllAquariums() ([]Aquarium, error) {
         var aquarium Aquarium
         var speciesJSON, plantsJSON, equipmentJSON []byte
 
-        err := rows.Scan(&aquarium.ID, &aquarium.Name, &aquarium.Type, &aquarium.Size, &speciesJSON, &plantsJSON, &equipmentJSON)
+        err := rows.Scan(&aquarium.ID, &aquarium.UserID, &aquarium.Name, &aquarium.Type, &aquarium.Size, &speciesJSON, &plantsJSON, &equipmentJSON)
         if err != nil {
             return nil, err
         }
 
-        // Decode JSON arrays
         json.Unmarshal(speciesJSON, &aquarium.Species)
         json.Unmarshal(plantsJSON, &aquarium.Plants)
         json.Unmarshal(equipmentJSON, &aquarium.Equipment)
@@ -142,25 +144,20 @@ func GetAllAquariums() ([]Aquarium, error) {
         aquariums = append(aquariums, aquarium)
     }
 
-    if err = rows.Err(); err != nil {
-        return nil, err
-    }
-
     return aquariums, nil
 }
 
 // GetAquariumByID retrieves an aquarium by its ID.
 func GetAquariumByID(id string) (*Aquarium, error) {
-    query := `SELECT id, name, type, size, species, plants, equipment FROM aquariums WHERE id = $1`
+    query := `SELECT id, user_id, name, type, size, species, plants, equipment FROM aquariums WHERE id = $1`
     var aquarium Aquarium
     var speciesJSON, plantsJSON, equipmentJSON []byte
 
-    err := db.QueryRow(query, id).Scan(&aquarium.ID, &aquarium.Name, &aquarium.Type, &aquarium.Size, &speciesJSON, &plantsJSON, &equipmentJSON)
+    err := db.QueryRow(query, id).Scan(&aquarium.ID, &aquarium.UserID, &aquarium.Name, &aquarium.Type, &aquarium.Size, &speciesJSON, &plantsJSON, &equipmentJSON)
     if err != nil {
         return nil, err
     }
 
-    // Decode JSON arrays
     json.Unmarshal(speciesJSON, &aquarium.Species)
     json.Unmarshal(plantsJSON, &aquarium.Plants)
     json.Unmarshal(equipmentJSON, &aquarium.Equipment)
@@ -170,7 +167,6 @@ func GetAquariumByID(id string) (*Aquarium, error) {
 
 // UpdateAquarium updates an existing aquarium in the database.
 func UpdateAquarium(aquarium *Aquarium) error {
-    // Convert slices to JSON for storage
     speciesJSON, err := json.Marshal(aquarium.Species)
     if err != nil {
         return err
@@ -187,9 +183,9 @@ func UpdateAquarium(aquarium *Aquarium) error {
     query := `
         UPDATE aquariums
         SET name = $1, type = $2, size = $3, species = $4::jsonb, plants = $5::jsonb, equipment = $6::jsonb
-        WHERE id = $7
+        WHERE id = $7 AND user_id = $8
     `
-    result, err := db.Exec(query, aquarium.Name, aquarium.Type, aquarium.Size, speciesJSON, plantsJSON, equipmentJSON, aquarium.ID)
+    result, err := db.Exec(query, aquarium.Name, aquarium.Type, aquarium.Size, speciesJSON, plantsJSON, equipmentJSON, aquarium.ID, aquarium.UserID)
     if err != nil {
         return err
     }
@@ -206,9 +202,9 @@ func UpdateAquarium(aquarium *Aquarium) error {
 }
 
 // DeleteAquarium deletes an aquarium from the database.
-func DeleteAquarium(id string) error {
-    query := `DELETE FROM aquariums WHERE id = $1`
-    result, err := db.Exec(query, id)
+func DeleteAquarium(id string, userID string) error {
+    query := `DELETE FROM aquariums WHERE id = $1 AND user_id = $2`
+    result, err := db.Exec(query, id, userID)
     if err != nil {
         return err
     }
