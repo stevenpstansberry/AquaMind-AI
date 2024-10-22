@@ -30,27 +30,51 @@ export const AquariumProvider: React.FC<{ children: ReactNode }> = ({ children }
     }
   }, [user]);
 
-  // Monitor changes in aquariums state
+  // Save aquariums to local storage whenever they change
   useEffect(() => {
-    console.log('Aquariums state updated:', aquariums);
-  }, [aquariums]);
+    if (user) {
+      localStorage.setItem(`aquariums_${user.email}`, JSON.stringify(aquariums));
+    }
+  }, [aquariums, user]);
 
-  const fetchAquariums = async () => {
-    // Simulate fetching aquariums for the logged-in user
-    // In real usage, this would be an API call
-    const mockAquariums: Aquarium[] = [
-      { id: '1', name: 'My Freshwater Tank', type: 'Freshwater', size: '55', species: [], plants: [], equipment: [] },
-    ];
-
-    setAquariums(mockAquariums);
+  const fetchAquariums = () => {
+    if (user) {
+      // Retrieve aquariums from local storage for the logged-in user
+      const storedAquariums = localStorage.getItem(`aquariums_${user.email}`);
+      if (storedAquariums) {
+        setAquariums(JSON.parse(storedAquariums));
+      } else {
+        // Simulate fetching from an API if local storage is empty
+        const mockAquariums: Aquarium[] = [
+          { id: '1', name: 'My Freshwater Tank', type: 'Freshwater', size: '55', species: [], plants: [], equipment: [] },
+        ];
+        setAquariums(mockAquariums);
+        // Save mock data to local storage for future use
+        localStorage.setItem(`aquariums_${user.email}`, JSON.stringify(mockAquariums));
+      }
+    }
   };
 
   const addAquarium = (aquarium: Aquarium) => {
-    setAquariums((prev) => [...prev, aquarium]);
+    setAquariums((prev) => {
+      const updatedAquariums = [...prev, aquarium];
+      // Save updated aquariums to local storage
+      if (user) {
+        localStorage.setItem(`aquariums_${user.email}`, JSON.stringify(updatedAquariums));
+      }
+      return updatedAquariums;
+    });
   };
 
   const removeAquarium = (id: string) => {
-    setAquariums((prev) => prev.filter((a) => a.id !== id));
+    setAquariums((prev) => {
+      const updatedAquariums = prev.filter((a) => a.id !== id);
+      // Save updated aquariums to local storage
+      if (user) {
+        localStorage.setItem(`aquariums_${user.email}`, JSON.stringify(updatedAquariums));
+      }
+      return updatedAquariums;
+    });
   };
 
   return (
