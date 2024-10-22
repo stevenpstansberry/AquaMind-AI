@@ -9,4 +9,7 @@ require (
 	golang.org/x/crypto v0.27.0
 )
 
-require github.com/sashabaranov/go-openai v1.32.2 // indirect
+require (
+	github.com/gorilla/mux v1.8.1 // indirect
+	github.com/sashabaranov/go-openai v1.32.2 // indirect
+)

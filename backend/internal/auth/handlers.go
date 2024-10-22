@@ -5,12 +5,15 @@
 package auth
 
 import (
+    "database/sql"
     "encoding/json"
     "log"
     "net/http"
-    "golang.org/x/crypto/bcrypt"
+
+    "github.com/gorilla/mux"
     "github.com/stevenpstansberry/AquaMind-AI/internal/models"
     "github.com/stevenpstansberry/AquaMind-AI/internal/util"
+    "golang.org/x/crypto/bcrypt"
 )
 
 // Credentials represents the structure for incoming authentication requests.
@@ -202,4 +205,89 @@ func CreateAquariumHandler(w http.ResponseWriter, r *http.Request) {
     // Respond with the created aquarium object
     w.WriteHeader(http.StatusCreated)
     json.NewEncoder(w).Encode(aquarium)
+}
+
+// GetAquariumsHandler handles the retrieval of all aquariums.
+func GetAquariumsHandler(w http.ResponseWriter, r *http.Request) {
+    aquariums, err := models.GetAllAquariums()
+    if err != nil {
+        log.Printf("Error retrieving aquariums: %v", err)
+        http.Error(w, "Error retrieving aquariums", http.StatusInternalServerError)
+        return
+    }
+    w.Header().Set("Content-Type", "application/json")
+    json.NewEncoder(w).Encode(aquariums)
+}
+
+// GetAquariumHandler handles the retrieval of a single aquarium by ID.
+func GetAquariumHandler(w http.ResponseWriter, r *http.Request) {
+    vars := mux.Vars(r)
+    id := vars["id"]
+    aquarium, err := models.GetAquariumByID(id)
+    if err != nil {
+        if err == sql.ErrNoRows {
+            http.Error(w, "Aquarium not found", http.StatusNotFound)
+        } else {
+            log.Printf("Error retrieving aquarium: %v", err)
+            http.Error(w, "Error retrieving aquarium", http.StatusInternalServerError)
+        }
+        return
+    }
+    w.Header().Set("Content-Type", "application/json")
+    json.NewEncoder(w).Encode(aquarium)
+}
+
+// UpdateAquariumHandler handles the update of an existing aquarium.
+func UpdateAquariumHandler(w http.ResponseWriter, r *http.Request) {
+    vars := mux.Vars(r)
+    id := vars["id"]
+
+    var aquarium models.Aquarium
+
+    // Parse JSON request body
+    err := json.NewDecoder(r.Body).Decode(&aquarium)
+    if err != nil {
+        log.Printf("Error decoding request body: %v", err)
+        http.Error(w, "Invalid input", http.StatusBadRequest)
+        return
+    }
+
+    // Set the ID from the URL path
+    aquarium.ID = id
+
+    // Update the aquarium in the database
+    err = models.UpdateAquarium(&aquarium)
+    if err != nil {
+        if err == sql.ErrNoRows {
+            http.Error(w, "Aquarium not found", http.StatusNotFound)
+        } else {
+            log.Printf("Error updating aquarium: %v", err)
+            http.Error(w, "Error updating aquarium", http.StatusInternalServerError)
+        }
+        return
+    }
+
+    // Respond with the updated aquarium object
+    w.Header().Set("Content-Type", "application/json")
+    json.NewEncoder(w).Encode(aquarium)
+}
+
+// DeleteAquariumHandler handles the deletion of an aquarium.
+func DeleteAquariumHandler(w http.ResponseWriter, r *http.Request) {
+    vars := mux.Vars(r)
+    id := vars["id"]
+
+    err := models.DeleteAquarium(id)
+    if err != nil {
+        if err == sql.ErrNoRows {
+            http.Error(w, "Aquarium not found", http.StatusNotFound)
+        } else {
+            log.Printf("Error deleting aquarium: %v", err)
+            http.Error(w, "Error deleting aquarium", http.StatusInternalServerError)
+        }
+        return
+    }
+
+    // Respond with no content status
+    w.WriteHeader(http.StatusNoContent)
 }
