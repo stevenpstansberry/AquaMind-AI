@@ -34,7 +34,6 @@ type Credentials struct {
 // The function performs the following steps:
 //   - Parse and validate the incoming request body (expects JSON).
 //   - Check if the user already exists in the database.
-//   - Hash the user's password using bcrypt.
 //   - Store the user details in the database.
 //   - Generate a JWT token for the registered user.
 //   - Return the token as a JSON response or an error message in case of failure.
@@ -60,7 +59,6 @@ func RegisterUser(w http.ResponseWriter, r *http.Request) {
         return
     }
 
-    // Print out creds to see what it looks like
     log.Printf("Parsed credentials: %+v", creds)
 
     // Check if user already exists
@@ -70,7 +68,7 @@ func RegisterUser(w http.ResponseWriter, r *http.Request) {
         return
     }
 
-    // Hash the password
+    // Hash the password before storing it
     hashedPassword, err := bcrypt.GenerateFromPassword([]byte(creds.Password), bcrypt.DefaultCost)
     if err != nil {
         log.Printf("Error hashing password: %v", err)
@@ -78,7 +76,7 @@ func RegisterUser(w http.ResponseWriter, r *http.Request) {
         return
     }
 
-    // Create user in the database
+    // Create user in the database with the hashed password
     err = models.CreateUser(creds.Email, string(hashedPassword), creds.FirstName, creds.Username, creds.Subscribe, creds.CreatedAt)
     if err != nil {
         log.Printf("Error creating user in database: %v", err)
@@ -95,9 +93,10 @@ func RegisterUser(w http.ResponseWriter, r *http.Request) {
     }
 
     // Respond with the JWT token
-    log.Printf("User %s created successfully", creds)
+    log.Printf("User %s created successfully", creds.Email)
     json.NewEncoder(w).Encode(map[string]string{"token": token})
 }
+
 
 // LoginUser handles user authentication by verifying the user's email and password.
 // If valid, it returns a JWT token for future authenticated requests.
@@ -152,6 +151,7 @@ func LoginUser(w http.ResponseWriter, r *http.Request) {
         http.Error(w, "Invalid credentials", http.StatusUnauthorized)
         return
     }
+
 
     log.Printf("User authenticated successfully: %s\n", creds.Email)
 

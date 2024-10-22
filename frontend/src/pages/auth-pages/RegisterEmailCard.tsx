@@ -109,13 +109,12 @@ const RegisterEmailCard: React.FC = () => {
 
     try {
       const createdAt = new Date(); // Get the current timestamp
-      const hashedPassword = await bcrypt.hash(password, 10); // Hash the password
 
       const user = {
         username,
         email,
         first_name: firstName,
-        password: hashedPassword,
+        password,
         subscribe: subscribe ? 'true' : 'false',
         createdAt,
       }
