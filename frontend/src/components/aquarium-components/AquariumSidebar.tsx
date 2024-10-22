@@ -64,13 +64,15 @@ const AquariumSidebar: React.FC<AquariumSidebarProps> = ({ aquariums, onOpenWiza
           }}
         >
         {collapsed ? (
-          <IconButton onClick={() => setCollapsed(!collapsed)}>
-            <ViewSidebar 
-            sx={{
-              color: '#438ED9',
-            }}
-            />
-          </IconButton>
+          <Tooltip title="Expand Sidebar" placement='right'>
+            <IconButton onClick={() => setCollapsed(!collapsed)}>
+              <ViewSidebar 
+              sx={{
+                color: '#438ED9',
+              }}
+              />
+            </IconButton>
+          </Tooltip>
         ) : (
           <Typography
             variant="h6"
@@ -93,7 +95,7 @@ const AquariumSidebar: React.FC<AquariumSidebarProps> = ({ aquariums, onOpenWiza
                   sx={{
                     width: '100%',
                     display: 'flex',
-                    justifyContent: collapsed ? 'center' : 'space-between',
+                    justifyContent: 'space-between',
                     alignItems: 'center',
                     cursor: 'pointer',
                     backgroundColor: currentAquarium?.id === aquarium.id ? theme.palette.action.selected : 'inherit',
@@ -105,32 +107,57 @@ const AquariumSidebar: React.FC<AquariumSidebarProps> = ({ aquariums, onOpenWiza
                   }}
                   onClick={() => setCurrentAquarium(aquarium)}
                 >
-                  <Box sx={{ display: 'flex', alignItems: 'center', flexShrink: 0 }}>
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      flexShrink: 0,
+                      flexGrow: 1, // ensures that the name and icon stick together
+                    }}
+                  >
                     <Tooltip title={aquarium.name} placement="right">
-                      <AquariumIcon fontSize="small" />
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          flexShrink: 0,
+                        }}
+                        component="div"
+                      >
+                        <AquariumIcon fontSize="small" />
+                      </Box>
                     </Tooltip>
                     <Typography
                       noWrap
                       sx={{
                         ml: 1,
                         display: collapsed ? 'none' : 'block',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        flexGrow: 1, // ensures that the typography takes available space without pushing the edit icon away
                       }}
                     >
                       {aquarium.name}
                     </Typography>
                   </Box>
-                  <IconButton
-                    edge="end"
-                    aria-label="edit"
-                    onClick={() => console.log(`Editing aquarium with id: ${aquarium.id}`)}
-                    size="small"
-                    sx={{
-                      display: collapsed ? 'none' : 'flex',
-                    }}
-                  >
-                    <EditIcon fontSize="small" />
-                  </IconButton>
+                  {!collapsed && (
+                    <IconButton
+                      edge="end"
+                      aria-label="edit"
+                      onClick={(e) => {
+                        e.stopPropagation(); // prevent triggering the aquarium selection when editing
+                        console.log(`Editing aquarium with id: ${aquarium.id}`);
+                      }}
+                      size="small"
+                      sx={{
+                        ml: 1,
+                      }}
+                    >
+                      <EditIcon fontSize="small" />
+                    </IconButton>
+                  )}
                 </ListItem>
+
               ))}
             </List>
           ) : (
