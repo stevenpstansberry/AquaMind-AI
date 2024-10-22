@@ -270,7 +270,7 @@ const EquipmentStep: React.FC<EquipmentStepProps> = ({
    */
   useEffect(() => {
     setAquariumData((prevData: any) => ({ ...prevData, equipment: selectedEquipment }));
-    setIsStepValid(selectedEquipment.length > 0);
+    setIsStepValid(selectedEquipment.length >= 0);
   }, [selectedEquipment, setAquariumData, setIsStepValid]);
 
   /**
