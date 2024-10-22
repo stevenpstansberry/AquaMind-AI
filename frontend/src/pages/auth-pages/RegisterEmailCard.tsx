@@ -15,8 +15,7 @@ import IconButton from '@mui/material/IconButton';
 import InputAdornment from '@mui/material/InputAdornment';
 import { Link, useNavigate } from 'react-router-dom';
 import { registerUser } from '../../services/APIServices';
-import { User } from '../../interfaces/Auth';
-import bcrypt from 'bcryptjs';
+import { useAuth } from '../../util/AuthContext';
 
 /**
  * RegisterEmailCard component renders a registration form that allows new users to sign up using their email, 
@@ -35,6 +34,8 @@ const RegisterEmailCard: React.FC = () => {
   const [snackbar, setSnackbar] = useState<SnackbarState>({ open: false, message: '', severity: 'info' });
 
   const navigate = useNavigate();
+  const { login } = useAuth();
+
 
   // Define type for Snackbar severity and state
   type SnackbarSeverity = 'success' | 'error' | 'warning' | 'info';
@@ -87,6 +88,17 @@ const RegisterEmailCard: React.FC = () => {
   };
 
   /**
+   * Defines the expected response structure from the login API.
+   * @typedef {Object} LoginResponse
+   * @property {string} email - The email address of the logged-in user.
+   * @property {string} token - The authentication token provided by the server.
+   */
+  interface LoginResponse {
+      email: string;
+      token: string;
+    }
+
+  /**
    * Handles the form submission process. It validates the input fields and calls the register API if valid.
    * 
    * @function handleSubmit
@@ -116,13 +128,18 @@ const RegisterEmailCard: React.FC = () => {
         first_name: firstName,
         password,
         subscribe: subscribe ? 'true' : 'false',
-        createdAt,
+        created_at: createdAt.toISOString(),
       }
       // Call the registerUser API function
       const response = await registerUser(user);
       console.log(response);
 
       showSnackbar('Registration successful!', 'success');
+
+
+      // Call login from AuthContext and store the token and email
+      const { token } = response as LoginResponse;
+      login({ email, token });
 
       // Navigate to dashboard after successful registration
       navigate('/dashboard');
