@@ -15,6 +15,7 @@ import IconButton from '@mui/material/IconButton';
 import InputAdornment from '@mui/material/InputAdornment';
 import { Link, useNavigate } from 'react-router-dom';
 import { registerUser } from '../../services/APIServices';
+import { useAuth } from '../../util/AuthContext';
 
 /**
  * RegisterEmailCard component renders a registration form that allows new users to sign up using their email, 
@@ -26,12 +27,15 @@ const RegisterEmailCard: React.FC = () => {
   // States for form fields
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [fullName, setFullName] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [username, setUsername] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [subscribe, setSubscribe] = useState(false);
   const [snackbar, setSnackbar] = useState<SnackbarState>({ open: false, message: '', severity: 'info' });
 
   const navigate = useNavigate();
+  const { login } = useAuth();
+
 
   // Define type for Snackbar severity and state
   type SnackbarSeverity = 'success' | 'error' | 'warning' | 'info';
@@ -84,6 +88,17 @@ const RegisterEmailCard: React.FC = () => {
   };
 
   /**
+   * Defines the expected response structure from the login API.
+   * @typedef {Object} LoginResponse
+   * @property {string} email - The email address of the logged-in user.
+   * @property {string} token - The authentication token provided by the server.
+   */
+  interface LoginResponse {
+      email: string;
+      token: string;
+    }
+
+  /**
    * Handles the form submission process. It validates the input fields and calls the register API if valid.
    * 
    * @function handleSubmit
@@ -93,7 +108,7 @@ const RegisterEmailCard: React.FC = () => {
     event.preventDefault();
 
     // Check if all fields are filled
-    if (!fullName.trim() || !email.trim() || !password.trim()) {
+    if (!firstName.trim() || !email.trim() || !password.trim()) {
       showSnackbar('All fields must be filled', 'warning');
       return;
     }
@@ -105,11 +120,30 @@ const RegisterEmailCard: React.FC = () => {
     }
 
     try {
+      const createdAt = new Date(); // Get the current timestamp
+
+      const user = {
+        username,
+        email,
+        first_name: firstName,
+        password,
+        subscribe: subscribe ? 'true' : 'false',
+        created_at: createdAt.toISOString(),
+      }
       // Call the registerUser API function
-      const response = await registerUser({ email, password, full_name: fullName });
+      const response = await registerUser(user);
       console.log(response);
 
       showSnackbar('Registration successful!', 'success');
+
+      const userToStore = {
+        email,
+      }
+
+
+      // Call login from AuthContext and store the token and email
+      const { token } = response as LoginResponse;
+      login({ user: userToStore, token });
 
       // Navigate to dashboard after successful registration
       navigate('/dashboard');
@@ -186,6 +220,16 @@ const RegisterEmailCard: React.FC = () => {
             onChange={(e) => setEmail(e.target.value)}
           />
 
+          {/* Username field */}
+          <TextField
+          label="Username"
+          variant="outlined"
+          fullWidth
+          margin="normal"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          />
+
           {/* Password field with toggle visibility */}
           <TextField
             label="Password"
@@ -207,15 +251,14 @@ const RegisterEmailCard: React.FC = () => {
             helperText="Minimum of 7 characters"
           />
 
-          {/* Full Name field */}
+          {/* First Name field */}
           <TextField
-            label="Full Name"
+            label="First Name"
             variant="outlined"
             fullWidth
             margin="normal"
-            value={fullName}
-            onChange={(e) => setFullName(e.target.value)}
-            helperText="Will be displayed on your profile"
+            value={firstName}
+            onChange={(e) => setFirstName(e.target.value)}
           />
 
           {/* CAPTCHA-like checkbox */}

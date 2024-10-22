@@ -15,7 +15,7 @@ const PlantSelectionStep: React.FC<PlantSelectionStepProps> = ({
 }) => {
   useEffect(() => {
     // Check if the step is valid (optional step, so always valid)
-    setIsStepValid(true);
+    setIsStepValid(aquariumData.plants.length >= 0);
 
     console.log('Selected plants:', aquariumData.plants);
   }, [aquariumData.plants, setIsStepValid]);

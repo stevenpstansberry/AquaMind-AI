@@ -14,14 +14,18 @@ import (
 )
 
 // Credentials represents the structure for incoming authentication requests.
-// It includes the user's email, password, and optionally, full name (for registration).
+// It includes the user's email, password, and optionally, first name (for registration).
 type Credentials struct {
     Email    string `json:"email"`     // The user's email address
     Password string `json:"password"`  // The user's password
-    FullName string `json:"full_name,omitempty"` // Optional full name for registration
+    FirstName string `json:"first_name,omitempty"`  // Optional first name for registration
+    Username string `json:"username,omitempty"`  // Optional username for registration
+    Subscribe string `json:"subscribe,omitempty"`  // Optional subscription for registration
+    CreatedAt string `json:"created_at,omitempty"`  // Optional created_at for registration
+
 }
 
-// RegisterUser handles user registration by accepting user details (email, password, full name),
+// RegisterUser handles user registration by accepting user details (email, password, first name),
 // hashing the password, and storing the user in the database. It returns a JWT token upon success.
 //
 // Method: POST
@@ -30,7 +34,6 @@ type Credentials struct {
 // The function performs the following steps:
 //   - Parse and validate the incoming request body (expects JSON).
 //   - Check if the user already exists in the database.
-//   - Hash the user's password using bcrypt.
 //   - Store the user details in the database.
 //   - Generate a JWT token for the registered user.
 //   - Return the token as a JSON response or an error message in case of failure.
@@ -39,7 +42,7 @@ type Credentials struct {
 //   {
 //     "email": "user@example.com",
 //     "password": "userpassword",
-//     "full_name": "User Full Name"
+//     "first_name": "User first Name"
 //   }
 //
 // Response (JSON):
@@ -56,6 +59,8 @@ func RegisterUser(w http.ResponseWriter, r *http.Request) {
         return
     }
 
+    log.Printf("Parsed credentials: %+v", creds)
+
     // Check if user already exists
     if models.UserExists(creds.Email) {
         log.Printf("User with email %s already exists", creds.Email)
@@ -63,7 +68,7 @@ func RegisterUser(w http.ResponseWriter, r *http.Request) {
         return
     }
 
-    // Hash the password
+    // Hash the password before storing it
     hashedPassword, err := bcrypt.GenerateFromPassword([]byte(creds.Password), bcrypt.DefaultCost)
     if err != nil {
         log.Printf("Error hashing password: %v", err)
@@ -71,8 +76,8 @@ func RegisterUser(w http.ResponseWriter, r *http.Request) {
         return
     }
 
-    // Create user in the database
-    err = models.CreateUser(creds.Email, string(hashedPassword), creds.FullName)
+    // Create user in the database with the hashed password
+    err = models.CreateUser(creds.Email, string(hashedPassword), creds.FirstName, creds.Username, creds.Subscribe, creds.CreatedAt)
     if err != nil {
         log.Printf("Error creating user in database: %v", err)
         http.Error(w, "Error creating user", http.StatusInternalServerError)
@@ -91,6 +96,7 @@ func RegisterUser(w http.ResponseWriter, r *http.Request) {
     log.Printf("User %s created successfully", creds.Email)
     json.NewEncoder(w).Encode(map[string]string{"token": token})
 }
+
 
 // LoginUser handles user authentication by verifying the user's email and password.
 // If valid, it returns a JWT token for future authenticated requests.
@@ -146,6 +152,7 @@ func LoginUser(w http.ResponseWriter, r *http.Request) {
         return
     }
 
+
     log.Printf("User authenticated successfully: %s\n", creds.Email)
 
     // Generate JWT token
@@ -162,4 +169,37 @@ func LoginUser(w http.ResponseWriter, r *http.Request) {
     // Return the JWT token
     json.NewEncoder(w).Encode(map[string]string{"token": token})
     log.Println("Login attempt successful, token sent to user")
+}
+
+
+
+// CreateAquariumHandler handles the creation of a new aquarium.
+func CreateAquariumHandler(w http.ResponseWriter, r *http.Request) {
+    // Only allow POST method
+    if r.Method != http.MethodPost {
+        http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+        return
+    }
+
+    var aquarium models.Aquarium
+
+    // Parse JSON request body
+    err := json.NewDecoder(r.Body).Decode(&aquarium)
+    if err != nil {
+        log.Printf("Error decoding request body: %v", err)
+        http.Error(w, "Invalid input", http.StatusBadRequest)
+        return
+    }
+
+    // Save the aquarium to the database
+    err = models.CreateAquarium(&aquarium)
+    if err != nil {
+        log.Printf("Error creating aquarium in database: %v", err)
+        http.Error(w, "Error creating aquarium", http.StatusInternalServerError)
+        return
+    }
+
+    // Respond with the created aquarium object
+    w.WriteHeader(http.StatusCreated)
+    json.NewEncoder(w).Encode(aquarium)
 }

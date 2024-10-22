@@ -21,10 +21,12 @@
 
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../util/AuthContext';
+import { useAquarium } from '../util/AquariumContext';
 import AquariumSidebar from '../components/aquarium-components/AquariumSidebar';
 import AquariumWizard from '../components/aquarium-components/aquarium-wizard-components/AquariumWizard';
 import { Box, AppBar, Toolbar, Typography, Grid, CardContent, Card, Icon, Tooltip } from '@mui/material';
 import AquariumParameters from '../components/aquarium-components/AquariumParameters';
+import { createAquarium } from '../services/APIServices';
 import { ViewSidebar } from '@mui/icons-material';
 
 
@@ -40,7 +42,7 @@ import ParametersCard from '../components/aquarium-components/ParametersCard';
 
 
 const Aquariums: React.FC = () => {
-  const [aquariums, setAquariums] = useState<Aquarium[]>([]);
+  const { aquariums, addAquarium, fetchAquariums } = useAquarium(); // Use AquariumContext
   const [showWizard, setShowWizard] = useState(false);
   const [currentAquarium, setCurrentAquarium] = useState<Aquarium | null>(null);
   const [collapsed, setCollapsed] = useState<boolean>(false);
@@ -55,18 +57,20 @@ const Aquariums: React.FC = () => {
   };
 
   /**
-   * Fetches aquarium data (mock data used here) and sets it to the component state.
+   * Adds a new aquarium using the context's addAquarium function.
    * 
-   * @returns {void}
+   * @param {Aquarium} aquariumToAdd - The aquarium to add.
    */
-  useEffect(() => {
-    const fetchAquariums = async () => {
-      const mockAquariums: Aquarium[] = mockAquaData as Aquarium[];
-      setAquariums(mockAquariums);
-    };
+  const handleAddAquarium = (aquariumToAdd: Aquarium): void => {
+    addAquarium(aquariumToAdd);
 
-    fetchAquariums();
-  }, []);
+    try {
+      createAquarium(aquariumToAdd);
+    } catch (error) {
+      console.error("Failed to add aquarium:", error);
+    }
+  };
+
 
   /**
    * Updates the parameters of the currently selected aquarium.
@@ -140,7 +144,7 @@ const Aquariums: React.FC = () => {
         </Tooltip>
       ) }
         <Box sx={{ flexGrow: 1 }}>
-          {showWizard && <AquariumWizard onClose={() => setShowWizard(false)} />}
+          {showWizard && <AquariumWizard onClose={() => setShowWizard(false)} handleAddAquarium={handleAddAquarium} />}
 
           {currentAquarium && (
             <>

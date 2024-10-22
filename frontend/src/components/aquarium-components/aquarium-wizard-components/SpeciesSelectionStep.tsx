@@ -14,8 +14,8 @@ const SpeciesSelectionStep: React.FC<SpeciesSelectionStepProps> = ({
   setIsStepValid,
 }) => {
   useEffect(() => {
-    // Check if at least one species is selected to enable the "Next" button
-    setIsStepValid(aquariumData.species.length > 0);
+    // Always true
+    setIsStepValid(aquariumData.species.length >= 0);
 
     // Log the selected fish
     console.log('Selected fish:', aquariumData.species);

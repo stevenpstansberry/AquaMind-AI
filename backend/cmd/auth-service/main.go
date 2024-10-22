@@ -7,7 +7,7 @@ import (
     "net/http"
     "os"
     "github.com/joho/godotenv"
-    "github.com/stevenpstansberry/AquaMind-AI/internal/auth"   // Now using the auth package
+    "github.com/stevenpstansberry/AquaMind-AI/internal/auth"  
     "github.com/stevenpstansberry/AquaMind-AI/internal/models"  
     _ "github.com/lib/pq" // PostgreSQL driver
 )
@@ -69,6 +69,7 @@ func main() {
     // Set up routes for user registration and login using the auth package
     http.HandleFunc("/register", auth.RegisterUser)  // Use auth package for handlers
     http.HandleFunc("/login", auth.LoginUser)        // Use auth package for handlers
+    http.HandleFunc("/aquariums", auth.CreateAquariumHandler) 
 
     // Apply the CORS middleware to all routes
     corsHandler := enableCORS(http.DefaultServeMux)
