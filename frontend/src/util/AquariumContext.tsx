@@ -1,6 +1,7 @@
 import React, { createContext, useState, useContext, ReactNode, useEffect } from 'react';
 import { Aquarium } from '../interfaces/Aquarium';
 import { useAuth } from './AuthContext';
+import { getUserAquariums } from '../services/APIServices';
 
 interface AquariumContextType {
   aquariums: Aquarium[];
@@ -37,7 +38,7 @@ export const AquariumProvider: React.FC<{ children: ReactNode }> = ({ children }
     }
   }, [aquariums, user]);
 
-  const fetchAquariums = () => {
+  const fetchAquariums = async () => {
     if (user) {
       // Retrieve aquariums from local storage for the logged-in user
       const storedAquariums = localStorage.getItem(`aquariums_${user.email}`);
@@ -45,12 +46,10 @@ export const AquariumProvider: React.FC<{ children: ReactNode }> = ({ children }
         setAquariums(JSON.parse(storedAquariums));
       } else {
         // Simulate fetching from an API if local storage is empty
-        const mockAquariums: Aquarium[] = [
-          { id: '1', name: 'My Freshwater Tank', type: 'Freshwater', size: '55', species: [], plants: [], equipment: [] },
-        ];
-        setAquariums(mockAquariums);
+        const fetchedAquariums = await getUserAquariums();
+        setAquariums(fetchedAquariums);
         // Save mock data to local storage for future use
-        localStorage.setItem(`aquariums_${user.email}`, JSON.stringify(mockAquariums));
+        localStorage.setItem(`aquariums_${user.email}`, JSON.stringify(fetchedAquariums));
       }
     }
   };

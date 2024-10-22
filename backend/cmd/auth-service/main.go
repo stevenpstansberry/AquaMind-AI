@@ -10,11 +10,11 @@ import (
     "github.com/gorilla/mux"
     "github.com/joho/godotenv"
     _ "github.com/lib/pq" // PostgreSQL driver
+
     "github.com/stevenpstansberry/AquaMind-AI/internal/auth"
     "github.com/stevenpstansberry/AquaMind-AI/internal/models"
 )
 
-// enableCORS is a middleware function that adds headers to allow cross-origin requests.
 func enableCORS(next http.Handler) http.Handler {
     return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
         w.Header().Set("Access-Control-Allow-Origin", "*")
@@ -75,12 +75,12 @@ func main() {
     router.HandleFunc("/register", auth.RegisterUser).Methods("POST")
     router.HandleFunc("/login", auth.LoginUser).Methods("POST")
 
-    // Aquarium routes
-    router.HandleFunc("/aquariums", auth.CreateAquariumHandler).Methods("POST")
-    router.HandleFunc("/aquariums", auth.GetAquariumsHandler).Methods("GET")
-    router.HandleFunc("/aquariums/{id}", auth.GetAquariumHandler).Methods("GET")
-    router.HandleFunc("/aquariums/{id}", auth.UpdateAquariumHandler).Methods("PUT")
-    router.HandleFunc("/aquariums/{id}", auth.DeleteAquariumHandler).Methods("DELETE")
+    // Aquarium routes with JWT authentication middleware
+    router.Handle("/aquariums", auth.JWTAuthMiddleware(http.HandlerFunc(auth.CreateAquariumHandler))).Methods("POST")
+    router.Handle("/user/aquariums", auth.JWTAuthMiddleware(http.HandlerFunc(auth.GetUserAquariumsHandler))).Methods("GET")
+    router.Handle("/aquariums/{id}", auth.JWTAuthMiddleware(http.HandlerFunc(auth.GetAquariumHandler))).Methods("GET")
+    router.Handle("/aquariums/{id}", auth.JWTAuthMiddleware(http.HandlerFunc(auth.UpdateAquariumHandler))).Methods("PUT")
+    router.Handle("/aquariums/{id}", auth.JWTAuthMiddleware(http.HandlerFunc(auth.DeleteAquariumHandler))).Methods("DELETE")
 
     // Apply the CORS middleware to all routes
     corsHandler := enableCORS(router)

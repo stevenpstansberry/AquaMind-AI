@@ -7,6 +7,7 @@ import (
     "time"
     "github.com/dgrijalva/jwt-go"
     "errors"
+    "strings"
     "log"
     "os"
 
@@ -100,4 +101,30 @@ func ValidateJWT(tokenString string) (*Claims, error) {
 
     // Token is valid, return the claims
     return claims, nil
+}
+
+// ExtractEmailFromJWT extracts the email from the JWT token in the Authorization header.
+func ExtractEmailFromJWT(authHeader string) (string, error) {
+    if authHeader == "" {
+        return "", errors.New("authorization header is empty")
+    }
+
+    parts := strings.Split(authHeader, " ")
+    if len(parts) != 2 || parts[0] != "Bearer" {
+        return "", errors.New("invalid authorization header format")
+    }
+
+    tokenStr := parts[1]
+
+    claims := &Claims{}
+
+    token, err := jwt.ParseWithClaims(tokenStr, claims, func(token *jwt.Token) (interface{}, error) {
+        return jwtKey, nil
+    })
+
+    if err != nil || !token.Valid {
+        return "", errors.New("invalid token")
+    }
+
+    return claims.Email, nil
 }

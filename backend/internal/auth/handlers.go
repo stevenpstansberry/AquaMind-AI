@@ -184,18 +184,34 @@ func CreateAquariumHandler(w http.ResponseWriter, r *http.Request) {
         return
     }
 
+    // Extract user information from the JWT token
+    userEmail, err := utils.ExtractEmailFromJWT(r.Header.Get("Authorization"))
+    if err != nil {
+        log.Printf("Error extracting user from token: %v", err)
+        http.Error(w, "Unauthorized", http.StatusUnauthorized)
+        return
+    }
+
+    // Get user by email
+    user, err := models.GetUserByEmail(userEmail)
+    if err != nil {
+        log.Printf("Error retrieving user: %v", err)
+        http.Error(w, "User not found", http.StatusNotFound)
+        return
+    }
+
     var aquarium models.Aquarium
 
     // Parse JSON request body
-    err := json.NewDecoder(r.Body).Decode(&aquarium)
+    err = json.NewDecoder(r.Body).Decode(&aquarium)
     if err != nil {
         log.Printf("Error decoding request body: %v", err)
         http.Error(w, "Invalid input", http.StatusBadRequest)
         return
     }
 
-    // Print the contents of the aquarium
-    log.Printf("Aquarium details: %+v", aquarium)
+    // Set the UserID to the authenticated user's ID
+    aquarium.UserID = user.ID
 
     // Save the aquarium to the database
     err = models.CreateAquarium(&aquarium)
@@ -205,21 +221,38 @@ func CreateAquariumHandler(w http.ResponseWriter, r *http.Request) {
         return
     }
 
-    log.Println("Successfully created aquarium")
-
     // Respond with the created aquarium object
     w.WriteHeader(http.StatusCreated)
     json.NewEncoder(w).Encode(aquarium)
 }
 
-// GetAquariumsHandler handles the retrieval of all aquariums.
-func GetAquariumsHandler(w http.ResponseWriter, r *http.Request) {
-    aquariums, err := models.GetAllAquariums()
+// GetUserAquariumsHandler retrieves all aquariums for the authenticated user.
+func GetUserAquariumsHandler(w http.ResponseWriter, r *http.Request) {
+    // Extract user information from the JWT token
+    userEmail, err := utils.ExtractEmailFromJWT(r.Header.Get("Authorization"))
+    if err != nil {
+        log.Printf("Error extracting user from token: %v", err)
+        http.Error(w, "Unauthorized", http.StatusUnauthorized)
+        return
+    }
+
+    // Get user by email
+    user, err := models.GetUserByEmail(userEmail)
+    if err != nil {
+        log.Printf("Error retrieving user: %v", err)
+        http.Error(w, "User not found", http.StatusNotFound)
+        return
+    }
+
+    // Get aquariums for the user
+    aquariums, err := models.GetAquariumsByUserID(user.ID)
     if err != nil {
         log.Printf("Error retrieving aquariums: %v", err)
         http.Error(w, "Error retrieving aquariums", http.StatusInternalServerError)
         return
     }
+
+    // Respond with the user's aquariums
     w.Header().Set("Content-Type", "application/json")
     json.NewEncoder(w).Encode(aquariums)
 }
@@ -228,6 +261,23 @@ func GetAquariumsHandler(w http.ResponseWriter, r *http.Request) {
 func GetAquariumHandler(w http.ResponseWriter, r *http.Request) {
     vars := mux.Vars(r)
     id := vars["id"]
+
+    // Extract user information from the JWT token
+    userEmail, err := utils.ExtractEmailFromJWT(r.Header.Get("Authorization"))
+    if err != nil {
+        log.Printf("Error extracting user from token: %v", err)
+        http.Error(w, "Unauthorized", http.StatusUnauthorized)
+        return
+    }
+
+    // Get user by email
+    user, err := models.GetUserByEmail(userEmail)
+    if err != nil {
+        log.Printf("Error retrieving user: %v", err)
+        http.Error(w, "User not found", http.StatusNotFound)
+        return
+    }
+
     aquarium, err := models.GetAquariumByID(id)
     if err != nil {
         if err == sql.ErrNoRows {
@@ -239,8 +289,13 @@ func GetAquariumHandler(w http.ResponseWriter, r *http.Request) {
         return
     }
 
-    log.Printf("Retrieved aquarium: %+v", aquarium)
+    // Check if the aquarium belongs to the user
+    if aquarium.UserID != user.ID {
+        http.Error(w, "Forbidden", http.StatusForbidden)
+        return
+    }
 
+    // Respond with the aquarium data
     w.Header().Set("Content-Type", "application/json")
     json.NewEncoder(w).Encode(aquarium)
 }
@@ -250,10 +305,26 @@ func UpdateAquariumHandler(w http.ResponseWriter, r *http.Request) {
     vars := mux.Vars(r)
     id := vars["id"]
 
+    // Extract user information from the JWT token
+    userEmail, err := utils.ExtractEmailFromJWT(r.Header.Get("Authorization"))
+    if err != nil {
+        log.Printf("Error extracting user from token: %v", err)
+        http.Error(w, "Unauthorized", http.StatusUnauthorized)
+        return
+    }
+
+    // Get user by email
+    user, err := models.GetUserByEmail(userEmail)
+    if err != nil {
+        log.Printf("Error retrieving user: %v", err)
+        http.Error(w, "User not found", http.StatusNotFound)
+        return
+    }
+
     var aquarium models.Aquarium
 
     // Parse JSON request body
-    err := json.NewDecoder(r.Body).Decode(&aquarium)
+    err = json.NewDecoder(r.Body).Decode(&aquarium)
     if err != nil {
         log.Printf("Error decoding request body: %v", err)
         http.Error(w, "Invalid input", http.StatusBadRequest)
@@ -262,6 +333,27 @@ func UpdateAquariumHandler(w http.ResponseWriter, r *http.Request) {
 
     // Set the ID from the URL path
     aquarium.ID = id
+
+    // Retrieve the existing aquarium
+    existingAquarium, err := models.GetAquariumByID(id)
+    if err != nil {
+        if err == sql.ErrNoRows {
+            http.Error(w, "Aquarium not found", http.StatusNotFound)
+        } else {
+            log.Printf("Error retrieving aquarium: %v", err)
+            http.Error(w, "Error retrieving aquarium", http.StatusInternalServerError)
+        }
+        return
+    }
+
+    // Check if the aquarium belongs to the user
+    if existingAquarium.UserID != user.ID {
+        http.Error(w, "Forbidden", http.StatusForbidden)
+        return
+    }
+
+    // Set the UserID to ensure it remains the same
+    aquarium.UserID = user.ID
 
     // Update the aquarium in the database
     err = models.UpdateAquarium(&aquarium)
@@ -275,8 +367,6 @@ func UpdateAquariumHandler(w http.ResponseWriter, r *http.Request) {
         return
     }
 
-    log.Printf("Updated aquarium: %+v", aquarium)
-
     // Respond with the updated aquarium object
     w.Header().Set("Content-Type", "application/json")
     json.NewEncoder(w).Encode(aquarium)
@@ -287,18 +377,33 @@ func DeleteAquariumHandler(w http.ResponseWriter, r *http.Request) {
     vars := mux.Vars(r)
     id := vars["id"]
 
-    err := models.DeleteAquarium(id)
+    // Extract user information from the JWT token
+    userEmail, err := utils.ExtractEmailFromJWT(r.Header.Get("Authorization"))
+    if err != nil {
+        log.Printf("Error extracting user from token: %v", err)
+        http.Error(w, "Unauthorized", http.StatusUnauthorized)
+        return
+    }
+
+    // Get user by email
+    user, err := models.GetUserByEmail(userEmail)
+    if err != nil {
+        log.Printf("Error retrieving user: %v", err)
+        http.Error(w, "User not found", http.StatusNotFound)
+        return
+    }
+
+    // Attempt to delete the aquarium
+    err = models.DeleteAquarium(id, user.ID)
     if err != nil {
         if err == sql.ErrNoRows {
-            http.Error(w, "Aquarium not found", http.StatusNotFound)
+            http.Error(w, "Aquarium not found or not owned by user", http.StatusNotFound)
         } else {
             log.Printf("Error deleting aquarium: %v", err)
             http.Error(w, "Error deleting aquarium", http.StatusInternalServerError)
         }
         return
     }
-
-    log.Printf("Deleted aquarium with ID: %s", id)
 
     // Respond with no content status
     w.WriteHeader(http.StatusNoContent)
