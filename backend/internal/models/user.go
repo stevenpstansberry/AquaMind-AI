@@ -33,12 +33,13 @@ type User struct {
 //   - email: the user's email address
 //   - password: the user's hashed password
 //   - first_name: the user's first name
+//   - username: the user's username
 //
 // Returns:
 //   - error: an error if the insert operation fails, otherwise nil
-func CreateUser(email, password, first_name string) error {
-    query := `INSERT INTO users (email, password, first_name) VALUES ($1, $2, $3)`
-    _, err := db.Exec(query, email, password, first_name)
+func CreateUser(email, password, first_name string, username string, subscribe string, created_at string) error {
+    query := `INSERT INTO users (email, password, first_name, username, subscribe, created_at) VALUES ($1, $2, $3, $4, $5, $6)`
+    _, err := db.Exec(query, email, password, first_name, username, subscribe, created_at)
     return err
 }
 
@@ -53,7 +54,7 @@ func CreateUser(email, password, first_name string) error {
 func GetUserByEmail(email string) (*User, error) {
     var user User
     query := `SELECT id, email, password, first_name FROM users WHERE email = $1`
-    err := db.QueryRow(query, email).Scan(&user.ID, &user.Email, &user.Password, &user.first_name)
+    err := db.QueryRow(query, email).Scan(&user.ID, &user.Email, &user.Password, &user.FirstName)
     if err != nil {
         return nil, err
     }

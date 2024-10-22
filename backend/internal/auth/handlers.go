@@ -19,6 +19,10 @@ type Credentials struct {
     Email    string `json:"email"`     // The user's email address
     Password string `json:"password"`  // The user's password
     FirstName string `json:"first_name,omitempty"`  // Optional first name for registration
+    Username string `json:"username,omitempty"`  // Optional username for registration
+    Subscribe string `json:"subscribe,omitempty"`  // Optional subscription for registration
+    CreatedAt string `json:"created_at,omitempty"`  // Optional created_at for registration
+
 }
 
 // RegisterUser handles user registration by accepting user details (email, password, first name),
@@ -75,7 +79,7 @@ func RegisterUser(w http.ResponseWriter, r *http.Request) {
     }
 
     // Create user in the database
-    err = models.CreateUser(creds.Email, string(hashedPassword), creds.FirstName)
+    err = models.CreateUser(creds.Email, string(hashedPassword), creds.FirstName, creds.Username, creds.Subscribe, creds.CreatedAt)
     if err != nil {
         log.Printf("Error creating user in database: %v", err)
         http.Error(w, "Error creating user", http.StatusInternalServerError)

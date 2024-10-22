@@ -15,7 +15,6 @@ import IconButton from '@mui/material/IconButton';
 import InputAdornment from '@mui/material/InputAdornment';
 import { Link, useNavigate } from 'react-router-dom';
 import { registerUser } from '../../services/APIServices';
-import { v4 as uuidv4 } from 'uuid';
 import { User } from '../../interfaces/Auth';
 import bcrypt from 'bcryptjs';
 
@@ -109,17 +108,15 @@ const RegisterEmailCard: React.FC = () => {
     }
 
     try {
-      const userId = uuidv4(); // Generate a unique user ID
       const createdAt = new Date(); // Get the current timestamp
       const hashedPassword = await bcrypt.hash(password, 10); // Hash the password
 
       const user = {
-        id: userId,
         username,
         email,
-        firstName,
+        first_name: firstName,
         password: hashedPassword,
-        subscribe,
+        subscribe: subscribe ? 'true' : 'false',
         createdAt,
       }
       // Call the registerUser API function
