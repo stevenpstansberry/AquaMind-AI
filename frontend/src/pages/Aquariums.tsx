@@ -55,6 +55,13 @@ const Aquariums: React.FC = () => {
   };
 
   /**
+   * 
+   */
+  const handleAddAquarium = (aquariumToAdd: Aquarium): void => {
+    setAquariums([...aquariums, aquariumToAdd]);
+  }
+
+  /**
    * Fetches aquarium data (mock data used here) and sets it to the component state.
    * 
    * @returns {void}
@@ -140,7 +147,7 @@ const Aquariums: React.FC = () => {
         </Tooltip>
       ) }
         <Box sx={{ flexGrow: 1 }}>
-          {showWizard && <AquariumWizard onClose={() => setShowWizard(false)} />}
+          {showWizard && <AquariumWizard onClose={() => setShowWizard(false)} handleAddAquarium={handleAddAquarium} />}
 
           {currentAquarium && (
             <>

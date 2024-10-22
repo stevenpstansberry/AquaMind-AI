@@ -20,9 +20,10 @@ import AIChatInterface from '../../ai-components/AIChatInterface';
 
 interface AquariumWizardProps {
   onClose: () => void;
+  handleAddAquarium: (aquariumToAdd: any) => void;
 }
 
-const AquariumWizard: React.FC<AquariumWizardProps> = ({ onClose }) => {
+const AquariumWizard: React.FC<AquariumWizardProps> = ({ onClose, handleAddAquarium }) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [aquariumData, setAquariumData] = useState({
     id: '',
@@ -92,6 +93,7 @@ const AquariumWizard: React.FC<AquariumWizardProps> = ({ onClose }) => {
     const finalAquariumData = { ...aquariumData, id };
 
     console.log("Saving Aquarium:", finalAquariumData); 
+    handleAddAquarium(finalAquariumData); // Save the aquarium data
     onClose(); 
     resetWizard(); // Reset the wizard state after closing
   };
@@ -141,7 +143,7 @@ const AquariumWizard: React.FC<AquariumWizardProps> = ({ onClose }) => {
             />
           )}
           
-          {currentStep === 5 && <SummaryStep aquariumData={aquariumData} setAquariumData={setAquariumData} />}
+          {currentStep === 5 && <SummaryStep aquariumData={aquariumData} setAquariumData={setAquariumData}/>}
         </CardContent>
 
         {/* Button container */}
