@@ -26,15 +26,20 @@ export const AquariumProvider: React.FC<{ children: ReactNode }> = ({ children }
   useEffect(() => {
     if (user) {
       fetchAquariums();
+      console.log('Fetching aquariums for user:', user.email);
     }
   }, [user]);
+
+  // Monitor changes in aquariums state
+  useEffect(() => {
+    console.log('Aquariums state updated:', aquariums);
+  }, [aquariums]);
 
   const fetchAquariums = async () => {
     // Simulate fetching aquariums for the logged-in user
     // In real usage, this would be an API call
     const mockAquariums: Aquarium[] = [
       { id: '1', name: 'My Freshwater Tank', type: 'Freshwater', size: '55', species: [], plants: [], equipment: [] },
-      // Add more mock or fetched data here
     ];
 
     setAquariums(mockAquariums);
