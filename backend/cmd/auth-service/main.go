@@ -6,10 +6,12 @@ import (
     "log"
     "net/http"
     "os"
+
+    "github.com/gorilla/mux"
     "github.com/joho/godotenv"
-    "github.com/stevenpstansberry/AquaMind-AI/internal/auth"  
-    "github.com/stevenpstansberry/AquaMind-AI/internal/models"  
     _ "github.com/lib/pq" // PostgreSQL driver
+    "github.com/stevenpstansberry/AquaMind-AI/internal/auth"
+    "github.com/stevenpstansberry/AquaMind-AI/internal/models"
 )
 
 // enableCORS is a middleware function that adds headers to allow cross-origin requests.
@@ -66,13 +68,22 @@ func main() {
     // Initialize the database in models package
     models.InitDB(db)
 
+    // Initialize the router
+    router := mux.NewRouter()
+
     // Set up routes for user registration and login using the auth package
-    http.HandleFunc("/register", auth.RegisterUser)  // Use auth package for handlers
-    http.HandleFunc("/login", auth.LoginUser)        // Use auth package for handlers
-    http.HandleFunc("/aquariums", auth.CreateAquariumHandler) 
+    router.HandleFunc("/register", auth.RegisterUser).Methods("POST")
+    router.HandleFunc("/login", auth.LoginUser).Methods("POST")
+
+    // Aquarium routes
+    router.HandleFunc("/aquariums", auth.CreateAquariumHandler).Methods("POST")
+    router.HandleFunc("/aquariums", auth.GetAquariumsHandler).Methods("GET")
+    router.HandleFunc("/aquariums/{id}", auth.GetAquariumHandler).Methods("GET")
+    router.HandleFunc("/aquariums/{id}", auth.UpdateAquariumHandler).Methods("PUT")
+    router.HandleFunc("/aquariums/{id}", auth.DeleteAquariumHandler).Methods("DELETE")
 
     // Apply the CORS middleware to all routes
-    corsHandler := enableCORS(http.DefaultServeMux)
+    corsHandler := enableCORS(router)
 
     // Start the server on port 8080, using the CORS handler
     log.Fatal(http.ListenAndServe(":8080", corsHandler))

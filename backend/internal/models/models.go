@@ -28,16 +28,7 @@ type User struct {
     FirstName string // First name of the user
 }
 
-// Aquarium represents an aquarium in the system.
-type Aquarium struct {
-    ID        string   // UUID
-    Name      string
-    Type      string
-    Size      string
-    Species   []string
-    Plants    []string
-    Equipment []string
-}
+
 // CreateUser inserts a new user into the database with the provided email, password, and first name.
 //
 // Params:
@@ -87,7 +78,16 @@ func UserExists(email string) bool {
     return exists
 }
 
-
+// Aquarium represents an aquarium in the system.
+type Aquarium struct {
+    ID        string   // UUID
+    Name      string
+    Type      string
+    Size      string
+    Species   []string
+    Plants    []string
+    Equipment []string
+}
 
 // CreateAquarium inserts a new aquarium into the database.
 func CreateAquarium(aquarium *Aquarium) error {
@@ -113,3 +113,113 @@ func CreateAquarium(aquarium *Aquarium) error {
     return err
 }
 
+
+// GetAllAquariums retrieves all aquariums from the database.
+func GetAllAquariums() ([]Aquarium, error) {
+    query := `SELECT id, name, type, size, species, plants, equipment FROM aquariums`
+    rows, err := db.Query(query)
+    if err != nil {
+        return nil, err
+    }
+    defer rows.Close()
+
+    var aquariums []Aquarium
+
+    for rows.Next() {
+        var aquarium Aquarium
+        var speciesJSON, plantsJSON, equipmentJSON []byte
+
+        err := rows.Scan(&aquarium.ID, &aquarium.Name, &aquarium.Type, &aquarium.Size, &speciesJSON, &plantsJSON, &equipmentJSON)
+        if err != nil {
+            return nil, err
+        }
+
+        // Decode JSON arrays
+        json.Unmarshal(speciesJSON, &aquarium.Species)
+        json.Unmarshal(plantsJSON, &aquarium.Plants)
+        json.Unmarshal(equipmentJSON, &aquarium.Equipment)
+
+        aquariums = append(aquariums, aquarium)
+    }
+
+    if err = rows.Err(); err != nil {
+        return nil, err
+    }
+
+    return aquariums, nil
+}
+
+// GetAquariumByID retrieves an aquarium by its ID.
+func GetAquariumByID(id string) (*Aquarium, error) {
+    query := `SELECT id, name, type, size, species, plants, equipment FROM aquariums WHERE id = $1`
+    var aquarium Aquarium
+    var speciesJSON, plantsJSON, equipmentJSON []byte
+
+    err := db.QueryRow(query, id).Scan(&aquarium.ID, &aquarium.Name, &aquarium.Type, &aquarium.Size, &speciesJSON, &plantsJSON, &equipmentJSON)
+    if err != nil {
+        return nil, err
+    }
+
+    // Decode JSON arrays
+    json.Unmarshal(speciesJSON, &aquarium.Species)
+    json.Unmarshal(plantsJSON, &aquarium.Plants)
+    json.Unmarshal(equipmentJSON, &aquarium.Equipment)
+
+    return &aquarium, nil
+}
+
+// UpdateAquarium updates an existing aquarium in the database.
+func UpdateAquarium(aquarium *Aquarium) error {
+    // Convert slices to JSON for storage
+    speciesJSON, err := json.Marshal(aquarium.Species)
+    if err != nil {
+        return err
+    }
+    plantsJSON, err := json.Marshal(aquarium.Plants)
+    if err != nil {
+        return err
+    }
+    equipmentJSON, err := json.Marshal(aquarium.Equipment)
+    if err != nil {
+        return err
+    }
+
+    query := `
+        UPDATE aquariums
+        SET name = $1, type = $2, size = $3, species = $4::jsonb, plants = $5::jsonb, equipment = $6::jsonb
+        WHERE id = $7
+    `
+    result, err := db.Exec(query, aquarium.Name, aquarium.Type, aquarium.Size, speciesJSON, plantsJSON, equipmentJSON, aquarium.ID)
+    if err != nil {
+        return err
+    }
+
+    rowsAffected, err := result.RowsAffected()
+    if err != nil {
+        return err
+    }
+    if rowsAffected == 0 {
+        return sql.ErrNoRows
+    }
+
+    return nil
+}
+
+// DeleteAquarium deletes an aquarium from the database.
+func DeleteAquarium(id string) error {
+    query := `DELETE FROM aquariums WHERE id = $1`
+    result, err := db.Exec(query, id)
+    if err != nil {
+        return err
+    }
+
+    rowsAffected, err := result.RowsAffected()
+    if err != nil {
+        return err
+    }
+    if rowsAffected == 0 {
+        return sql.ErrNoRows
+    }
+
+    return nil
+}
