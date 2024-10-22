@@ -194,6 +194,9 @@ func CreateAquariumHandler(w http.ResponseWriter, r *http.Request) {
         return
     }
 
+    // Print the contents of the aquarium
+    log.Printf("Aquarium details: %+v", aquarium)
+
     // Save the aquarium to the database
     err = models.CreateAquarium(&aquarium)
     if err != nil {
@@ -201,6 +204,8 @@ func CreateAquariumHandler(w http.ResponseWriter, r *http.Request) {
         http.Error(w, "Error creating aquarium", http.StatusInternalServerError)
         return
     }
+
+    log.Println("Successfully created aquarium")
 
     // Respond with the created aquarium object
     w.WriteHeader(http.StatusCreated)
@@ -233,6 +238,9 @@ func GetAquariumHandler(w http.ResponseWriter, r *http.Request) {
         }
         return
     }
+
+    log.Printf("Retrieved aquarium: %+v", aquarium)
+
     w.Header().Set("Content-Type", "application/json")
     json.NewEncoder(w).Encode(aquarium)
 }
@@ -267,6 +275,8 @@ func UpdateAquariumHandler(w http.ResponseWriter, r *http.Request) {
         return
     }
 
+    log.Printf("Updated aquarium: %+v", aquarium)
+
     // Respond with the updated aquarium object
     w.Header().Set("Content-Type", "application/json")
     json.NewEncoder(w).Encode(aquarium)
@@ -287,6 +297,8 @@ func DeleteAquariumHandler(w http.ResponseWriter, r *http.Request) {
         }
         return
     }
+
+    log.Printf("Deleted aquarium with ID: %s", id)
 
     // Respond with no content status
     w.WriteHeader(http.StatusNoContent)
