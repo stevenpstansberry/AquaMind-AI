@@ -22,6 +22,7 @@ export interface Aquarium {
       alkalinity?: number;
       phosphate?: number;
     };
+    owner?: string; // User id of the aquarium owner
   }
 
 export interface Fish {
