@@ -170,3 +170,36 @@ func LoginUser(w http.ResponseWriter, r *http.Request) {
     json.NewEncoder(w).Encode(map[string]string{"token": token})
     log.Println("Login attempt successful, token sent to user")
 }
+
+
+
+// CreateAquariumHandler handles the creation of a new aquarium.
+func CreateAquariumHandler(w http.ResponseWriter, r *http.Request) {
+    // Only allow POST method
+    if r.Method != http.MethodPost {
+        http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+        return
+    }
+
+    var aquarium models.Aquarium
+
+    // Parse JSON request body
+    err := json.NewDecoder(r.Body).Decode(&aquarium)
+    if err != nil {
+        log.Printf("Error decoding request body: %v", err)
+        http.Error(w, "Invalid input", http.StatusBadRequest)
+        return
+    }
+
+    // Save the aquarium to the database
+    err = models.CreateAquarium(&aquarium)
+    if err != nil {
+        log.Printf("Error creating aquarium in database: %v", err)
+        http.Error(w, "Error creating aquarium", http.StatusInternalServerError)
+        return
+    }
+
+    // Respond with the created aquarium object
+    w.WriteHeader(http.StatusCreated)
+    json.NewEncoder(w).Encode(aquarium)
+}

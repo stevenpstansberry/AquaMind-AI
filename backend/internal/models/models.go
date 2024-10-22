@@ -4,6 +4,7 @@ package models
 
 import (
     "database/sql"
+    "encoding/json"
     _ "github.com/lib/pq" // PostgreSQL driver
 )
 
@@ -27,6 +28,16 @@ type User struct {
     FirstName string // First name of the user
 }
 
+// Aquarium represents an aquarium in the system.
+type Aquarium struct {
+    ID        string   // UUID
+    Name      string
+    Type      string
+    Size      string
+    Species   []string
+    Plants    []string
+    Equipment []string
+}
 // CreateUser inserts a new user into the database with the provided email, password, and first name.
 //
 // Params:
@@ -42,6 +53,7 @@ func CreateUser(email, password, first_name string, username string, subscribe s
     _, err := db.Exec(query, email, password, first_name, username, subscribe, created_at)
     return err
 }
+
 
 // GetUserByEmail retrieves a user from the database by their email address.
 //
@@ -74,3 +86,30 @@ func UserExists(email string) bool {
     db.QueryRow(query, email).Scan(&exists)
     return exists
 }
+
+
+
+// CreateAquarium inserts a new aquarium into the database.
+func CreateAquarium(aquarium *Aquarium) error {
+    // Convert slices to JSON for storage
+    speciesJSON, err := json.Marshal(aquarium.Species)
+    if err != nil {
+        return err
+    }
+    plantsJSON, err := json.Marshal(aquarium.Plants)
+    if err != nil {
+        return err
+    }
+    equipmentJSON, err := json.Marshal(aquarium.Equipment)
+    if err != nil {
+        return err
+    }
+
+    query := `
+        INSERT INTO aquariums (id, name, type, size, species, plants, equipment)
+        VALUES ($1, $2, $3, $4, $5::jsonb, $6::jsonb, $7::jsonb)
+    `
+    _, err = db.Exec(query, aquarium.ID, aquarium.Name, aquarium.Type, aquarium.Size, speciesJSON, plantsJSON, equipmentJSON)
+    return err
+}
+
