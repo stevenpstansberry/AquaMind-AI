@@ -15,6 +15,9 @@ import IconButton from '@mui/material/IconButton';
 import InputAdornment from '@mui/material/InputAdornment';
 import { Link, useNavigate } from 'react-router-dom';
 import { registerUser } from '../../services/APIServices';
+import { v4 as uuidv4 } from 'uuid';
+import { User } from '../../interfaces/Auth';
+import bcrypt from 'bcryptjs';
 
 /**
  * RegisterEmailCard component renders a registration form that allows new users to sign up using their email, 
@@ -26,7 +29,8 @@ const RegisterEmailCard: React.FC = () => {
   // States for form fields
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [fullName, setFullName] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [username, setUsername] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [subscribe, setSubscribe] = useState(false);
   const [snackbar, setSnackbar] = useState<SnackbarState>({ open: false, message: '', severity: 'info' });
@@ -93,7 +97,7 @@ const RegisterEmailCard: React.FC = () => {
     event.preventDefault();
 
     // Check if all fields are filled
-    if (!fullName.trim() || !email.trim() || !password.trim()) {
+    if (!firstName.trim() || !email.trim() || !password.trim()) {
       showSnackbar('All fields must be filled', 'warning');
       return;
     }
@@ -105,8 +109,21 @@ const RegisterEmailCard: React.FC = () => {
     }
 
     try {
+      const userId = uuidv4(); // Generate a unique user ID
+      const createdAt = new Date(); // Get the current timestamp
+      const hashedPassword = await bcrypt.hash(password, 10); // Hash the password
+
+      const user = {
+        id: userId,
+        username,
+        email,
+        firstName,
+        password: hashedPassword,
+        subscribe,
+        createdAt,
+      }
       // Call the registerUser API function
-      const response = await registerUser({ email, password, full_name: fullName });
+      const response = await registerUser({ email, password, full_name: firstName });
       console.log(response);
 
       showSnackbar('Registration successful!', 'success');
@@ -186,6 +203,16 @@ const RegisterEmailCard: React.FC = () => {
             onChange={(e) => setEmail(e.target.value)}
           />
 
+          {/* Username field */}
+          <TextField
+          label="Username"
+          variant="outlined"
+          fullWidth
+          margin="normal"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          />
+
           {/* Password field with toggle visibility */}
           <TextField
             label="Password"
@@ -207,15 +234,14 @@ const RegisterEmailCard: React.FC = () => {
             helperText="Minimum of 7 characters"
           />
 
-          {/* Full Name field */}
+          {/* First Name field */}
           <TextField
-            label="Full Name"
+            label="First Name"
             variant="outlined"
             fullWidth
             margin="normal"
-            value={fullName}
-            onChange={(e) => setFullName(e.target.value)}
-            helperText="Will be displayed on your profile"
+            value={firstName}
+            onChange={(e) => setFirstName(e.target.value)}
           />
 
           {/* CAPTCHA-like checkbox */}
