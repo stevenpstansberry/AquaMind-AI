@@ -121,9 +121,13 @@ const SignInEmailCard: React.FC = () => {
       const response = await loginUser({ email, password });
 
 
+      const userToStore = {
+        email,
+      }
+
       // Call login from AuthContext and store the token and email
       const { token } = response as LoginResponse;
-      login({ email, token });
+      login({ user: userToStore, token });
 
       // Show success and navigate to dashboard if login is successful
       showSnackbar('Login successful!', 'success');

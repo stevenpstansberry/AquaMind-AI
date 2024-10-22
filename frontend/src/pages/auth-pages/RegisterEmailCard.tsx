@@ -136,10 +136,14 @@ const RegisterEmailCard: React.FC = () => {
 
       showSnackbar('Registration successful!', 'success');
 
+      const userToStore = {
+        email,
+      }
+
 
       // Call login from AuthContext and store the token and email
       const { token } = response as LoginResponse;
-      login({ email, token });
+      login({ user: userToStore, token });
 
       // Navigate to dashboard after successful registration
       navigate('/dashboard');

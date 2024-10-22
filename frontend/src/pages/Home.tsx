@@ -4,7 +4,7 @@
  * 
  * @file src/pages/Home.tsx
  * @component
- * @requires ../services/AuthServices
+ * @requires ../util/AuthContext
  * 
  * @description The `Home` component checks if a user is logged in by retrieving user data from
  * localStorage using a service function. If a user is logged in, it displays a greeting with the
@@ -16,27 +16,17 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { getUser } from '../services/AuthServices';
+import { useAuth } from '../util/AuthContext';
+
 
 const Home: React.FC = () => {
-  const [userName, setUserName] = useState<string | null>(null);
+  const { isLoggedIn, user, logout } = useAuth(); // Access isLoggedIn and logout function
 
-  /**
-   * Effect that checks if the user is logged in by looking for user data in localStorage.
-   * If user data is found, it sets the `userName` state.
-   * 
-   * @returns {void}
-   */
-  useEffect(() => {
-    const storedUserName = getUser();
-    if (storedUserName) {
-      setUserName(storedUserName);
-    }
-  }, []);
+
 
   return (
     <div>
-      {userName ? <h1>Hello, {userName}!</h1> : <h1>Welcome to the homepage!</h1>}
+      {isLoggedIn ? <h1>Hello, {user?.email}!</h1> : <h1>Welcome to the homepage!</h1>}
     </div>
   );
 };

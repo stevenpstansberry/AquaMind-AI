@@ -9,6 +9,7 @@
  */
 
 import React, { createContext, useState, useContext, ReactNode } from 'react';
+import { User } from '../interfaces/Auth';
 
 /**
  * AuthContextType defines the structure of the authentication context.
@@ -20,10 +21,10 @@ import React, { createContext, useState, useContext, ReactNode } from 'react';
  * @property {function} logout - Function to log the user out, clears user data and token.
  */
 interface AuthContextType {
-  user: string | null;
+  user: User | null;
   token: string | null;
   isLoggedIn: boolean;
-  login: (userData: { email: string; token: string }) => void;
+  login: (userData: { user: User; token: string }) => void;
   logout: () => void;
 }
 
@@ -52,24 +53,24 @@ export const useAuth = () => useContext(AuthContext);
  * @returns {JSX.Element} The AuthProvider wrapping its children.
  */
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<string | null>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
 
   // Determine if the user is logged in
   const isLoggedIn = !!user && !!token;
 
   /**
-   * Login function to store user email and authentication token.
+   * Login function to store user data and authentication token.
    * 
-   * @param {Object} userData - The user data containing email and token.
-   * @param {string} userData.email - The user's email.
+   * @param {Object} userData - The user data containing user object and token.
+   * @param {User} userData.user - The user object.
    * @param {string} userData.token - The authentication token.
    */
-  const login = ({ email, token }: { email: string; token: string }) => {
-    setUser(email);
+  const login = ({ user, token }: { user: User; token: string }) => {
+    setUser( user );
     setToken(token);
     localStorage.setItem('token', token); // Store token in local storage
-    localStorage.setItem('user', email);
+    localStorage.setItem('user', JSON.stringify(user)); // Store user in local storage
   };
 
   /**
@@ -89,12 +90,25 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
    */
   React.useEffect(() => {
     const savedToken = localStorage.getItem('token');
-    const savedUser = localStorage.getItem('user');
-    if (savedToken && savedUser) {
-      setToken(savedToken);
-      setUser(savedUser);
+    let savedUser = null;
+
+    try {
+        const userString = localStorage.getItem('user');
+        if (userString) {
+            savedUser = JSON.parse(userString) as User;
+        }
+    } catch (error) {
+        console.error('Error parsing user data from local storage:', error);
+        // If parsing fails, remove the invalid entry from local storage
+        localStorage.removeItem('user');
     }
-  }, []);
+
+    if (savedToken && savedUser) {
+        setToken(savedToken);
+        setUser(savedUser);
+    }
+}, []);
+
 
   return (
     <AuthContext.Provider value={{ user, token, isLoggedIn, login, logout }}>
