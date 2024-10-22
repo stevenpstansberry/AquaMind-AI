@@ -21,6 +21,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../util/AuthContext';
+import { useAquarium } from '../util/AquariumContext';
 import AquariumSidebar from '../components/aquarium-components/AquariumSidebar';
 import AquariumWizard from '../components/aquarium-components/aquarium-wizard-components/AquariumWizard';
 import { Box, AppBar, Toolbar, Typography, Grid, CardContent, Card, Icon, Tooltip } from '@mui/material';
@@ -41,7 +42,7 @@ import ParametersCard from '../components/aquarium-components/ParametersCard';
 
 
 const Aquariums: React.FC = () => {
-  const [aquariums, setAquariums] = useState<Aquarium[]>([]);
+  const { aquariums, addAquarium, fetchAquariums } = useAquarium(); // Use AquariumContext
   const [showWizard, setShowWizard] = useState(false);
   const [currentAquarium, setCurrentAquarium] = useState<Aquarium | null>(null);
   const [collapsed, setCollapsed] = useState<boolean>(false);
@@ -56,31 +57,20 @@ const Aquariums: React.FC = () => {
   };
 
   /**
+   * Adds a new aquarium using the context's addAquarium function.
    * 
+   * @param {Aquarium} aquariumToAdd - The aquarium to add.
    */
   const handleAddAquarium = (aquariumToAdd: Aquarium): void => {
-    setAquariums([...aquariums, aquariumToAdd]);
+    addAquarium(aquariumToAdd);
 
     try {
       createAquarium(aquariumToAdd);
     } catch (error) {
       console.error("Failed to add aquarium:", error);
     }
-  }
+  };
 
-  /**
-   * Fetches aquarium data (mock data used here) and sets it to the component state.
-   * 
-   * @returns {void}
-   */
-  useEffect(() => {
-    const fetchAquariums = async () => {
-      const mockAquariums: Aquarium[] = mockAquaData as Aquarium[];
-      setAquariums(mockAquariums);
-    };
-
-    fetchAquariums();
-  }, []);
 
   /**
    * Updates the parameters of the currently selected aquarium.
