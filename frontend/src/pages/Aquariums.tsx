@@ -23,8 +23,11 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../util/AuthContext';
 import AquariumSidebar from '../components/aquarium-components/AquariumSidebar';
 import AquariumWizard from '../components/aquarium-components/aquarium-wizard-components/AquariumWizard';
-import { Box, AppBar, Toolbar, Typography, Grid, CardContent, Card } from '@mui/material';
+import { Box, AppBar, Toolbar, Typography, Grid, CardContent, Card, Icon } from '@mui/material';
 import AquariumParameters from '../components/aquarium-components/AquariumParameters';
+import { ViewSidebar } from '@mui/icons-material';
+
+
 import { Aquarium } from '../interfaces/Aquarium';
 import mockAquaData from '../util/MockAquariums.json';
 
@@ -33,6 +36,8 @@ import FishCard from '../components/aquarium-components/FishCard';
 import PlantCard from '../components/aquarium-components/PlantCard';
 import EquipmentCard from '../components/aquarium-components/EquipmentCard';
 import ParametersCard from '../components/aquarium-components/ParametersCard';
+
+
 
 const Aquariums: React.FC = () => {
   const [aquariums, setAquariums] = useState<Aquarium[]>([]);
@@ -103,6 +108,30 @@ const Aquariums: React.FC = () => {
           flexDirection: 'column',
         }}
       >
+        <Icon
+          onClick={() => setCollapsed(!collapsed)}
+          sx={{
+            color: '#438ED9',
+            backgroundColor: 'transparent',
+            borderRadius: '4px',
+            cursor: 'pointer',
+            zIndex: '1000',
+            transition: 'background-color 0.2s, transform 0.2s',
+            '&:hover': {
+              backgroundColor: '#f0f0f0',
+              transform: 'scale(1.05)',
+            },
+            '&:active': {
+              backgroundColor: '#AFAEAE',
+            },
+          }}
+        >
+          <ViewSidebar
+            sx={{
+              color: '#438ED9',
+            }}
+          />
+        </Icon>
         <Box sx={{ flexGrow: 1 }}>
           {showWizard && <AquariumWizard onClose={() => setShowWizard(false)} />}
 
