@@ -11,7 +11,7 @@ import React, { useState } from 'react';
 import { List, ListItem, Typography, Button, Box, IconButton, Tooltip } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import MenuIcon from '@mui/icons-material/Menu';
-import AquariumIcon from '../../../assets/'
+import AquariumIcon from '../../assets/Icons/FishIcon';
 import { useTheme } from '@mui/material/styles';
 import { Aquarium } from '../../interfaces/Aquarium';
 
@@ -81,7 +81,7 @@ const AquariumSidebar: React.FC<AquariumSidebarProps> = ({ aquariums, onOpenWiza
               >
                 <Tooltip title={aquarium.name} placement="right">
                   <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                    <AquariumIcon fontSize="small" />
+                    <AquariumIcon fontSize="small"/>
                     {!collapsed && (
                       <Typography noWrap sx={{ ml: 1 }}>{aquarium.name}</Typography>
                     )}
