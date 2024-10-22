@@ -108,6 +108,9 @@ const Aquariums: React.FC = () => {
           flexDirection: 'column',
         }}
       >
+      {/* Sidebar Toggle Button */}
+      {collapsed ? ( <div/>
+      ) : (
         <Icon
           onClick={() => setCollapsed(!collapsed)}
           sx={{
@@ -132,6 +135,7 @@ const Aquariums: React.FC = () => {
             }}
           />
         </Icon>
+      ) }
         <Box sx={{ flexGrow: 1 }}>
           {showWizard && <AquariumWizard onClose={() => setShowWizard(false)} />}
 
