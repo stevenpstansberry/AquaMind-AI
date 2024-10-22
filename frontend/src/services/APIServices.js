@@ -139,6 +139,17 @@ export const loginUser = async (userData) => {
 };
 
 /**
+ * Creates an aquarium by sending a POST request to the API.
+ *
+ * @async
+ * @function createAquarium
+ * @param {Object} aquariumData - The aquarim data
+ * @returns {Promise<Object>} Response data from the API.
+ */
+export const createAquarium = async (aquariumData) => {
+  return postToAPI("/aquariums", aquariumData);
+};
+/**
  * Generic function to send a POST request to the OpenAI API.
  *
  * @async

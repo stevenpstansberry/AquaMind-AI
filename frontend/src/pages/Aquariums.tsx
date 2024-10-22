@@ -25,6 +25,7 @@ import AquariumSidebar from '../components/aquarium-components/AquariumSidebar';
 import AquariumWizard from '../components/aquarium-components/aquarium-wizard-components/AquariumWizard';
 import { Box, AppBar, Toolbar, Typography, Grid, CardContent, Card, Icon, Tooltip } from '@mui/material';
 import AquariumParameters from '../components/aquarium-components/AquariumParameters';
+import { createAquarium } from '../services/APIServices';
 import { ViewSidebar } from '@mui/icons-material';
 
 
@@ -59,6 +60,12 @@ const Aquariums: React.FC = () => {
    */
   const handleAddAquarium = (aquariumToAdd: Aquarium): void => {
     setAquariums([...aquariums, aquariumToAdd]);
+
+    try {
+      createAquarium(aquariumToAdd);
+    } catch (error) {
+      console.error("Failed to add aquarium:", error);
+    }
   }
 
   /**
