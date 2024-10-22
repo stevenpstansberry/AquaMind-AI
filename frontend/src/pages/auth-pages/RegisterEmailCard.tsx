@@ -123,7 +123,7 @@ const RegisterEmailCard: React.FC = () => {
         createdAt,
       }
       // Call the registerUser API function
-      const response = await registerUser({ email, password, full_name: firstName });
+      const response = await registerUser(user);
       console.log(response);
 
       showSnackbar('Registration successful!', 'success');

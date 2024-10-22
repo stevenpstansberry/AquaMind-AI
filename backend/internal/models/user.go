@@ -19,26 +19,26 @@ func InitDB(database *sql.DB) {
     db = database
 }
 
-// User represents a user in the system with their ID, email, password, and full name.
+// User represents a user in the system with their ID, email, password, and first name.
 type User struct {
     ID       int    // Unique identifier of the user
     Email    string // Email address of the user
     Password string // Hashed password of the user
-    FullName string // Full name of the user
+    FirstName string // First name of the user
 }
 
-// CreateUser inserts a new user into the database with the provided email, password, and full name.
+// CreateUser inserts a new user into the database with the provided email, password, and first name.
 //
 // Params:
 //   - email: the user's email address
 //   - password: the user's hashed password
-//   - fullName: the user's full name
+//   - first_name: the user's first name
 //
 // Returns:
 //   - error: an error if the insert operation fails, otherwise nil
-func CreateUser(email, password, fullName string) error {
-    query := `INSERT INTO users (email, password, full_name) VALUES ($1, $2, $3)`
-    _, err := db.Exec(query, email, password, fullName)
+func CreateUser(email, password, first_name string) error {
+    query := `INSERT INTO users (email, password, first_name) VALUES ($1, $2, $3)`
+    _, err := db.Exec(query, email, password, first_name)
     return err
 }
 
@@ -52,8 +52,8 @@ func CreateUser(email, password, fullName string) error {
 //   - error: an error if the query fails or the user is not found
 func GetUserByEmail(email string) (*User, error) {
     var user User
-    query := `SELECT id, email, password, full_name FROM users WHERE email = $1`
-    err := db.QueryRow(query, email).Scan(&user.ID, &user.Email, &user.Password, &user.FullName)
+    query := `SELECT id, email, password, first_name FROM users WHERE email = $1`
+    err := db.QueryRow(query, email).Scan(&user.ID, &user.Email, &user.Password, &user.first_name)
     if err != nil {
         return nil, err
     }

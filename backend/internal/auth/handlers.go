@@ -14,14 +14,14 @@ import (
 )
 
 // Credentials represents the structure for incoming authentication requests.
-// It includes the user's email, password, and optionally, full name (for registration).
+// It includes the user's email, password, and optionally, first name (for registration).
 type Credentials struct {
     Email    string `json:"email"`     // The user's email address
     Password string `json:"password"`  // The user's password
-    FullName string `json:"full_name,omitempty"` // Optional full name for registration
+    FirstName string `json:"first_name,omitempty"`  // Optional first name for registration
 }
 
-// RegisterUser handles user registration by accepting user details (email, password, full name),
+// RegisterUser handles user registration by accepting user details (email, password, first name),
 // hashing the password, and storing the user in the database. It returns a JWT token upon success.
 //
 // Method: POST
@@ -39,7 +39,7 @@ type Credentials struct {
 //   {
 //     "email": "user@example.com",
 //     "password": "userpassword",
-//     "full_name": "User Full Name"
+//     "first_name": "User first Name"
 //   }
 //
 // Response (JSON):
@@ -55,6 +55,9 @@ func RegisterUser(w http.ResponseWriter, r *http.Request) {
         http.Error(w, "Invalid input", http.StatusBadRequest)
         return
     }
+
+    // Print out creds to see what it looks like
+    log.Printf("Parsed credentials: %+v", creds)
 
     // Check if user already exists
     if models.UserExists(creds.Email) {
@@ -72,7 +75,7 @@ func RegisterUser(w http.ResponseWriter, r *http.Request) {
     }
 
     // Create user in the database
-    err = models.CreateUser(creds.Email, string(hashedPassword), creds.FullName)
+    err = models.CreateUser(creds.Email, string(hashedPassword), creds.FirstName)
     if err != nil {
         log.Printf("Error creating user in database: %v", err)
         http.Error(w, "Error creating user", http.StatusInternalServerError)
@@ -88,7 +91,7 @@ func RegisterUser(w http.ResponseWriter, r *http.Request) {
     }
 
     // Respond with the JWT token
-    log.Printf("User %s created successfully", creds.Email)
+    log.Printf("User %s created successfully", creds)
     json.NewEncoder(w).Encode(map[string]string{"token": token})
 }
 
