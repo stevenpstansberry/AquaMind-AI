@@ -23,7 +23,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../util/AuthContext';
 import AquariumSidebar from '../components/aquarium-components/AquariumSidebar';
 import AquariumWizard from '../components/aquarium-components/aquarium-wizard-components/AquariumWizard';
-import { Box, AppBar, Toolbar, Typography, Grid, CardContent, Card, Icon } from '@mui/material';
+import { Box, AppBar, Toolbar, Typography, Grid, CardContent, Card, Icon, Tooltip } from '@mui/material';
 import AquariumParameters from '../components/aquarium-components/AquariumParameters';
 import { ViewSidebar } from '@mui/icons-material';
 
@@ -111,30 +111,33 @@ const Aquariums: React.FC = () => {
       {/* Sidebar Toggle Button */}
       {collapsed ? ( <div/>
       ) : (
-        <Icon
-          onClick={() => setCollapsed(!collapsed)}
-          sx={{
-            color: '#438ED9',
-            backgroundColor: 'transparent',
-            borderRadius: '4px',
-            cursor: 'pointer',
-            zIndex: '1000',
-            transition: 'background-color 0.2s, transform 0.2s',
-            '&:hover': {
-              backgroundColor: '#f0f0f0',
-              transform: 'scale(1.05)',
-            },
-            '&:active': {
-              backgroundColor: '#AFAEAE',
-            },
-          }}
-        >
-          <ViewSidebar
+        <Tooltip title="Collapse Sidebar" placement='right'>
+          <Icon
+            onClick={() => setCollapsed(!collapsed)}
             sx={{
               color: '#438ED9',
+              backgroundColor: 'transparent',
+              borderRadius: '4px',
+              cursor: 'pointer',
+              zIndex: '1000',
+              transition: 'background-color 0.2s, transform 0.2s',
+              '&:hover': {
+                backgroundColor: '#f0f0f0',
+                transform: 'scale(1.05)',
+              },
+              '&:active': {
+                backgroundColor: '#AFAEAE',
+              },
             }}
-          />
-        </Icon>
+          >
+
+            <ViewSidebar
+              sx={{
+                color: '#438ED9',
+              }}
+            />
+          </Icon>
+        </Tooltip>
       ) }
         <Box sx={{ flexGrow: 1 }}>
           {showWizard && <AquariumWizard onClose={() => setShowWizard(false)} />}
