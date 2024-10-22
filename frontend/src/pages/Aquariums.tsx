@@ -23,8 +23,11 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../util/AuthContext';
 import AquariumSidebar from '../components/aquarium-components/AquariumSidebar';
 import AquariumWizard from '../components/aquarium-components/aquarium-wizard-components/AquariumWizard';
-import { Box, AppBar, Toolbar, Typography, Grid, CardContent, Card } from '@mui/material';
+import { Box, AppBar, Toolbar, Typography, Grid, CardContent, Card, Icon, Tooltip } from '@mui/material';
 import AquariumParameters from '../components/aquarium-components/AquariumParameters';
+import { ViewSidebar } from '@mui/icons-material';
+
+
 import { Aquarium } from '../interfaces/Aquarium';
 import mockAquaData from '../util/MockAquariums.json';
 
@@ -34,10 +37,13 @@ import PlantCard from '../components/aquarium-components/PlantCard';
 import EquipmentCard from '../components/aquarium-components/EquipmentCard';
 import ParametersCard from '../components/aquarium-components/ParametersCard';
 
+
+
 const Aquariums: React.FC = () => {
   const [aquariums, setAquariums] = useState<Aquarium[]>([]);
   const [showWizard, setShowWizard] = useState(false);
   const [currentAquarium, setCurrentAquarium] = useState<Aquarium | null>(null);
+  const [collapsed, setCollapsed] = useState<boolean>(false);
 
   /**
    * Opens the aquarium setup wizard.
@@ -82,16 +88,57 @@ const Aquariums: React.FC = () => {
   
   return (
     <div style={{ display: 'flex', height: '100vh' }}>
-      {aquariums.length > 0 && (
-        <AquariumSidebar
-          aquariums={aquariums}
-          onOpenWizard={handleOpenWizard}
-          setCurrentAquarium={setCurrentAquarium}
-          currentAquarium={currentAquarium}
-        />
-      )}
+    {aquariums.length > 0 && (
+      <AquariumSidebar
+        aquariums={aquariums}
+        onOpenWizard={handleOpenWizard}
+        setCurrentAquarium={setCurrentAquarium}
+        currentAquarium={currentAquarium}
+        collapsed={collapsed}
+        setCollapsed={setCollapsed}
+      />
+    )}
+      <div
+        style={{
+          marginLeft: aquariums.length > 0 ? (collapsed ? '60px' : '250px') : '0px',
+          transition: 'margin-left 0.3s',
+          padding: '20px',
+          width: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+        }}
+      >
+      {/* Sidebar Toggle Button */}
+      {collapsed ? ( <div/>
+      ) : (
+        <Tooltip title="Collapse Sidebar" placement='right'>
+          <Icon
+            onClick={() => setCollapsed(!collapsed)}
+            sx={{
+              color: '#438ED9',
+              backgroundColor: 'transparent',
+              borderRadius: '4px',
+              cursor: 'pointer',
+              zIndex: '1000',
+              transition: 'background-color 0.2s, transform 0.2s',
+              '&:hover': {
+                backgroundColor: '#f0f0f0',
+                transform: 'scale(1.05)',
+              },
+              '&:active': {
+                backgroundColor: '#AFAEAE',
+              },
+            }}
+          >
 
-      <div style={{ marginLeft: aquariums.length > 0 ? '250px' : '0', padding: '20px', width: '100%', display: 'flex', flexDirection: 'column' }}>
+            <ViewSidebar
+              sx={{
+                color: '#438ED9',
+              }}
+            />
+          </Icon>
+        </Tooltip>
+      ) }
         <Box sx={{ flexGrow: 1 }}>
           {showWizard && <AquariumWizard onClose={() => setShowWizard(false)} />}
 

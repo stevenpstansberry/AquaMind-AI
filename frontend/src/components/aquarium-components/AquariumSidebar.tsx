@@ -7,35 +7,35 @@
  * and allows users to edit existing aquariums through the edit icon next to each aquarium entry.
  */
 
-import React from 'react';
-import { List, ListItem, Typography, Button, Box, IconButton } from '@mui/material';
+import React, { useState } from 'react';
+import { List, ListItem, Typography, Button, Box, IconButton, Tooltip } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
+import MenuIcon from '@mui/icons-material/Menu';
+import AquariumIcon from '../../assets/Icons/FishIcon';
+import AddIcon from '@mui/icons-material/Add';
 import { useTheme } from '@mui/material/styles';
 import { Aquarium } from '../../interfaces/Aquarium';
-
-
-
-
-
-
+import { ViewSidebar } from '@mui/icons-material';
 
 interface AquariumSidebarProps {
   aquariums: Aquarium[];
   onOpenWizard: () => void;
   setCurrentAquarium: (aquarium: Aquarium) => void;
-  currentAquarium: Aquarium | null; // Track the currently selected aquarium
+  currentAquarium: Aquarium | null;
+  collapsed: boolean;
+  setCollapsed: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const AquariumSidebar: React.FC<AquariumSidebarProps> = ({ aquariums, onOpenWizard, setCurrentAquarium, currentAquarium }) => {
+const AquariumSidebar: React.FC<AquariumSidebarProps> = ({ aquariums, onOpenWizard, setCurrentAquarium, currentAquarium, collapsed, setCollapsed }) => {
   const theme = useTheme();
 
   return (
     <Box
       sx={{
-        width: '250px',
+        width: collapsed ? '60px' : '250px',
         height: '100vh',
         backgroundColor: theme.palette.background.default,
-        padding: '20px',
+        padding: '20px 10px',
         position: 'fixed',
         top: 0,
         left: 0,
@@ -45,63 +45,165 @@ const AquariumSidebar: React.FC<AquariumSidebarProps> = ({ aquariums, onOpenWiza
         justifyContent: 'space-between',
         borderTop: `4px solid ${theme.palette.primary.main}`,
         color: theme.palette.text.primary,
+        transition: 'width 0.3s',
+        overflow: 'hidden', // hides content when collapsed
       }}
     >
       <div>
-        <Typography variant="h6" gutterBottom>
-          Your Aquariums
-        </Typography>
+        <IconButton onClick={() => setCollapsed(!collapsed)}>
+          <MenuIcon />
+        </IconButton>
 
-        {aquariums.length > 0 ? (
-          <List>
-            {aquariums.map((aquarium) => (
-              <ListItem
-                key={aquarium.id}
-                sx={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  paddingRight: 0,
-                  cursor: 'pointer',
-                  // Apply a different background color if this aquarium is selected
-                  backgroundColor: currentAquarium?.id === aquarium.id ? theme.palette.action.selected : 'inherit',
-                  borderRadius: '4px', // Add border-radius to look neat
-                  padding: '8px',
-                }}
-                onClick={() => setCurrentAquarium(aquarium) } // Select aquarium on click
-              >
-                <Typography>{aquarium.name}</Typography>
-                <IconButton
-                  edge="end"
-                  aria-label="edit"
-                  onClick={() => console.log(`Editing aquarium with id: ${aquarium.id}`)}
-                  size="small"
-                >
-                  <EditIcon fontSize="small" />
-                </IconButton>
-              </ListItem>
-            ))}
-          </List>
+        <Box
+          sx={{
+            width: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: collapsed ? 'center' : 'flex-start',
+            overflow: 'hidden', // prevents stretching when collapsing
+          }}
+        >
+        {collapsed ? (
+          <Tooltip title="Expand Sidebar" placement='right'>
+            <IconButton onClick={() => setCollapsed(!collapsed)}>
+              <ViewSidebar 
+              sx={{
+                color: '#438ED9',
+              }}
+              />
+            </IconButton>
+          </Tooltip>
         ) : (
-          <Typography>
-            You have no aquariums. Get started by adding one!
+          <Typography
+            variant="h6"
+            gutterBottom
+            sx={{
+              whiteSpace: 'nowrap',
+              visibility: collapsed ? 'hidden' : 'visible',
+              
+            }}
+          >
+            Your Aquariums
           </Typography>
         )}
+
+          {aquariums.length > 0 ? (
+            <List sx={{ width: '100%' }}>
+              {aquariums.map((aquarium) => (
+                <ListItem
+                  key={aquarium.id}
+                  sx={{
+                    width: '100%',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    cursor: 'pointer',
+                    backgroundColor: currentAquarium?.id === aquarium.id ? theme.palette.action.selected : 'inherit',
+                    borderRadius: '4px',
+                    padding: '8px',
+                    '&:hover': {
+                      backgroundColor: theme.palette.action.hover,
+                    },
+                  }}
+                  onClick={() => setCurrentAquarium(aquarium)}
+                >
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      flexShrink: 0,
+                      flexGrow: 1, // ensures that the name and icon stick together
+                    }}
+                  >
+                    <Tooltip title={aquarium.name} placement="right">
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          flexShrink: 0,
+                        }}
+                        component="div"
+                      >
+                        <AquariumIcon fontSize="small" />
+                      </Box>
+                    </Tooltip>
+                    <Typography
+                      noWrap
+                      sx={{
+                        ml: 1,
+                        display: collapsed ? 'none' : 'block',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        flexGrow: 1, // ensures that the typography takes available space without pushing the edit icon away
+                      }}
+                    >
+                      {aquarium.name}
+                    </Typography>
+                  </Box>
+                  {!collapsed && (
+                    <IconButton
+                      edge="end"
+                      aria-label="edit"
+                      onClick={(e) => {
+                        e.stopPropagation(); // prevent triggering the aquarium selection when editing
+                        console.log(`Editing aquarium with id: ${aquarium.id}`);
+                      }}
+                      size="small"
+                      sx={{
+                        ml: 1,
+                      }}
+                    >
+                      <EditIcon fontSize="small" />
+                    </IconButton>
+                  )}
+                </ListItem>
+
+              ))}
+            </List>
+          ) : (
+            <Typography
+              sx={{
+                display: collapsed ? 'none' : 'block',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              You have no aquariums. Get started by adding one!
+            </Typography>
+          )}
+        </Box>
       </div>
 
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={onOpenWizard}
+      <Box
         sx={{
           width: '100%',
-          marginTop: 'auto',
+          mt: 'auto',
+          display: 'flex',
+          justifyContent: collapsed ? 'center' : 'flex-start',
         }}
       >
-        + Add New Aquarium
-      </Button>
+        <Tooltip title="Add a new aquarium" placement={collapsed ? "right" : "top"}>
+          {collapsed ? (
+            <IconButton color="primary" onClick={onOpenWizard}>
+              <AddIcon />
+            </IconButton>
+          ) : (
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={onOpenWizard}
+              sx={{
+                width: '100%',
+                whiteSpace: 'nowrap', // prevent wrapping of button text
+              }}
+            >
+              + Add New Aquarium
+            </Button>
+          )}
+        </Tooltip>
+      </Box>
     </Box>
   );
 };
+
 
 export default AquariumSidebar;
