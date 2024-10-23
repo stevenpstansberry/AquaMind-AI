@@ -42,10 +42,20 @@ import ParametersCard from '../components/aquarium-components/ParametersCard';
 
 
 const Aquariums: React.FC = () => {
-  const { aquariums, addAquarium, fetchAquariums } = useAquarium(); // Use AquariumContext
+  const { aquariums = [], addAquarium } = useAquarium(); 
   const [showWizard, setShowWizard] = useState(false);
   const [currentAquarium, setCurrentAquarium] = useState<Aquarium | null>(null);
   const [collapsed, setCollapsed] = useState<boolean>(false);
+
+
+  // Effect to set the default aquarium when component mounts or aquariums change
+  useEffect(() => {
+    if (aquariums.length > 0) {
+      setCurrentAquarium(aquariums[0]); // Set the first aquarium as the default
+    } else {
+      setCurrentAquarium(null); // No aquariums available, set to null
+    }
+  }, [aquariums]);
 
   /**
    * Opens the aquarium setup wizard.
@@ -92,7 +102,6 @@ const Aquariums: React.FC = () => {
   
   return (
     <div style={{ display: 'flex', height: '100vh' }}>
-    {aquariums.length > 0 && (
       <AquariumSidebar
         aquariums={aquariums}
         onOpenWizard={handleOpenWizard}
@@ -101,7 +110,6 @@ const Aquariums: React.FC = () => {
         collapsed={collapsed}
         setCollapsed={setCollapsed}
       />
-    )}
       <div
         style={{
           marginLeft: aquariums.length > 0 ? (collapsed ? '60px' : '250px') : '0px',
