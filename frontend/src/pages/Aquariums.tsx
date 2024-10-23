@@ -26,7 +26,7 @@ import AquariumSidebar from '../components/aquarium-components/AquariumSidebar';
 import AquariumWizard from '../components/aquarium-components/aquarium-wizard-components/AquariumWizard';
 import { Box, AppBar, Toolbar, Typography, Grid, CardContent, Card, Icon, Tooltip } from '@mui/material';
 import AquariumParameters from '../components/aquarium-components/AquariumParameters';
-import { createAquarium } from '../services/APIServices';
+import { createAquarium, updateAquarium as apiUpdateAquarium } from '../services/APIServices';
 import { ViewSidebar } from '@mui/icons-material';
 
 
@@ -108,6 +108,13 @@ const Aquariums: React.FC = () => {
       };
       setCurrentAquarium(updatedAquarium);
       updateAquarium(updatedAquarium);
+      apiUpdateAquarium(updatedAquarium.id, updatedAquarium)
+        .then(response => {
+          console.log('API updated aquarium:', response);
+        })
+        .catch(error => {
+          console.error('Failed to update aquarium via API:', error);
+        });
       console.log('Updated aquarium:', updatedAquarium);
     }
   };
