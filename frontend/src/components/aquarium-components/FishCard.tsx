@@ -7,10 +7,11 @@ import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';  
 import FishInfoCard from './FishInfoCard';  
 import AddFishCard from './AddFishCard';  
-import { Aquarium } from '../../interfaces/Aquarium';
+import { Aquarium, Fish } from '../../interfaces/Aquarium';
 
 interface FishCardProps {
   aquarium: Aquarium; 
+  onUpdateSpecies: (newSpecies: Fish[]) => void;
 }
 
 enum DisplayMode {
@@ -22,7 +23,7 @@ enum DisplayMode {
   BREEDERS,
 }
 
-const FishCard: React.FC<FishCardProps> = ({ aquarium }) => {
+const FishCard: React.FC<FishCardProps> = ({ aquarium, onUpdateSpecies}) => {
   const [displayMode, setDisplayMode] = useState<DisplayMode>(DisplayMode.ALL_FISH);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [fishList, setFishList] = useState(aquarium.species || []);  
@@ -118,7 +119,11 @@ const FishCard: React.FC<FishCardProps> = ({ aquarium }) => {
   const handleConfirmDelete = () => {
     if (fishToDelete) {
       // Update both the current fish list and the original fish list
-      setFishList((prevList) => prevList.filter(fish => fish.name !== fishToDelete.name));
+      setFishList((prevList) => {
+        const updatedList = prevList.filter(fish => fish.name !== fishToDelete.name);
+        onUpdateSpecies(updatedList);  // Update the aquarium species with the updated list
+        return updatedList;
+      });
       setOriginalFishList((prevList) => prevList.filter(fish => fish.name !== fishToDelete.name));  // Update original list
       setFishToDelete(null);  // Clear the fish to delete state
       setConfirmDeleteOpen(false);  // Close the confirmation dialog
@@ -149,9 +154,10 @@ const FishCard: React.FC<FishCardProps> = ({ aquarium }) => {
 
   const handleAddFish = (fishList: { name: string; count: number; type: string; role: string }[]) => {
     console.log('Fish list after before fish:', fishList);
-    setFishList((prevList) => [...prevList, ...fishList]); 
-    console.log('Fish list after adding fish:', fishList);
-    setAddFishOpen(false);  
+    const updatedFishList = [...fishList, ...fishList];
+    onUpdateSpecies(updatedFishList); 
+    console.log('Fish list after adding fish:', updatedFishList);
+    setAddFishOpen(false);
   };
 
   const handleShowFishInfo = (fish: { name: string; count: number; role: string; type: string }) => {

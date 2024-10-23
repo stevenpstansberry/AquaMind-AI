@@ -30,7 +30,7 @@ import { createAquarium } from '../services/APIServices';
 import { ViewSidebar } from '@mui/icons-material';
 
 
-import { Aquarium } from '../interfaces/Aquarium';
+import { Aquarium, Fish } from '../interfaces/Aquarium';
 import mockAquaData from '../util/MockAquariums.json';
 
 // Import the refactored card components
@@ -42,7 +42,7 @@ import ParametersCard from '../components/aquarium-components/ParametersCard';
 
 
 const Aquariums: React.FC = () => {
-  const { aquariums = [], addAquarium } = useAquarium(); 
+  const { aquariums = [], addAquarium, updateAquarium } = useAquarium(); 
   const [showWizard, setShowWizard] = useState(false);
   const [currentAquarium, setCurrentAquarium] = useState<Aquarium | null>(null);
   const [collapsed, setCollapsed] = useState<boolean>(false);
@@ -97,6 +97,18 @@ const Aquariums: React.FC = () => {
         ...currentAquarium,
         parameters: newParams,  // Update parameters
       });
+    }
+  };
+
+  const handleUpdateSpecies = (newSpecies: Fish[]): void => {
+    if (currentAquarium) {
+      const updatedAquarium = {
+        ...currentAquarium,
+        species: newSpecies,
+      };
+      setCurrentAquarium(updatedAquarium);
+      updateAquarium(updatedAquarium);
+      console.log('Updated aquarium:', updatedAquarium);
     }
   };
   
@@ -190,7 +202,7 @@ const Aquariums: React.FC = () => {
               <Grid container spacing={3} sx={{ marginTop: '20px' }} alignItems="flex-start">
                 {/* Fish Card */}
                 <Grid item xs={12} md={6} lg={6}>
-                  {currentAquarium && <FishCard aquarium={currentAquarium} />}
+                  {currentAquarium && <FishCard aquarium={currentAquarium}  onUpdateSpecies={handleUpdateSpecies} />}
                 </Grid>
 
                 {/* Plant Card */}

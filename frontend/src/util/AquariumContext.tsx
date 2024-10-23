@@ -8,6 +8,7 @@ interface AquariumContextType {
   addAquarium: (aquarium: Aquarium) => void;
   removeAquarium: (id: string) => void;
   fetchAquariums: () => void;
+  updateAquarium: (updatedAquarium: Aquarium) => void;
 }
 
 const AquariumContext = createContext<AquariumContextType>({
@@ -15,6 +16,7 @@ const AquariumContext = createContext<AquariumContextType>({
   addAquarium: () => {},
   removeAquarium: () => {},
   fetchAquariums: () => {},
+  updateAquarium: () => {},
 });
 
 export const useAquarium = () => useContext(AquariumContext);
@@ -76,8 +78,17 @@ export const AquariumProvider: React.FC<{ children: ReactNode }> = ({ children }
     });
   };
 
+  const updateAquarium = (updatedAquarium: Aquarium) => {
+    setAquariums((prevAquariums) =>
+      prevAquariums.map((aquarium) =>
+        aquarium.id === updatedAquarium.id ? updatedAquarium : aquarium
+      )
+    );
+  };
+
+
   return (
-    <AquariumContext.Provider value={{ aquariums, addAquarium, removeAquarium, fetchAquariums }}>
+    <AquariumContext.Provider value={{ aquariums, addAquarium, removeAquarium, fetchAquariums, updateAquarium }}>
       {children}
     </AquariumContext.Provider>
   );

@@ -58,9 +58,6 @@ const AddFishCard: React.FC<AddFishCardProps> = ({ open, onClose, aquarium, onAd
   const [infoOpen, setInfoOpen] = useState(false);  
   const [filteredFishList, setFilteredFishList] = useState<Fish[]>([]);
 
-  // Local state for keeping track of fish in the aquarium
-  const [localAquarium, setLocalAquarium] = useState<Aquarium>(aquarium);
-
   // Select fish list based on aquarium type
   const fishList = aquarium.type === 'Freshwater' ? freshwaterFishList : saltwaterFishList;
 
@@ -72,10 +69,11 @@ const AddFishCard: React.FC<AddFishCardProps> = ({ open, onClose, aquarium, onAd
    * @param {boolean} open - Indicates if the dialog is open.
    */
   useEffect(() => {
+    console.log("Aquarium species:", aquarium.species);
     if (open) {
 
       // Map the names of fish that already exist in the aquarium
-      const existingFishNames = localAquarium.species.map(fish => fish.name.toLowerCase());
+      const existingFishNames = aquarium.species.map(fish => fish.name.toLowerCase());
 
       // Filter the fish list based on the current aquarium state and available fish
       const availableFish = fishList.filter(fish => {
@@ -99,7 +97,7 @@ const AddFishCard: React.FC<AddFishCardProps> = ({ open, onClose, aquarium, onAd
 
       setFilteredFishList(filteredFish);
     }
-  }, [open, localAquarium.species, roleFilter, careLevelFilter, minTankSizeFilter, searchQuery]);
+  }, [open, aquarium.species, roleFilter, careLevelFilter, minTankSizeFilter, searchQuery]);
 
 
   /**
@@ -166,11 +164,6 @@ const AddFishCard: React.FC<AddFishCardProps> = ({ open, onClose, aquarium, onAd
 
     onAddFish(validFish);
 
-    // Update the local aquarium species list with newly added fish
-    setLocalAquarium(prevAquarium => ({
-      ...prevAquarium,
-      species: [...prevAquarium.species, ...validFish] // Add new fish to the local species list
-    }));
 
     setSelectedFishList([]);  // Clear selected list after adding fish
   };
