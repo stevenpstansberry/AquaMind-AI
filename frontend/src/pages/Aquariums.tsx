@@ -20,18 +20,13 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '../util/AuthContext';
 import { useAquarium } from '../util/AquariumContext';
 import AquariumSidebar from '../components/aquarium-components/AquariumSidebar';
 import AquariumWizard from '../components/aquarium-components/aquarium-wizard-components/AquariumWizard';
-import { Box, AppBar, Toolbar, Typography, Grid, CardContent, Card, Icon, Tooltip } from '@mui/material';
-import AquariumParameters from '../components/aquarium-components/AquariumParameters';
+import { Box, AppBar, Toolbar, Typography, Grid, CardContent, Card, Icon, Tooltip, Snackbar, Alert } from '@mui/material';
 import { createAquarium } from '../services/APIServices';
 import { ViewSidebar } from '@mui/icons-material';
-
-
 import { Aquarium } from '../interfaces/Aquarium';
-import mockAquaData from '../util/MockAquariums.json';
 
 // Import the refactored card components
 import FishCard from '../components/aquarium-components/FishCard';
@@ -47,6 +42,12 @@ const Aquariums: React.FC = () => {
   const [currentAquarium, setCurrentAquarium] = useState<Aquarium | null>(null);
   const [collapsed, setCollapsed] = useState<boolean>(false);
 
+  // Snackbar state
+  const [snackbarMessage, setSnackbarMessage] = useState<string>('');
+  const [snackbarSeverity, setSnackbarSeverity] = useState<'success' | 'error' | 'warning' | 'info'>('info');
+  const [snackbarOpen, setSnackbarOpen] = useState<boolean>(false);
+  
+
   /**
    * Opens the aquarium setup wizard.
    * 
@@ -55,6 +56,20 @@ const Aquariums: React.FC = () => {
   const handleOpenWizard = (): void => {
     setShowWizard(true);
   };
+
+
+  /**
+   * Handles the snackbar visibility, message, and severity.
+   * 
+   * @param {string} message - The message to display in the snackbar.
+   * @param {'success' | 'error' | 'warning' | 'info'} severity - The severity of the snackbar.
+   * @param {boolean} open - Whether the snackbar is open or not.
+   */
+    const handleSnackbar = (message: string, severity: 'success' | 'error' | 'warning' | 'info', open: boolean): void => {
+      setSnackbarMessage(message);
+      setSnackbarSeverity(severity);
+      setSnackbarOpen(open);
+    };
 
   /**
    * Adds a new aquarium using the context's addAquarium function.
@@ -66,8 +81,10 @@ const Aquariums: React.FC = () => {
 
     try {
       createAquarium(aquariumToAdd);
+      handleSnackbar('Aquarium added successfully!', 'success', true);
     } catch (error) {
       console.error("Failed to add aquarium:", error);
+      handleSnackbar('Failed to add aquarium.', 'error', true);
     }
   };
 
@@ -248,6 +265,18 @@ const Aquariums: React.FC = () => {
           </Card>
         </Box>
       </div>
+
+      {/* Snackbar Component */}
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={6000}
+        onClose={() => setSnackbarOpen(false)}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert onClose={() => setSnackbarOpen(false)} severity={snackbarSeverity} sx={{ width: '100%' }}>
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </div>
   );
 };
