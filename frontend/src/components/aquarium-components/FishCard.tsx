@@ -113,6 +113,7 @@ const FishCard: React.FC<FishCardProps> = ({ aquarium, onUpdateSpecies}) => {
       return fish;
     });
     setFishList(updatedFishList);
+    
   };
 
   // Remove fish if confirmed and update both fishList and originalFishList
@@ -138,6 +139,7 @@ const FishCard: React.FC<FishCardProps> = ({ aquarium, onUpdateSpecies}) => {
   const handleSaveChanges = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
     setOriginalFishList(fishList);  
+    onUpdateSpecies(fishList);  // Update the aquarium species with the updated list
     setChangesSaved(true);  
   };
 
