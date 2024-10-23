@@ -199,7 +199,7 @@ const Aquariums: React.FC = () => {
               <Grid container spacing={3} sx={{ marginTop: '20px' }} alignItems="flex-start">
                 {/* Fish Card */}
                 <Grid item xs={12} md={6} lg={6}>
-                  {currentAquarium && <FishCard aquarium={currentAquarium} />}
+                  {currentAquarium && <FishCard aquarium={currentAquarium} handleSnackbar={handleSnackbar}/>}
                 </Grid>
 
                 {/* Plant Card */}

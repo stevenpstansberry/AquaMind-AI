@@ -11,6 +11,7 @@ import { Aquarium } from '../../interfaces/Aquarium';
 
 interface FishCardProps {
   aquarium: Aquarium; 
+  handleSnackbar: (message: string, severity: 'success' | 'error' | 'warning' | 'info', open: boolean) => void;
 }
 
 enum DisplayMode {
@@ -22,7 +23,7 @@ enum DisplayMode {
   BREEDERS,
 }
 
-const FishCard: React.FC<FishCardProps> = ({ aquarium }) => {
+const FishCard: React.FC<FishCardProps> = ({ aquarium, handleSnackbar }) => {
   const [displayMode, setDisplayMode] = useState<DisplayMode>(DisplayMode.ALL_FISH);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [fishList, setFishList] = useState(aquarium.species || []);  
@@ -122,6 +123,7 @@ const FishCard: React.FC<FishCardProps> = ({ aquarium }) => {
       setOriginalFishList((prevList) => prevList.filter(fish => fish.name !== fishToDelete.name));  // Update original list
       setFishToDelete(null);  // Clear the fish to delete state
       setConfirmDeleteOpen(false);  // Close the confirmation dialog
+      handleSnackbar(`${fishToDelete.name} removed from the aquarium.`, 'success', true);
     }
   };
 
@@ -133,6 +135,7 @@ const FishCard: React.FC<FishCardProps> = ({ aquarium }) => {
   const handleSaveChanges = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
     setOriginalFishList(fishList);  
+    handleSnackbar('Changes saved', 'success', true);
     setChangesSaved(true);  
   };
 
