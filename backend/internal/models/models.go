@@ -80,15 +80,82 @@ func UserExists(email string) bool {
 
 // Aquarium represents an aquarium in the system.
 type Aquarium struct {
-    ID        string   // UUID
-    UserID    string      // Owner's user ID
-    Name      string
-    Type      string
-    Size      string
-    Species   []string
-    Plants    []string
-    Equipment []string
+    ID        string    `json:"id"`
+    UserID    string    `json:"userId"`
+    Name      string    `json:"name"`
+    Type      string    `json:"type"`
+    Size      string    `json:"size"`
+    Species   []Species `json:"species"`
+    Plants    []Plant   `json:"plants"`
+    Equipment []Equipment `json:"equipment"`
 }
+
+type Species struct {
+    Name                   string  `json:"name"`
+    Count                  int     `json:"count"`
+    Role                   string  `json:"role"`
+    Type                   string  `json:"type"`
+    Description            string  `json:"description"`
+    FeedingHabits          string  `json:"feedingHabits"`
+    TankRequirements       string  `json:"tankRequirements"`
+    Compatibility          string  `json:"compatibility"`
+    Lifespan               string  `json:"lifespan"`
+    Size                   string  `json:"size"`
+    WaterParameters        string  `json:"waterParameters"`
+    BreedingInfo           string  `json:"breedingInfo"`
+    Behavior               string  `json:"behavior"`
+    CareLevel              string  `json:"careLevel"`
+    DietaryRestrictions    string  `json:"dietaryRestrictions"`
+    NativeHabitat          string  `json:"nativeHabitat"`
+    StockingRecommendations string `json:"stockingRecommendations"`
+    SpecialConsiderations  string  `json:"specialConsiderations"`
+    MinTankSize            int     `json:"minTankSize"`
+}
+
+type Plant struct {
+    Name                   string  `json:"name"`
+    Count                  int     `json:"count"`
+    Role                   string  `json:"role"`
+    Type                   string  `json:"type"`
+    Description            string  `json:"description"`
+    FeedingHabits          string  `json:"feedingHabits"`
+    TankRequirements       string  `json:"tankRequirements"`
+    Compatibility          string  `json:"compatibility"`
+    Lifespan               string  `json:"lifespan"`
+    Size                   string  `json:"size"`
+    WaterParameters        string  `json:"waterParameters"`
+    BreedingInfo           string  `json:"breedingInfo"`
+    Behavior               string  `json:"behavior"`
+    CareLevel              string  `json:"careLevel"`
+    DietaryRestrictions    string  `json:"dietaryRestrictions"`
+    NativeHabitat          string  `json:"nativeHabitat"`
+    StockingRecommendations string `json:"stockingRecommendations"`
+    SpecialConsiderations  string  `json:"specialConsiderations"`
+    MinTankSize            int     `json:"minTankSize"`
+}
+
+type Equipment struct {
+    Name                   string  `json:"name"`
+    Count                  int     `json:"count"`
+    Role                   string  `json:"role"`
+    Type                   string  `json:"type"`
+    Description            string  `json:"description"`
+    FeedingHabits          string  `json:"feedingHabits"`
+    TankRequirements       string  `json:"tankRequirements"`
+    Compatibility          string  `json:"compatibility"`
+    Lifespan               string  `json:"lifespan"`
+    Size                   string  `json:"size"`
+    WaterParameters        string  `json:"waterParameters"`
+    BreedingInfo           string  `json:"breedingInfo"`
+    Behavior               string  `json:"behavior"`
+    CareLevel              string  `json:"careLevel"`
+    DietaryRestrictions    string  `json:"dietaryRestrictions"`
+    NativeHabitat          string  `json:"nativeHabitat"`
+    StockingRecommendations string `json:"stockingRecommendations"`
+    SpecialConsiderations  string  `json:"specialConsiderations"`
+    MinTankSize            int     `json:"minTankSize"`
+}
+
 
 // CreateAquarium inserts a new aquarium into the database.
 func CreateAquarium(aquarium *Aquarium) error {

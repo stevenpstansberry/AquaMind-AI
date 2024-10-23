@@ -7,10 +7,11 @@ import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';  
 import FishInfoCard from './FishInfoCard';  
 import AddFishCard from './AddFishCard';  
-import { Aquarium } from '../../interfaces/Aquarium';
+import { Aquarium, Fish } from '../../interfaces/Aquarium';
 
 interface FishCardProps {
   aquarium: Aquarium; 
+  onUpdateSpecies: (newSpecies: Fish[]) => void;
 }
 
 enum DisplayMode {
@@ -22,7 +23,7 @@ enum DisplayMode {
   BREEDERS,
 }
 
-const FishCard: React.FC<FishCardProps> = ({ aquarium }) => {
+const FishCard: React.FC<FishCardProps> = ({ aquarium, onUpdateSpecies}) => {
   const [displayMode, setDisplayMode] = useState<DisplayMode>(DisplayMode.ALL_FISH);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [fishList, setFishList] = useState(aquarium.species || []);  
@@ -55,6 +56,18 @@ const FishCard: React.FC<FishCardProps> = ({ aquarium }) => {
   useEffect(() => {
     checkChangesSaved();
   }, [fishList]);
+
+  useEffect(() => {
+    resetFishList();
+  }, [aquarium]);
+
+  // Function to reset the fish list
+  const resetFishList = () => {
+      const initialFishList = aquarium.species || [];
+      setFishList(initialFishList);
+      setOriginalFishList(initialFishList);
+      setChangesSaved(true);  
+  };
 
   const filteredSpecies = fishList.filter((fish) => {
     switch (displayMode) {
@@ -112,13 +125,18 @@ const FishCard: React.FC<FishCardProps> = ({ aquarium }) => {
       return fish;
     });
     setFishList(updatedFishList);
+    
   };
 
   // Remove fish if confirmed and update both fishList and originalFishList
   const handleConfirmDelete = () => {
     if (fishToDelete) {
       // Update both the current fish list and the original fish list
-      setFishList((prevList) => prevList.filter(fish => fish.name !== fishToDelete.name));
+      setFishList((prevList) => {
+        const updatedList = prevList.filter(fish => fish.name !== fishToDelete.name);
+        onUpdateSpecies(updatedList);  // Update the aquarium species with the updated list
+        return updatedList;
+      });
       setOriginalFishList((prevList) => prevList.filter(fish => fish.name !== fishToDelete.name));  // Update original list
       setFishToDelete(null);  // Clear the fish to delete state
       setConfirmDeleteOpen(false);  // Close the confirmation dialog
@@ -133,6 +151,7 @@ const FishCard: React.FC<FishCardProps> = ({ aquarium }) => {
   const handleSaveChanges = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
     setOriginalFishList(fishList);  
+    onUpdateSpecies(fishList);  // Update the aquarium species with the updated list
     setChangesSaved(true);  
   };
 
@@ -147,10 +166,15 @@ const FishCard: React.FC<FishCardProps> = ({ aquarium }) => {
     setAddFishOpen(true);
   };
 
-  const handleAddFish = (fishList: { name: string; count: number; type: string; role: string }[]) => {
-    setFishList((prevList) => [...prevList, ...fishList]); 
-    setAddFishOpen(false);  
+  const handleAddFish = (newFishList: { name: string; count: number; type: string; role: string }[]) => {
+    console.log('Fish list before adding new fish:', fishList);
+    const updatedFishList = [...fishList, ...newFishList]; // Corrected line
+    onUpdateSpecies(updatedFishList); 
+    console.log('Fish list after adding new fish:', updatedFishList);
+    setAddFishOpen(false);
   };
+
+  
 
   const handleShowFishInfo = (fish: { name: string; count: number; role: string; type: string }) => {
     setSelectedFish(fish);  

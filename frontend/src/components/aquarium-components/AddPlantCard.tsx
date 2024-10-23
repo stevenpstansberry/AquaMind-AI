@@ -77,9 +77,6 @@ const AddPlantCard: React.FC<AddPlantCardProps> = ({ open, onClose, aquarium, on
    // Extract names of existing plants in the aquarium
    const existingPlantNames = aquarium.plants.map(plant => plant.name.toLowerCase());
 
-   // Filter the plant list to exclude plants that are already in the aquarium
-   const availablePlants = plantList.filter(plant => !existingPlantNames.includes(plant.name.toLowerCase()));
-
   // Filter plant list based on role, care level, minimum tank size, and search query
 
 const [filteredPlantList, setFilteredPlantList] = useState<Plant[]>([]);
@@ -92,7 +89,7 @@ useEffect(() => {
       console.log("Aquarium type:", aquarium.type);
       console.log("Existing plants in aquarium:", localPlantList);  // Use localPlantList here
 
-      const existingPlantNames = localPlantList.map(plant => plant.name.toLowerCase());
+      const existingPlantNames = aquarium.plants.map(plant => plant.name.toLowerCase());
       console.log("Existing plant names (lowercased):", existingPlantNames);
 
       const filtered = plantList.filter(plant => {
