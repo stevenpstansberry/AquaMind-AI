@@ -197,7 +197,7 @@ const AddFishCard: React.FC<AddFishCardProps> = ({ open, onClose, aquarium, onAd
   };
 
   /**
-   * @function handleAddItem
+   * @function handleAddFishGPT
    * @description Allows the GPT chatbot to add an item to the aquarium.
    * 
    * @param {string} itemType - The type of item to add.
