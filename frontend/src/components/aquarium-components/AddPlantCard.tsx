@@ -178,6 +178,27 @@ useEffect(() => {
     setPage(0);
   };
 
+    /**
+   * @function handleAddPlantGPT
+   * @description Allows the GPT chatbot to add an item to the aquarium.
+   * 
+   * @param {string} itemType - The type of item to add.
+   * @param {string} itemName - The name of the item to add.
+   */
+    const handleAddPlantGPT = (itemType: string, itemName: string) => {
+      if (itemType.toLowerCase() === 'plant') {
+        const plantToAdd = plantList.find(plant => plant.name.toLowerCase() === itemName.toLowerCase());
+        if (plantToAdd) {
+          handleSelectPlant(plantToAdd); // Add the plant to selectedPlantList
+          handleSnackbar(`${itemName} added via AI suggestion!`, 'success', true);
+        } else {
+          console.warn(`Fish ${itemName} not found in plant list.`);
+        }
+      } else {
+        console.warn(`Item type ${itemType} is not handled in AddPlantCard.`);
+      }
+    };
+
   return (
     <>
       <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
