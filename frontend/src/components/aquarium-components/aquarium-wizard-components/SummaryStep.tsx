@@ -20,10 +20,13 @@ interface SummaryStepProps {
     equipment: { name: string; details: any }[];  // Equipment is an array of objects
   };
   setAquariumData: React.Dispatch<React.SetStateAction<any>>;
+  setIsStepValid: (isValid: boolean) => void;
 }
 
-const SummaryStep: React.FC<SummaryStepProps> = ({ aquariumData, setAquariumData }) => {
+const SummaryStep: React.FC<SummaryStepProps> = ({ aquariumData, setAquariumData, setIsStepValid }) => {
   const [aquariumName, setAquariumName] = useState(aquariumData.name);
+  const [isNameEmpty, setIsNameEmpty] = useState(false);
+
 
   /**
    * Updates the aquarium name in the parent state whenever the local aquarium name state changes.
@@ -33,6 +36,19 @@ const SummaryStep: React.FC<SummaryStepProps> = ({ aquariumData, setAquariumData
   useEffect(() => {
     setAquariumData((prevData: any) => ({ ...prevData, name: aquariumName }));
   }, [aquariumName, setAquariumData]);
+  
+  // Effect to check if the aquarium name is empty and update the state
+  useEffect(() => {
+    const isEmpty = aquariumName.trim() === '';
+    setIsNameEmpty(isEmpty);
+    setIsStepValid(!isEmpty); // Notify the parent about the validity
+  }, [aquariumName, setIsStepValid]);
+
+  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newName = e.target.value;
+    setAquariumName(newName);
+    setIsNameEmpty(newName.trim() === '');
+  };
 
   return (
     <Box>
@@ -44,9 +60,12 @@ const SummaryStep: React.FC<SummaryStepProps> = ({ aquariumData, setAquariumData
         variant="outlined"
         fullWidth
         value={aquariumName}
-        onChange={(e) => setAquariumName(e.target.value)}
+        onChange={handleNameChange}
+        error={isNameEmpty}
+        helperText={isNameEmpty ? 'Aquarium name cannot be empty' : ''}
         sx={{ mb: 3 }}
       />
+
 
       <Typography variant="body1">
         <strong>Type:</strong> {aquariumData.type}

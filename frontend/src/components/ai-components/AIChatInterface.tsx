@@ -48,7 +48,6 @@ const AIChatInterface: React.FC<AIChatInterfaceProps> = ({ showChat, onClose, aq
       chatContentRef.current?.clearChat();
     }
   };
-  console.log("Passing onAddItem to ChatContent:", onAddItem);
 
   return (
     <>

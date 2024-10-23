@@ -8,10 +8,11 @@ import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import DeleteIcon from '@mui/icons-material/Delete'; // Import Delete Icon
 import EquipmentInfoCard from './EquipmentInfoCard'; // Import the EquipmentInfoCard component
 import AddEquipmentCard from './AddEquipmentCard';
-import { Aquarium } from '../../interfaces/Aquarium';
+import { Aquarium, Equipment } from '../../interfaces/Aquarium';
 
 interface EquipmentCardProps {
   aquarium: Aquarium;
+  onUpdateEquipment: (updatedEquipment : Equipment []) => void;
 }
 
 enum DisplayMode {
@@ -24,7 +25,7 @@ enum DisplayMode {
   OTHER,
 }
 
-const EquipmentCard: React.FC<EquipmentCardProps> = ({ aquarium }) => {
+const EquipmentCard: React.FC<EquipmentCardProps> = ({ aquarium, onUpdateEquipment }) => {
   const [displayMode, setDisplayMode] = useState<DisplayMode>(DisplayMode.ALL_EQUIPMENT);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null); // State for kebab menu
   const [equipmentList, setEquipmentList] = useState(aquarium.equipment || []); // State for equipment list
@@ -98,17 +99,10 @@ const EquipmentCard: React.FC<EquipmentCardProps> = ({ aquarium }) => {
     setAddEquipmentOpen(true);
   };
 
-  const handleAddEquipment = (newEquipment: any) => {
-    // Add the new equipment to the actual aquarium.equipment array
-    const updatedAquariumEquipment = [...aquarium.equipment, newEquipment];
-  
-    // Update the aquarium object
-    aquarium.equipment = updatedAquariumEquipment;
-  
-    // Sync the local state with the updated aquarium.equipment
-    setEquipmentList(updatedAquariumEquipment);
-  
-    // Close the Add Equipment modal
+  const handleAddEquipment = (newEquipment: Equipment) => {
+    const updatedEquipmentList = [...equipmentList, newEquipment];
+    setEquipmentList(updatedEquipmentList);
+    onUpdateEquipment(updatedEquipmentList);
     setAddEquipmentOpen(false);
   };
   
@@ -131,17 +125,13 @@ const EquipmentCard: React.FC<EquipmentCardProps> = ({ aquarium }) => {
 
 // Handle deleting the selected equipment
 const handleDeleteEquipment = () => {
-  // Remove the equipment from the aquarium.equipment array
-  const updatedAquariumEquipment = aquarium.equipment.filter(item => item !== equipmentToDelete);
-
-  // Update the aquarium object
-  aquarium.equipment = updatedAquariumEquipment;
-
-  // Sync the local state with the updated aquarium.equipment
-  setEquipmentList(updatedAquariumEquipment);
-
-  // Close the delete confirmation dialog
-  setDeleteDialogOpen(false);
+  if (equipmentToDelete) {
+    const updatedEquipmentList = equipmentList.filter(item => item !== equipmentToDelete);
+    setEquipmentList(updatedEquipmentList);
+    onUpdateEquipment(updatedEquipmentList);
+    setDeleteDialogOpen(false);
+    setEquipmentToDelete(null);
+  }
 };
 
 

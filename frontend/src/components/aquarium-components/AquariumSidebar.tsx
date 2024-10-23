@@ -167,7 +167,6 @@ const AquariumSidebar: React.FC<AquariumSidebarProps> = ({ aquariums, onOpenWiza
                 whiteSpace: 'nowrap',
               }}
             >
-              You have no aquariums. Get started by adding one!
             </Typography>
           )}
         </Box>

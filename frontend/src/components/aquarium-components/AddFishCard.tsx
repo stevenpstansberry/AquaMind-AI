@@ -58,9 +58,6 @@ const AddFishCard: React.FC<AddFishCardProps> = ({ open, onClose, aquarium, onAd
   const [infoOpen, setInfoOpen] = useState(false);  
   const [filteredFishList, setFilteredFishList] = useState<Fish[]>([]);
 
-  // Local state for keeping track of fish in the aquarium
-  const [localAquarium, setLocalAquarium] = useState<Aquarium>(aquarium);
-
   // Select fish list based on aquarium type
   const fishList = aquarium.type === 'Freshwater' ? freshwaterFishList : saltwaterFishList;
 
@@ -72,21 +69,18 @@ const AddFishCard: React.FC<AddFishCardProps> = ({ open, onClose, aquarium, onAd
    * @param {boolean} open - Indicates if the dialog is open.
    */
   useEffect(() => {
+    console.log("Aquarium species:", aquarium.species);
     if (open) {
-      console.log("Dialog opened. Filtering fish.");
 
       // Map the names of fish that already exist in the aquarium
-      const existingFishNames = localAquarium.species.map(fish => fish.name.toLowerCase());
-      console.log("Existing fish names (lowercased):", existingFishNames);
+      const existingFishNames = aquarium.species.map(fish => fish.name.toLowerCase());
 
       // Filter the fish list based on the current aquarium state and available fish
       const availableFish = fishList.filter(fish => {
         const isExisting = existingFishNames.includes(fish.name.toLowerCase());
-        console.log(`Checking if ${fish.name} is already in the aquarium: ${isExisting}`);
         return !isExisting; // Exclude existing fish
       });
 
-      console.log("Available fish after filtering:", availableFish);
 
       // Apply other filters: role, care level, tank size, search query
       const filteredFish = availableFish.filter(fish => {
@@ -95,7 +89,6 @@ const AddFishCard: React.FC<AddFishCardProps> = ({ open, onClose, aquarium, onAd
         const matchesTankSize = !minTankSizeFilter || Number(fish.minTankSize) <= minTankSizeFilter;
         const matchesSearch = !searchQuery || fish.name.toLowerCase().includes(searchQuery.toLowerCase());
 
-        console.log(`Fish: ${fish.name}, Role: ${matchesRole}, CareLevel: ${matchesCareLevel}, TankSize: ${matchesTankSize}, Search: ${matchesSearch}`);
 
         return matchesRole && matchesCareLevel && matchesTankSize && matchesSearch;
       });
@@ -104,7 +97,7 @@ const AddFishCard: React.FC<AddFishCardProps> = ({ open, onClose, aquarium, onAd
 
       setFilteredFishList(filteredFish);
     }
-  }, [open, localAquarium.species, roleFilter, careLevelFilter, minTankSizeFilter, searchQuery]);
+  }, [open, aquarium.species, roleFilter, careLevelFilter, minTankSizeFilter, searchQuery]);
 
 
   /**
@@ -171,11 +164,6 @@ const AddFishCard: React.FC<AddFishCardProps> = ({ open, onClose, aquarium, onAd
 
     onAddFish(validFish);
 
-    // Update the local aquarium species list with newly added fish
-    setLocalAquarium(prevAquarium => ({
-      ...prevAquarium,
-      species: [...prevAquarium.species, ...validFish] // Add new fish to the local species list
-    }));
 
     setSelectedFishList([]);  // Clear selected list after adding fish
   };
@@ -221,7 +209,6 @@ const AddFishCard: React.FC<AddFishCardProps> = ({ open, onClose, aquarium, onAd
       console.warn(`Item type ${itemType} is not handled in AddFishCard.`);
     }
   };
-  console.log("Passing handleAddFishGPT to AIChatInterface:", handleAddFishGPT);
 
   return (
     <>
