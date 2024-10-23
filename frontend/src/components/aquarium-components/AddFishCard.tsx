@@ -73,20 +73,16 @@ const AddFishCard: React.FC<AddFishCardProps> = ({ open, onClose, aquarium, onAd
    */
   useEffect(() => {
     if (open) {
-      console.log("Dialog opened. Filtering fish.");
 
       // Map the names of fish that already exist in the aquarium
       const existingFishNames = localAquarium.species.map(fish => fish.name.toLowerCase());
-      console.log("Existing fish names (lowercased):", existingFishNames);
 
       // Filter the fish list based on the current aquarium state and available fish
       const availableFish = fishList.filter(fish => {
         const isExisting = existingFishNames.includes(fish.name.toLowerCase());
-        console.log(`Checking if ${fish.name} is already in the aquarium: ${isExisting}`);
         return !isExisting; // Exclude existing fish
       });
 
-      console.log("Available fish after filtering:", availableFish);
 
       // Apply other filters: role, care level, tank size, search query
       const filteredFish = availableFish.filter(fish => {
@@ -95,7 +91,6 @@ const AddFishCard: React.FC<AddFishCardProps> = ({ open, onClose, aquarium, onAd
         const matchesTankSize = !minTankSizeFilter || Number(fish.minTankSize) <= minTankSizeFilter;
         const matchesSearch = !searchQuery || fish.name.toLowerCase().includes(searchQuery.toLowerCase());
 
-        console.log(`Fish: ${fish.name}, Role: ${matchesRole}, CareLevel: ${matchesCareLevel}, TankSize: ${matchesTankSize}, Search: ${matchesSearch}`);
 
         return matchesRole && matchesCareLevel && matchesTankSize && matchesSearch;
       });
@@ -221,7 +216,6 @@ const AddFishCard: React.FC<AddFishCardProps> = ({ open, onClose, aquarium, onAd
       console.warn(`Item type ${itemType} is not handled in AddFishCard.`);
     }
   };
-  console.log("Passing handleAddFishGPT to AIChatInterface:", handleAddFishGPT);
 
   return (
     <>

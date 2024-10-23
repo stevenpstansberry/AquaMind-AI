@@ -148,7 +148,9 @@ const FishCard: React.FC<FishCardProps> = ({ aquarium }) => {
   };
 
   const handleAddFish = (fishList: { name: string; count: number; type: string; role: string }[]) => {
+    console.log('Fish list after before fish:', fishList);
     setFishList((prevList) => [...prevList, ...fishList]); 
+    console.log('Fish list after adding fish:', fishList);
     setAddFishOpen(false);  
   };
 
