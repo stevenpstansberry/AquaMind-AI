@@ -152,13 +152,15 @@ const FishCard: React.FC<FishCardProps> = ({ aquarium, onUpdateSpecies}) => {
     setAddFishOpen(true);
   };
 
-  const handleAddFish = (fishList: { name: string; count: number; type: string; role: string }[]) => {
-    console.log('Fish list after before fish:', fishList);
-    const updatedFishList = [...fishList, ...fishList];
+  const handleAddFish = (newFishList: { name: string; count: number; type: string; role: string }[]) => {
+    console.log('Fish list before adding new fish:', fishList);
+    const updatedFishList = [...fishList, ...newFishList]; // Corrected line
     onUpdateSpecies(updatedFishList); 
-    console.log('Fish list after adding fish:', updatedFishList);
+    console.log('Fish list after adding new fish:', updatedFishList);
     setAddFishOpen(false);
   };
+
+  
 
   const handleShowFishInfo = (fish: { name: string; count: number; role: string; type: string }) => {
     setSelectedFish(fish);  
