@@ -57,6 +57,18 @@ const FishCard: React.FC<FishCardProps> = ({ aquarium, onUpdateSpecies}) => {
     checkChangesSaved();
   }, [fishList]);
 
+  useEffect(() => {
+    resetFishList();
+  }, [aquarium]);
+
+  // Function to reset the fish list
+  const resetFishList = () => {
+      const initialFishList = aquarium.species || [];
+      setFishList(initialFishList);
+      setOriginalFishList(initialFishList);
+      setChangesSaved(true);  
+  };
+
   const filteredSpecies = fishList.filter((fish) => {
     switch (displayMode) {
       case DisplayMode.ALL_FISH:
