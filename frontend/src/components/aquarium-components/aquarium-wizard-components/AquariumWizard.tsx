@@ -143,7 +143,7 @@ const AquariumWizard: React.FC<AquariumWizardProps> = ({ onClose, handleAddAquar
             />
           )}
           
-          {currentStep === 5 && <SummaryStep aquariumData={aquariumData} setAquariumData={setAquariumData}/>}
+          {currentStep === 5 && <SummaryStep aquariumData={aquariumData} setAquariumData={setAquariumData} setIsStepValid={setIsStepValid}/>}
         </CardContent>
 
         {/* Button container */}
@@ -160,10 +160,14 @@ const AquariumWizard: React.FC<AquariumWizardProps> = ({ onClose, handleAddAquar
             </Button>
 
             {currentStep < steps.length - 1 ? (
-             <Button variant="contained" onClick={handleNext} disabled={!isStepValid}>Next</Button>
-            ) : (
-              <Button variant="contained" onClick={handleFinish}>Finish</Button>
-            )}
+            <Button variant="contained" onClick={handleNext} disabled={!isStepValid}>
+              Next
+            </Button>
+          ) : (
+            <Button variant="contained" onClick={handleFinish} disabled={!isStepValid}>
+              Finish
+            </Button>
+          )}
           </Box>
         </Box>
 
