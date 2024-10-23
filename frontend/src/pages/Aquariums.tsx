@@ -19,7 +19,7 @@
  * @exports Aquariums
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../util/AuthContext';
 import { useAquarium } from '../util/AquariumContext';
 import AquariumSidebar from '../components/aquarium-components/AquariumSidebar';
@@ -46,14 +46,17 @@ const Aquariums: React.FC = () => {
   const [showWizard, setShowWizard] = useState(false);
   const [currentAquarium, setCurrentAquarium] = useState<Aquarium | null>(null);
   const [collapsed, setCollapsed] = useState<boolean>(false);
+  const isFirstRender = useRef(true);
 
-
-  // Effect to set the default aquarium when component mounts or aquariums change
+  // Effect to set the default aquarium when component mounts
   useEffect(() => {
-    if (aquariums.length > 0) {
-      setCurrentAquarium(aquariums[0]); // Set the first aquarium as the default
-    } else {
-      setCurrentAquarium(null); // No aquariums available, set to null
+    if (isFirstRender.current) {
+      if (aquariums.length > 0) {
+        setCurrentAquarium(aquariums[0]); // Set the first aquarium as the default
+      } else {
+        setCurrentAquarium(null); // No aquariums available, set to null
+      }
+      isFirstRender.current = false;
     }
   }, [aquariums]);
 
