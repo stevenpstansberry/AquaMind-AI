@@ -276,7 +276,7 @@ const Aquariums: React.FC = () => {
 
                 {/* Plant Card */}
                 <Grid item xs={12} md={6} lg={6}>
-                  <PlantCard aquarium={currentAquarium} onUpdatePlants={handleUpdatePlants}/>
+                  <PlantCard aquarium={currentAquarium} onUpdatePlants={handleUpdatePlants} handleSnackbar={handleSnackbar}/>
                 </Grid>
 
                 {/* Equipment Card */}

@@ -12,6 +12,7 @@ import { Aquarium, Plant } from '../../interfaces/Aquarium';
 interface PlantCardProps {
   aquarium : Aquarium;
   onUpdatePlants: (plants: Plant[]) => void;
+  handleSnackbar: (message: string, severity: 'success' | 'error' | 'warning' | 'info', open: boolean) => void;
 }
 
 enum DisplayMode {
@@ -22,7 +23,7 @@ enum DisplayMode {
   ROOTED,
 }
 
-const PlantCard: React.FC<PlantCardProps> = ({ aquarium, onUpdatePlants }) => {
+const PlantCard: React.FC<PlantCardProps> = ({ aquarium, onUpdatePlants, handleSnackbar }) => {
   const [displayMode, setDisplayMode] = useState<DisplayMode>(DisplayMode.ALL_PLANTS);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [plantList, setPlantList] = useState(aquarium.plants || []);  // Track plant count updates
@@ -155,6 +156,7 @@ const handleConfirmDelete = () => {
     setOriginalPlantList((prevList) => prevList.filter((plant) => plant.name !== plantToDelete.name));
     setPlantToDelete(null);  // Clear the plant to delete state
     setConfirmDeleteOpen(false);  // Close the confirmation dialog
+    handleSnackbar(`${plantToDelete.name} removed from the aquarium.`, 'success', true);
   }
 };
 
@@ -166,6 +168,7 @@ const handleConfirmDelete = () => {
   const handleSaveChanges = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation(); // Prevent cycling mode when saving
     setOriginalPlantList(plantList); // Save current state as the original
+    handleSnackbar('Changes saved.', 'success', true);
     setChangesSaved(true); // Mark changes as saved
   };
 
@@ -204,7 +207,7 @@ const handleConfirmDelete = () => {
           updatedList.push(newPlant);
         }
       });
-  
+      handleSnackbar(`${plants.map((plant) => plant.name).join(', ')} added to the aquarium.`, 'success', true);
       console.log('Updated plant list after adding new plants:', updatedList);
       onUpdatePlants(updatedList); // Update the parent component with the new plant list
 
@@ -350,7 +353,7 @@ const handleConfirmDelete = () => {
       <PlantInfoCard open={infoCardOpen} onClose={handleInfoCardClose} plant={selectedPlant} />
 
       {/* Add Plant Modal */}
-      <AddPlantCard open={addPlantOpen} onClose={handleCloseAddPlant} aquarium={aquarium} onAddPlant={handleAddPlant} />
+      <AddPlantCard open={addPlantOpen} onClose={handleCloseAddPlant} aquarium={aquarium} onAddPlant={handleAddPlant} handleSnackbar={handleSnackbar}/>
 
         {/* Confirm Delete Plant Dialog */}
         <Dialog

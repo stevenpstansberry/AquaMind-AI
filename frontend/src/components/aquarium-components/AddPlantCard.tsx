@@ -13,6 +13,7 @@ interface AddPlantCardProps {
   onClose: () => void;
   aquarium: Aquarium;  // Pass the entire Aquarium object
   onAddPlant: (plants: Plant[]) => void;  // Callback when plants are added
+  handleSnackbar: (message: string, severity: 'success' | 'error' | 'warning' | 'info', open: boolean) => void;
 }
 
 const freshwaterPlantList: Plant[] = [
@@ -59,7 +60,7 @@ const freshwaterPlantList: Plant[] = [
   // Add more plants as needed
 ];
 
-const AddPlantCard: React.FC<AddPlantCardProps> = ({ open, onClose, aquarium, onAddPlant }) => {
+const AddPlantCard: React.FC<AddPlantCardProps> = ({ open, onClose, aquarium, onAddPlant, handleSnackbar }) => {
   const [roleFilter, setRoleFilter] = useState('');  
   const [careLevelFilter, setCareLevelFilter] = useState('');  // New filter for care level
   const [minTankSizeFilter, setMinTankSizeFilter] = useState<number>(parseInt(aquarium.size));  // Default to aquarium size
@@ -124,9 +125,11 @@ useEffect(() => {
     if (isSelected) {
       console.log('Removing plant from selected list:', plantWithCount);
       setSelectedPlantList(selectedPlantList.filter(p => p.name !== plant.name));
+      handleSnackbar(`${plant.name} removed from selection.`, 'info', true);
     } else {
       console.log('Adding plant to selected list:', plantWithCount);
       setSelectedPlantList([...selectedPlantList, plantWithCount]);
+      handleSnackbar(`${plant.name} added to selection.`, 'success', true);
     }
   };
 
@@ -156,6 +159,8 @@ useEffect(() => {
     }));
 
     onAddPlant(validPlants);
+
+    handleSnackbar(`Added ${validPlants.length} plants to the aquarium.`, 'success', true);
 
     // Update the local plant list with newly added plants
     setLocalPlantList(prevList => [...prevList, ...validPlants]);
