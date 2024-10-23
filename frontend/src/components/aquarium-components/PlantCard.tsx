@@ -11,6 +11,7 @@ import { Aquarium, Plant } from '../../interfaces/Aquarium';
 
 interface PlantCardProps {
   aquarium : Aquarium;
+  onUpdatePlants: (plants: Plant[]) => void;
 }
 
 enum DisplayMode {
@@ -21,7 +22,7 @@ enum DisplayMode {
   ROOTED,
 }
 
-const PlantCard: React.FC<PlantCardProps> = ({ aquarium }) => {
+const PlantCard: React.FC<PlantCardProps> = ({ aquarium, onUpdatePlants }) => {
   const [displayMode, setDisplayMode] = useState<DisplayMode>(DisplayMode.ALL_PLANTS);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [plantList, setPlantList] = useState(aquarium.plants || []);  // Track plant count updates
@@ -205,9 +206,10 @@ const handleConfirmDelete = () => {
       });
   
       console.log('Updated plant list after adding new plants:', updatedList);
+      onUpdatePlants(updatedList); // Update the parent component with the new plant list
+
       return updatedList;
     });
-  
     setAddPlantOpen(false);  // Close the dialog
   };
   
