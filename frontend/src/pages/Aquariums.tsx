@@ -30,7 +30,7 @@ import { createAquarium, updateAquarium as apiUpdateAquarium } from '../services
 import { ViewSidebar } from '@mui/icons-material';
 
 
-import { Aquarium, Fish, Plant } from '../interfaces/Aquarium';
+import { Aquarium, Equipment, Fish, Plant } from '../interfaces/Aquarium';
 import mockAquaData from '../util/MockAquariums.json';
 
 // Import the refactored card components
@@ -124,6 +124,25 @@ const Aquariums: React.FC = () => {
       const updatedAquarium = {
         ...currentAquarium,
         plants: newPlants,
+      };
+      setCurrentAquarium(updatedAquarium);
+      updateAquarium(updatedAquarium);
+      apiUpdateAquarium(updatedAquarium.id, updatedAquarium)
+        .then(response => {
+          console.log('API updated aquarium:', response);
+        })
+        .catch(error => {
+          console.error('Failed to update aquarium via API:', error);
+        });
+      console.log('Updated aquarium:', updatedAquarium);
+    }
+  };
+
+  const handleUpdateEquipment = (updatedEquipmentList: Equipment[]): void => {
+    if (currentAquarium) {
+      const updatedAquarium = {
+        ...currentAquarium,
+        equipment: updatedEquipmentList,
       };
       setCurrentAquarium(updatedAquarium);
       updateAquarium(updatedAquarium);
@@ -238,7 +257,7 @@ const Aquariums: React.FC = () => {
 
                 {/* Equipment Card */}
                 <Grid item xs={12} md={6} lg={4}>
-                  <EquipmentCard aquarium={currentAquarium} />
+                  <EquipmentCard aquarium={currentAquarium} onUpdateEquipment={handleUpdateEquipment}/>
                 </Grid>
 
                 {/* Aquarium Parameters Card */}
