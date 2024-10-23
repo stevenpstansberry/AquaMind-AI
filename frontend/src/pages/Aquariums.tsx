@@ -20,27 +20,16 @@
  */
 
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect,useRef } from 'react';
 import { useAquarium } from '../util/AquariumContext';
 import AquariumSidebar from '../components/aquarium-components/AquariumSidebar';
 import AquariumWizard from '../components/aquarium-components/aquarium-wizard-components/AquariumWizard';
 import { Box, AppBar, Toolbar, Typography, Grid, CardContent, Card, Icon, Tooltip, Snackbar, Alert } from '@mui/material';
-import { createAquarium } from '../services/APIServices';
-import { ViewSidebar } from '@mui/icons-material';
-import { Aquarium } from '../interfaces/Aquarium';
-import React, { useState, useEffect, useRef } from 'react';
-import { useAuth } from '../util/AuthContext';
-import { useAquarium } from '../util/AquariumContext';
-import AquariumSidebar from '../components/aquarium-components/AquariumSidebar';
-import AquariumWizard from '../components/aquarium-components/aquarium-wizard-components/AquariumWizard';
-import { Box, AppBar, Toolbar, Typography, Grid, CardContent, Card, Icon, Tooltip } from '@mui/material';
-import AquariumParameters from '../components/aquarium-components/AquariumParameters';
 import { createAquarium, updateAquarium as apiUpdateAquarium } from '../services/APIServices';
 import { ViewSidebar } from '@mui/icons-material';
 
 
 import { Aquarium, Equipment, Fish, Plant } from '../interfaces/Aquarium';
-import mockAquaData from '../util/MockAquariums.json';
 
 
 // Import the refactored card components
