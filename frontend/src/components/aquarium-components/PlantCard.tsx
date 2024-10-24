@@ -149,6 +149,7 @@ const handleConfirmDelete = () => {
 
     setPlantList((prevList) => {
       const newList = prevList.filter((plant) => plant.name !== plantToDelete.name);
+      onUpdatePlants(newList); // Update the parent component with the new plant list
       console.log('Updated plant list after deletion:', newList);
       return newList;
     });
