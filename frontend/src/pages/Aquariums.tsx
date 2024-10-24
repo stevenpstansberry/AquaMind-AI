@@ -42,7 +42,7 @@ import ParametersCard from '../components/aquarium-components/ParametersCard';
 
 
 const Aquariums: React.FC = () => {
-  const { aquariums = [], addAquarium, updateAquarium } = useAquarium(); 
+  const { aquariums = [], addAquarium, updateAquarium, removeAquarium } = useAquarium(); 
   const [showWizard, setShowWizard] = useState(false);
   const [currentAquarium, setCurrentAquarium] = useState<Aquarium | null>(null);
   const [collapsed, setCollapsed] = useState<boolean>(false);
@@ -130,7 +130,7 @@ const Aquariums: React.FC = () => {
 
   // Function to handle deleting an aquarium
   const handleDeleteAquarium = (id: string) => {
-    // deleteAquarium(id);
+    removeAquarium(id);
     setIsEditDialogOpen(false);
     handleSnackbar('Aquarium deleted successfully!', 'success', true);
   };
