@@ -387,6 +387,7 @@ const Aquariums: React.FC = () => {
             onDelete={handleDeleteAquarium}
             onClose={() => setIsEditDialogOpen(false)}
             open={isEditDialogOpen}
+            handleSnackbar={handleSnackbar}
           />
         )}
     </div>
