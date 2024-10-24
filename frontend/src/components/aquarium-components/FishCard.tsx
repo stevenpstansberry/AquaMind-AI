@@ -92,8 +92,11 @@ const FishCard: React.FC<FishCardProps> = ({ aquarium, onUpdateSpecies, handleSn
   });
 
   const cycleDisplayMode = () => {
-    const validModes = Object.values(DisplayMode).filter((value) => typeof value === 'number');
-    setDisplayMode((prevMode) => (prevMode + 1) % validModes.length);
+    // Only cycle if the menu is not open
+    if (!anchorEl) {
+      const validModes = Object.values(DisplayMode).filter((value) => typeof value === 'number');
+      setDisplayMode((prevMode) => (prevMode + 1) % validModes.length);
+    }
   };
 
   const handleMenuOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -206,6 +209,11 @@ const FishCard: React.FC<FishCardProps> = ({ aquarium, onUpdateSpecies, handleSn
     [DisplayMode.BREEDERS]: 'Breeders',
   };
 
+  useEffect(() => {
+    console.log('Display mode changed to:', displayMode);
+  }, [displayMode]);
+  
+
   return (
     <>
       <Card sx={cardStyle} onClick={cycleDisplayMode}>
@@ -305,12 +313,12 @@ const FishCard: React.FC<FishCardProps> = ({ aquarium, onUpdateSpecies, handleSn
         </IconButton>
 
         <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
-          <MenuItem onClick={() => setDisplayMode(DisplayMode.ALL_FISH)}>All Fish</MenuItem>
-          <MenuItem onClick={() => setDisplayMode(DisplayMode.SCHOOLING_FISH)}>Schooling Fish</MenuItem>
-          <MenuItem onClick={() => setDisplayMode(DisplayMode.SCAVENGERS)}>Scavengers</MenuItem>
-          <MenuItem onClick={() => setDisplayMode(DisplayMode.PREDATORS)}>Predators</MenuItem>
-          <MenuItem onClick={() => setDisplayMode(DisplayMode.PEACEFUL_COMMUNITY)}>Peaceful Community Fish</MenuItem>
-          <MenuItem onClick={() => setDisplayMode(DisplayMode.BREEDERS)}>Breeders</MenuItem>
+          <MenuItem onClick={(e) => { e.stopPropagation(); setDisplayMode(DisplayMode.ALL_FISH); console.log('Setting display mode to: ', displayMode); }}>All Fish</MenuItem>
+          <MenuItem onClick={(e) => { e.stopPropagation(); setDisplayMode(DisplayMode.SCHOOLING_FISH); console.log('Setting display mode to: ', displayMode); }}>Schooling Fish</MenuItem>
+          <MenuItem onClick={(e) => { e.stopPropagation(); setDisplayMode(DisplayMode.SCAVENGERS); console.log('Setting display mode to: ', displayMode); }}>Scavengers</MenuItem>
+          <MenuItem onClick={(e) => { e.stopPropagation(); setDisplayMode(DisplayMode.PREDATORS); console.log('Setting display mode to: ', displayMode); }}>Predators</MenuItem>
+          <MenuItem onClick={(e) => { e.stopPropagation(); setDisplayMode(DisplayMode.PEACEFUL_COMMUNITY); console.log('Setting display mode to: ', displayMode); }}>Peaceful Community Fish</MenuItem>
+          <MenuItem onClick={(e) => { e.stopPropagation(); setDisplayMode(DisplayMode.BREEDERS); console.log('Setting display mode to: ', displayMode); }}>Breeders</MenuItem>
         </Menu>
       </Card>
 

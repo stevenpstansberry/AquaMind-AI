@@ -64,11 +64,13 @@ const EquipmentCard: React.FC<EquipmentCardProps> = ({ aquarium, onUpdateEquipme
 
   // Cycle through display modes when clicking the card
   const cycleDisplayMode = () => {
-    const validModes = Object.values(DisplayMode).filter((value) => typeof value === 'number');
-    setDisplayMode((prevMode) => {
-      const nextMode = (prevMode + 1) % validModes.length;
-      return nextMode;
-    });
+    if(!anchorEl) {
+      const validModes = Object.values(DisplayMode).filter((value) => typeof value === 'number');
+      setDisplayMode((prevMode) => {
+        const nextMode = (prevMode + 1) % validModes.length;
+        return nextMode;
+      });
+    }
   };
 
   // Handle opening the kebab menu

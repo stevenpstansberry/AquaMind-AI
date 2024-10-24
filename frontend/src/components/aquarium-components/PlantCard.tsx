@@ -88,11 +88,13 @@ const PlantCard: React.FC<PlantCardProps> = ({ aquarium, onUpdatePlants, handleS
   });
 
   const cycleDisplayMode = (e: React.MouseEvent<HTMLDivElement>) => {
-    const validModes = Object.values(DisplayMode).filter((value) => typeof value === 'number');
-    setDisplayMode((prevMode) => {
-      const nextMode = (prevMode + 1) % validModes.length;
-      return nextMode;
-    });
+    if(!anchorEl) {
+      const validModes = Object.values(DisplayMode).filter((value) => typeof value === 'number');
+      setDisplayMode((prevMode) => {
+        const nextMode = (prevMode + 1) % validModes.length;
+        return nextMode;
+      });
+    }
   };
 
   const handleMenuOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
