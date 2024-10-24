@@ -30,6 +30,7 @@ export interface Fish {
   count: number;
   role: string;
   type: string;  
+  id?: string;
   description?: string;
   feedingHabits?: string;
   tankRequirements?: string;
