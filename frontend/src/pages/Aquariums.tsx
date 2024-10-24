@@ -25,7 +25,7 @@ import { useAquarium } from '../util/AquariumContext';
 import AquariumSidebar from '../components/aquarium-components/AquariumSidebar';
 import AquariumWizard from '../components/aquarium-components/aquarium-wizard-components/AquariumWizard';
 import { Box, AppBar, Toolbar, Typography, Grid, CardContent, Card, Icon, Tooltip, Snackbar, Alert } from '@mui/material';
-import { createAquarium, updateAquarium as apiUpdateAquarium } from '../services/APIServices';
+import { createAquarium, updateAquarium as apiUpdateAquarium, deleteAquarium as apiDeleteAquarium } from '../services/APIServices';
 import { ViewSidebar } from '@mui/icons-material';
 import EditAquarium from '../components/aquarium-components/EditAquarium';
 
@@ -119,20 +119,28 @@ const Aquariums: React.FC = () => {
     updateAquarium(updatedAquarium);
     apiUpdateAquarium(updatedAquarium.id, updatedAquarium)
       .then(() => {
-        handleSnackbar('Aquarium updated successfully!', 'success', true);
+        console.log('Successfully updated aquarium!');
       })
       .catch(error => {
         console.error('Failed to update aquarium:', error);
-        handleSnackbar('Failed to update aquarium.', 'error', true);
       });
     setIsEditDialogOpen(false);
   };
 
   // Function to handle deleting an aquarium
   const handleDeleteAquarium = (id: string) => {
-    removeAquarium(id);
+    apiDeleteAquarium(id)
+      .then(() => {
+        removeAquarium(id);
+        console.log('Aquarium deleted successfully!');
+        handleSnackbar('Aquarium deleted successfully!', 'success', true);
+      })
+      .catch(error => {
+        console.error('Failed to delete aquarium:', error);
+        handleSnackbar('Failed to delete aquarium. Please try again later', 'error', true);
+      });
     setIsEditDialogOpen(false);
-    handleSnackbar('Aquarium deleted successfully!', 'success', true);
+    
   };
 
 

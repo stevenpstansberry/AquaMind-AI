@@ -30,12 +30,10 @@ const EditAquarium: React.FC<EditAquariumProps> = ({ aquarium, onSave, onDelete,
             type,
         };
         onSave(updatedAquarium);
-        handleSnackbar('Aquarium updated successfully!', 'success', true);
     };
 
     const handleDelete = () => {
         onDelete(aquarium.id);
-        handleSnackbar('Aquarium deleted successfully!', 'success', true);
     };
 
     return (
