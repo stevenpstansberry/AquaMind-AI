@@ -26,7 +26,9 @@ interface AddFishCardProps {
   open: boolean;
   onClose: () => void;
   aquarium: Aquarium;  // Pass the entire Aquarium object
-  onAddFish: (fish: Fish[]) => void; }
+  onAddFish: (fish: Fish[]) => void; 
+  handleSnackbar: (message: string, severity: 'success' | 'error' | 'warning' | 'info', open: boolean) => void;
+}
 
 const freshwaterFishList = freshWaterFishData;
 const saltwaterFishList = saltWaterFishData;
@@ -45,7 +47,7 @@ const saltwaterFishList = saltWaterFishData;
  * 
  * @returns {JSX.Element} - The rendered component.
  */
-const AddFishCard: React.FC<AddFishCardProps> = ({ open, onClose, aquarium, onAddFish }) => {
+const AddFishCard: React.FC<AddFishCardProps> = ({ open, onClose, aquarium, onAddFish, handleSnackbar }) => {
   const [roleFilter, setRoleFilter] = useState('');  
   const [careLevelFilter, setCareLevelFilter] = useState('');  // New filter for care level
   const [minTankSizeFilter, setMinTankSizeFilter] = useState<number>(parseInt(aquarium.size));  // Default to aquarium size
@@ -110,8 +112,11 @@ const AddFishCard: React.FC<AddFishCardProps> = ({ open, onClose, aquarium, onAd
     const isSelected = selectedFishList.some(f => f.name === fish.name);
     if (isSelected) {
       setSelectedFishList(selectedFishList.filter(f => f.name !== fish.name));  
+      handleSnackbar(`${fish.name} removed from selection`, 'info', true);
     } else {
       setSelectedFishList([...selectedFishList, fish]);  
+      handleSnackbar(`${fish.name} added to selection`, 'success', true);
+
     }
   };
 
@@ -164,6 +169,7 @@ const AddFishCard: React.FC<AddFishCardProps> = ({ open, onClose, aquarium, onAd
 
     onAddFish(validFish);
 
+    handleSnackbar(`${validFish.length} fish added to the aquarium!`, 'success', true);
 
     setSelectedFishList([]);  // Clear selected list after adding fish
   };
@@ -191,7 +197,7 @@ const AddFishCard: React.FC<AddFishCardProps> = ({ open, onClose, aquarium, onAd
   };
 
   /**
-   * @function handleAddItem
+   * @function handleAddFishGPT
    * @description Allows the GPT chatbot to add an item to the aquarium.
    * 
    * @param {string} itemType - The type of item to add.
@@ -202,6 +208,7 @@ const AddFishCard: React.FC<AddFishCardProps> = ({ open, onClose, aquarium, onAd
       const fishToAdd = fishList.find(fish => fish.name.toLowerCase() === itemName.toLowerCase());
       if (fishToAdd) {
         handleSelectFish(fishToAdd); // Add the fish to selectedFishList
+        handleSnackbar(`${itemName} added via AI suggestion!`, 'success', true);
       } else {
         console.warn(`Fish ${itemName} not found in fish list.`);
       }

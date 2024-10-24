@@ -233,7 +233,7 @@ const Aquariums: React.FC = () => {
         </Tooltip>
       ) }
         <Box sx={{ flexGrow: 1 }}>
-          {showWizard && <AquariumWizard onClose={() => setShowWizard(false)} handleAddAquarium={handleAddAquarium} />}
+          {showWizard && <AquariumWizard onClose={() => setShowWizard(false)} handleAddAquarium={handleAddAquarium} handleSnackbar={handleSnackbar}/>}
 
           {currentAquarium && (
             <>
@@ -276,12 +276,12 @@ const Aquariums: React.FC = () => {
 
                 {/* Plant Card */}
                 <Grid item xs={12} md={6} lg={6}>
-                  <PlantCard aquarium={currentAquarium} onUpdatePlants={handleUpdatePlants}/>
+                  <PlantCard aquarium={currentAquarium} onUpdatePlants={handleUpdatePlants} handleSnackbar={handleSnackbar}/>
                 </Grid>
 
                 {/* Equipment Card */}
                 <Grid item xs={12} md={6} lg={4}>
-                  <EquipmentCard aquarium={currentAquarium} onUpdateEquipment={handleUpdateEquipment}/>
+                  <EquipmentCard aquarium={currentAquarium} onUpdateEquipment={handleUpdateEquipment} handleSnackbar={handleSnackbar}/>
                 </Grid>
 
                 {/* Aquarium Parameters Card */}

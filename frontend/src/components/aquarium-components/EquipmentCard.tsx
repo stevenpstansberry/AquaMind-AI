@@ -13,6 +13,7 @@ import { Aquarium, Equipment } from '../../interfaces/Aquarium';
 interface EquipmentCardProps {
   aquarium: Aquarium;
   onUpdateEquipment: (updatedEquipment : Equipment []) => void;
+  handleSnackbar: (message: string, severity: 'success' | 'error' | 'warning' | 'info', open: boolean) => void;
 }
 
 enum DisplayMode {
@@ -25,7 +26,7 @@ enum DisplayMode {
   OTHER,
 }
 
-const EquipmentCard: React.FC<EquipmentCardProps> = ({ aquarium, onUpdateEquipment }) => {
+const EquipmentCard: React.FC<EquipmentCardProps> = ({ aquarium, onUpdateEquipment, handleSnackbar }) => {
   const [displayMode, setDisplayMode] = useState<DisplayMode>(DisplayMode.ALL_EQUIPMENT);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null); // State for kebab menu
   const [equipmentList, setEquipmentList] = useState(aquarium.equipment || []); // State for equipment list
@@ -103,6 +104,7 @@ const EquipmentCard: React.FC<EquipmentCardProps> = ({ aquarium, onUpdateEquipme
     const updatedEquipmentList = [...equipmentList, newEquipment];
     setEquipmentList(updatedEquipmentList);
     onUpdateEquipment(updatedEquipmentList);
+    handleSnackbar(`${newEquipment.name} added successfully!`, 'success', true);
     setAddEquipmentOpen(false);
   };
   
@@ -130,6 +132,7 @@ const handleDeleteEquipment = () => {
     setEquipmentList(updatedEquipmentList);
     onUpdateEquipment(updatedEquipmentList);
     setDeleteDialogOpen(false);
+    handleSnackbar(`${equipmentToDelete.name} deleted successfully!`, 'success', true);
     setEquipmentToDelete(null);
   }
 };
@@ -242,6 +245,7 @@ const handleDeleteEquipment = () => {
         onClose={handleCloseAddEquipment}
         aquarium={aquarium}
         onAddEquipment={handleAddEquipment}
+        handleSnackbar={handleSnackbar}
       />
 
       {/* Delete Confirmation Dialog */}

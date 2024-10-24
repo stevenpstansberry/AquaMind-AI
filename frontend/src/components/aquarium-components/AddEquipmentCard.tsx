@@ -24,6 +24,7 @@ interface AddEquipmentCardProps {
   onClose: () => void;
   onAddEquipment: (equipment: Equipment) => void;
   aquarium: Aquarium;
+  handleSnackbar: (message: string, severity: 'success' | 'error' | 'warning' | 'info', open: boolean) => void;
 }
 
 const fieldUnitMapping: { [key: string]: string[] } = {
@@ -40,7 +41,7 @@ const fieldUnitMapping: { [key: string]: string[] } = {
 
 
 
-const AddEquipmentCard: React.FC<AddEquipmentCardProps> = ({ open, onClose, onAddEquipment, aquarium }) => {
+const AddEquipmentCard: React.FC<AddEquipmentCardProps> = ({ open, onClose, onAddEquipment, aquarium, handleSnackbar }) => {
   const [selectedType, setSelectedType] = useState<string>('filtration');
   const [selectedEquipment, setSelectedEquipment] = useState<Equipment | null>(null); // Allow only one equipment to be selected
   const [customFields, setCustomFields] = useState<{ [key: string]: string }>({});
@@ -79,7 +80,7 @@ const AddEquipmentCard: React.FC<AddEquipmentCardProps> = ({ open, onClose, onAd
       fields: {},  // Initialize fields as an empty object for user input
       type: equipment.type,
     };
-
+    handleSnackbar(`Selected ${equipment.name} to add to the aquarium`, 'info', true);
     setSelectedEquipment(equipmentToAdd);  // Set only one selected equipment at a time
   };
 

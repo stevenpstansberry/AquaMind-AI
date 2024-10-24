@@ -164,6 +164,7 @@ const FishCard: React.FC<FishCardProps> = ({ aquarium, onUpdateSpecies, handleSn
     e.stopPropagation();
     setFishList(originalFishList);  
     setChangesSaved(true);
+    handleSnackbar('Changes discarded.', 'info', true);
   };
 
   const handleAddNewFish = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -176,6 +177,7 @@ const FishCard: React.FC<FishCardProps> = ({ aquarium, onUpdateSpecies, handleSn
     const updatedFishList = [...fishList, ...newFishList]; // Corrected line
     onUpdateSpecies(updatedFishList); 
     console.log('Fish list after adding new fish:', updatedFishList);
+    handleSnackbar(`${newFishList.map(fish => fish.name).join(', ')} added to the aquarium.`, 'success', true);
     setAddFishOpen(false);
   };
 
@@ -321,6 +323,7 @@ const FishCard: React.FC<FishCardProps> = ({ aquarium, onUpdateSpecies, handleSn
         onClose={handleCloseAddFish}
         aquarium={aquarium}  
         onAddFish={handleAddFish}  
+        handleSnackbar={handleSnackbar}
       />
 
       {/* Confirm Delete Fish Dialog */}
