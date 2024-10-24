@@ -24,7 +24,7 @@ import React, { useState, useEffect,useRef } from 'react';
 import { useAquarium } from '../util/AquariumContext';
 import AquariumSidebar from '../components/aquarium-components/AquariumSidebar';
 import AquariumWizard from '../components/aquarium-components/aquarium-wizard-components/AquariumWizard';
-import { Box, AppBar, Toolbar, Typography, Grid, CardContent, Card, Icon, Tooltip, Snackbar, Alert } from '@mui/material';
+import { Box, AppBar, Toolbar, Typography, Grid, CardContent, Card, Icon, Tooltip, Snackbar, Alert, Button } from '@mui/material';
 import { createAquarium, updateAquarium as apiUpdateAquarium, deleteAquarium as apiDeleteAquarium } from '../services/APIServices';
 import { ViewSidebar } from '@mui/icons-material';
 import EditAquarium from '../components/aquarium-components/EditAquarium';
@@ -220,69 +220,168 @@ const Aquariums: React.FC = () => {
   };
   
   return (
-    <div style={{ display: 'flex', height: '100vh' }}>
-      <AquariumSidebar
-        aquariums={aquariums}
-        onOpenWizard={handleOpenWizard}
-        setCurrentAquarium={setCurrentAquarium}
-        currentAquarium={currentAquarium}
-        collapsed={collapsed}
-        setCollapsed={setCollapsed}
-        onEditAquarium={handleOpenEditDialog}
-      />
-      <div
-        style={{
-          marginLeft: aquariums.length > 0 ? (collapsed ? '60px' : '250px') : '0px',
-          transition: 'margin-left 0.3s',
-          padding: '20px',
-          width: '100%',
-          display: 'flex',
-          flexDirection: 'column',
-        }}
-      >
-      {/* Sidebar Toggle Button */}
-      {collapsed ? ( <div/>
+    <div style={{ display: 'flex', height: '100vh', justifyContent: 'center', alignItems: 'center' }}>
+      {aquariums.length === 0 ? (
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            textAlign: 'center',
+            padding: '20px',
+          }}
+        >
+          <Typography variant="h5" sx={{ marginBottom: '20px' }}>
+            You don't have any aquariums yet.
+          </Typography>
+          <Button variant="contained" color="primary" onClick={handleOpenWizard}>
+            Create Your First Aquarium
+          </Button>
+          {showWizard && (
+            <AquariumWizard
+              onClose={() => setShowWizard(false)}
+              handleAddAquarium={handleAddAquarium}
+              handleSnackbar={handleSnackbar}
+            />
+          )}
+        </Box>
       ) : (
-        <Tooltip title="Collapse Sidebar" placement='right'>
-          <Icon
-            onClick={() => setCollapsed(!collapsed)}
-            sx={{
-              color: '#438ED9',
-              backgroundColor: 'transparent',
-              borderRadius: '4px',
-              cursor: 'pointer',
-              zIndex: '1000',
-              transition: 'background-color 0.2s, transform 0.2s',
-              '&:hover': {
-                backgroundColor: '#f0f0f0',
-                transform: 'scale(1.05)',
-              },
-              '&:active': {
-                backgroundColor: '#AFAEAE',
-              },
+        <>
+          <AquariumSidebar
+            aquariums={aquariums}
+            onOpenWizard={handleOpenWizard}
+            setCurrentAquarium={setCurrentAquarium}
+            currentAquarium={currentAquarium}
+            collapsed={collapsed}
+            setCollapsed={setCollapsed}
+            onEditAquarium={handleOpenEditDialog}
+          />
+          <div
+            style={{
+              marginLeft: collapsed ? '60px' : '250px',
+              transition: 'margin-left 0.3s',
+              padding: '20px',
+              width: '100%',
+              display: 'flex',
+              flexDirection: 'column',
             }}
           >
-
-            <ViewSidebar
-              sx={{
-                color: '#438ED9',
-              }}
-            />
-          </Icon>
-        </Tooltip>
-      ) }
-        <Box sx={{ flexGrow: 1 }}>
-          {showWizard && <AquariumWizard onClose={() => setShowWizard(false)} handleAddAquarium={handleAddAquarium} handleSnackbar={handleSnackbar}/>}
-
-          {currentAquarium && (
-            <>
-              {/* Static Navbar for Current Aquarium Details */}
-              <AppBar
-                position="static"
-                color="default"
+            {/* Sidebar Toggle Button */}
+            {collapsed ? (
+              <div />
+            ) : (
+              <Tooltip title="Collapse Sidebar" placement='right'>
+                <Icon
+                  onClick={() => setCollapsed(!collapsed)}
+                  sx={{
+                    color: '#438ED9',
+                    backgroundColor: 'transparent',
+                    borderRadius: '4px',
+                    cursor: 'pointer',
+                    zIndex: '1000',
+                    transition: 'background-color 0.2s, transform 0.2s',
+                    '&:hover': {
+                      backgroundColor: '#f0f0f0',
+                      transform: 'scale(1.05)',
+                    },
+                    '&:active': {
+                      backgroundColor: '#AFAEAE',
+                    },
+                  }}
+                >
+                  <ViewSidebar sx={{ color: '#438ED9' }} />
+                </Icon>
+              </Tooltip>
+            )}
+            <Box sx={{ flexGrow: 1 }}>
+              {showWizard && (
+                <AquariumWizard onClose={() => setShowWizard(false)} handleAddAquarium={handleAddAquarium} handleSnackbar={handleSnackbar} />
+              )}
+  
+              {currentAquarium && (
+                <>
+                  {/* Static Navbar for Current Aquarium Details */}
+                  <AppBar
+                    position="static"
+                    color="default"
+                    sx={{
+                      borderBottom: '2px solid #333',
+                      paddingBottom: '10px',
+                      border: '1px solid #e0e0e0',
+                      boxShadow: '0px 2px 5px rgba(0, 0, 0, 0.05)',
+                      borderRadius: '8px',
+                      backgroundColor: '#fafafa',
+                      '&:hover': {
+                        transform: 'scale(1.01)',
+                        boxShadow: '0px 2px 10px rgba(0, 0, 0, 0.12)',
+                      }
+                    }}
+                  >
+                    <Toolbar sx={{ justifyContent: 'space-between' }}>
+                      <Typography variant="h6" sx={{ marginRight: '20px' }}>
+                        Aquarium Name: {currentAquarium.name}
+                      </Typography>
+                      <Typography variant="subtitle1" sx={{ marginRight: '20px' }}>
+                        Type: {currentAquarium.type}
+                      </Typography>
+                      <Typography variant="subtitle1">
+                        Size: {currentAquarium.size} gallons
+                      </Typography>
+                    </Toolbar>
+                  </AppBar>
+  
+                  {/* Grid of Cards */}
+                  <Grid container spacing={3} sx={{ marginTop: '20px' }} alignItems="flex-start">
+                    {/* Fish Card */}
+                    <Grid item xs={12} md={6} lg={6}>
+                      <FishCard aquarium={currentAquarium} onUpdateSpecies={handleUpdateSpecies} handleSnackbar={handleSnackbar} />
+                    </Grid>
+  
+                    {/* Plant Card */}
+                    <Grid item xs={12} md={6} lg={6}>
+                      <PlantCard aquarium={currentAquarium} onUpdatePlants={handleUpdatePlants} handleSnackbar={handleSnackbar} />
+                    </Grid>
+  
+                    {/* Equipment Card */}
+                    <Grid item xs={12} md={6} lg={4}>
+                      <EquipmentCard aquarium={currentAquarium} onUpdateEquipment={handleUpdateEquipment} handleSnackbar={handleSnackbar} />
+                    </Grid>
+  
+                    {/* Aquarium Parameters Card */}
+                    <Grid item xs={12} md={6} lg={8}>
+                      <ParametersCard
+                        parameters={{
+                          temperature: currentAquarium.parameters?.temperature ?? 0,
+                          ph: currentAquarium.parameters?.ph ?? 0,
+                          ammonia: currentAquarium.parameters?.ammonia ?? 0,
+                          nitrite: currentAquarium.parameters?.nitrite,
+                          nitrate: currentAquarium.parameters?.nitrate,
+                          gh: currentAquarium.parameters?.gh,
+                          kh: currentAquarium.parameters?.kh,
+                          co2: currentAquarium.parameters?.co2,
+                          salinity: currentAquarium.parameters?.salinity,
+                          calcium: currentAquarium.parameters?.calcium,
+                          magnesium: currentAquarium.parameters?.magnesium,
+                          alkalinity: currentAquarium.parameters?.alkalinity,
+                          phosphate: currentAquarium.parameters?.phosphate,
+                        }}
+                        onUpdateParameters={handleUpdateParameters}
+                        aquariumData={currentAquarium}
+                      />
+                    </Grid>
+                  </Grid>
+                </>
+              )}
+            </Box>
+  
+            {/* Bottom Section for Aquarium Insights */}
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 'auto' }}>
+              <Card
                 sx={{
-                  borderBottom: '2px solid #333',
-                  paddingBottom: '10px',
+                  width: '100%',
+                  height: '150px',
+                  transition: 'transform 0.15s ease-in-out, boxShadow 0.15s ease-in-out',
                   border: '1px solid #e0e0e0',
                   boxShadow: '0px 2px 5px rgba(0, 0, 0, 0.05)',
                   borderRadius: '8px',
@@ -293,90 +392,18 @@ const Aquariums: React.FC = () => {
                   }
                 }}
               >
-                <Toolbar sx={{ justifyContent: 'space-between' }}>
-                  <Typography variant="h6" sx={{ marginRight: '20px' }}>
-                    Aquarium Name: {currentAquarium.name}
+                <CardContent>
+                  <Typography variant="h6">Aquarium Insights (AI-Powered)</Typography>
+                  <Typography variant="body1">
+                    Your tank's water temperature is optimal for Tetra species. Make sure to monitor pH levels regularly.
                   </Typography>
-                  <Typography variant="subtitle1" sx={{ marginRight: '20px' }}>
-                    Type: {currentAquarium.type}
-                  </Typography>
-                  <Typography variant="subtitle1">
-                    Size: {currentAquarium.size} gallons
-                  </Typography>
-                </Toolbar>
-              </AppBar>
-
-              {/* Grid of Cards */}
-              <Grid container spacing={3} sx={{ marginTop: '20px' }} alignItems="flex-start">
-                {/* Fish Card */}
-                <Grid item xs={12} md={6} lg={6}>
-                  {currentAquarium && <FishCard aquarium={currentAquarium}  onUpdateSpecies={handleUpdateSpecies} handleSnackbar={handleSnackbar}/>}
-                </Grid>
-
-                {/* Plant Card */}
-                <Grid item xs={12} md={6} lg={6}>
-                  <PlantCard aquarium={currentAquarium} onUpdatePlants={handleUpdatePlants} handleSnackbar={handleSnackbar}/>
-                </Grid>
-
-                {/* Equipment Card */}
-                <Grid item xs={12} md={6} lg={4}>
-                  <EquipmentCard aquarium={currentAquarium} onUpdateEquipment={handleUpdateEquipment} handleSnackbar={handleSnackbar}/>
-                </Grid>
-
-                {/* Aquarium Parameters Card */}
-                <Grid item xs={12} md={6} lg={8}>
-                  <ParametersCard
-                    parameters={{
-                      temperature: currentAquarium.parameters?.temperature ?? 0,
-                      ph: currentAquarium.parameters?.ph ?? 0,
-                      ammonia: currentAquarium.parameters?.ammonia ?? 0,
-                      nitrite: currentAquarium.parameters?.nitrite,
-                      nitrate: currentAquarium.parameters?.nitrate,
-                      gh: currentAquarium.parameters?.gh,
-                      kh: currentAquarium.parameters?.kh,
-                      co2: currentAquarium.parameters?.co2,
-                      salinity: currentAquarium.parameters?.salinity,
-                      calcium: currentAquarium.parameters?.calcium,
-                      magnesium: currentAquarium.parameters?.magnesium,
-                      alkalinity: currentAquarium.parameters?.alkalinity,
-                      phosphate: currentAquarium.parameters?.phosphate,
-                    }}
-                    onUpdateParameters={handleUpdateParameters}
-                    aquariumData={currentAquarium}
-                  />
-                </Grid>
-              </Grid>
-            </>
-          )}
-        </Box>
-
-        {/* Bottom Section for Aquarium Insights */}
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 'auto' }}>
-          <Card
-            sx={{
-              width: '100%',
-              height: '150px',
-              transition: 'transform 0.15s ease-in-out, boxShadow 0.15s ease-in-out',
-              border: '1px solid #e0e0e0',
-              boxShadow: '0px 2px 5px rgba(0, 0, 0, 0.05)',
-              borderRadius: '8px',
-              backgroundColor: '#fafafa',
-              '&:hover': {
-                transform: 'scale(1.01)',
-                boxShadow: '0px 2px 10px rgba(0, 0, 0, 0.12)',
-              }
-            }}
-          >
-            <CardContent>
-              <Typography variant="h6">Aquarium Insights (AI-Powered)</Typography>
-              <Typography variant="body1">
-                Your tank's water temperature is optimal for Tetra species. Make sure to monitor pH levels regularly.
-              </Typography>
-            </CardContent>
-          </Card>
-        </Box>
-      </div>
-
+                </CardContent>
+              </Card>
+            </Box>
+          </div>
+        </>
+      )}
+  
       {/* Snackbar Component */}
       <Snackbar
         open={snackbarOpen}
@@ -389,17 +416,17 @@ const Aquariums: React.FC = () => {
         </Alert>
       </Snackbar>
       {currentAquarium && (
-          <EditAquarium
-            aquarium={currentAquarium}
-            onSave={handleSaveAquarium}
-            onDelete={handleDeleteAquarium}
-            onClose={() => setIsEditDialogOpen(false)}
-            open={isEditDialogOpen}
-            handleSnackbar={handleSnackbar}
-          />
-        )}
+        <EditAquarium
+          aquarium={currentAquarium}
+          onSave={handleSaveAquarium}
+          onDelete={handleDeleteAquarium}
+          onClose={() => setIsEditDialogOpen(false)}
+          open={isEditDialogOpen}
+          handleSnackbar={handleSnackbar}
+        />
+      )}
     </div>
-  );
+  );  
 };
 
 export default Aquariums;
