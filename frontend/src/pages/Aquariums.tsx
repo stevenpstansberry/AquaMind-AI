@@ -218,10 +218,9 @@ const Aquariums: React.FC = () => {
       console.log('Updated aquarium:', updatedAquarium);
     }
   };
-  
+
   return (
     <>
-      
         {aquariums.length === 0 ? (
           <div style={{ display: 'flex', height: '100vh', justifyContent: 'center', alignItems: 'center' }}>
             <Box
@@ -271,33 +270,7 @@ const Aquariums: React.FC = () => {
                   flexDirection: 'column',
                 }}
               >
-                {/* Sidebar Toggle Button */}
-                {collapsed ? (
-                  <div />
-                ) : (
-                  <Tooltip title="Collapse Sidebar" placement='right'>
-                    <Icon
-                      onClick={() => setCollapsed(!collapsed)}
-                      sx={{
-                        color: '#438ED9',
-                        backgroundColor: 'transparent',
-                        borderRadius: '4px',
-                        cursor: 'pointer',
-                        zIndex: '1000',
-                        transition: 'background-color 0.2s, transform 0.2s',
-                        '&:hover': {
-                          backgroundColor: '#f0f0f0',
-                          transform: 'scale(1.05)',
-                        },
-                        '&:active': {
-                          backgroundColor: '#AFAEAE',
-                        },
-                      }}
-                    >
-                      <ViewSidebar sx={{ color: '#438ED9' }} />
-                    </Icon>
-                  </Tooltip>
-                )}
+                
                 <Box sx={{ flexGrow: 1 }}>
                   {showWizard && (
                     <AquariumWizard onClose={() => setShowWizard(false)} handleAddAquarium={handleAddAquarium} handleSnackbar={handleSnackbar} />

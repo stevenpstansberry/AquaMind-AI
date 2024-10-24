@@ -55,38 +55,46 @@ const AquariumSidebar: React.FC<AquariumSidebarProps> = ({ aquariums, onOpenWiza
           <MenuIcon />
         </IconButton>
 
+        {/* Sidebar Toggle Button */}
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'flex-start', // Aligns the toggle to the left
+            alignItems: 'center',
+            padding: '10px 0',
+            borderBottom: `1px solid ${theme.palette.divider}`,
+          }}
+        >
+          <Tooltip title={collapsed ? "Expand Sidebar" : "Collapse Sidebar"} placement="top">
+            <IconButton 
+              onClick={() => setCollapsed(!collapsed)} 
+              sx={{
+                justifyContent: 'center', 
+                transition: 'all 0.3s',
+              }}
+            >
+              <ViewSidebar
+                sx={{
+                  color: '#438ED9',
+                  transition: 'transform 0.2s, color 0.2s',
+                  '&:hover': {
+                    transform: 'scale(1.1)',
+                    color: '#306bb3',
+                  },
+                }}
+              />
+            </IconButton>
+          </Tooltip>
+        </Box>
+
         <Box
           sx={{
             width: '100%',
             display: 'flex',
             flexDirection: 'column',
             alignItems: collapsed ? 'center' : 'flex-start',
-            overflow: 'hidden', // prevents stretching when collapsing
           }}
         >
-        {collapsed ? (
-          <Tooltip title="Expand Sidebar" placement='right'>
-            <IconButton onClick={() => setCollapsed(!collapsed)}>
-              <ViewSidebar 
-              sx={{
-                color: '#438ED9',
-              }}
-              />
-            </IconButton>
-          </Tooltip>
-        ) : (
-          <Typography
-            variant="h6"
-            gutterBottom
-            sx={{
-              whiteSpace: 'nowrap',
-              visibility: collapsed ? 'hidden' : 'visible',
-              
-            }}
-          >
-            Your Aquariums
-          </Typography>
-        )}
 
           {aquariums.length > 0 ? (
             <List sx={{ width: '100%' }}>
