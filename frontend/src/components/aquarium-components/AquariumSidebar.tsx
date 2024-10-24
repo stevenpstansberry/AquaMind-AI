@@ -65,7 +65,7 @@ const AquariumSidebar: React.FC<AquariumSidebarProps> = ({ aquariums, onOpenWiza
             borderBottom: `1px solid ${theme.palette.divider}`,
           }}
         >
-          <Tooltip title={collapsed ? "Expand Sidebar" : "Collapse Sidebar"} placement="top">
+          <Tooltip title={collapsed ? "Expand Sidebar" : "Collapse Sidebar"} placement="right">
             <IconButton 
               onClick={() => setCollapsed(!collapsed)} 
               sx={{
