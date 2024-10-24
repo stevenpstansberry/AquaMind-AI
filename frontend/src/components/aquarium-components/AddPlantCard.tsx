@@ -341,7 +341,16 @@ useEffect(() => {
             <Button variant="outlined" onClick={() => setShowChat(!showChat)}>
               {showChat ? 'Hide' : 'Show'} AI Suggestions
             </Button>
-            <AIChatInterface showChat={showChat} onClose={() => setShowChat(false)} aquarium={aquarium} />
+            <AIChatInterface
+              showChat={showChat}
+              onClose={() => setShowChat(false)}
+              aquarium={aquarium}
+              suggestions={[
+                "What is a plant can I add to this tank?", 
+                "Do the plants in my tank need any special care?",
+              ]}
+              onAddItem={handleAddPlantGPT} 
+            />
           </Box>
         </DialogContent>
 
