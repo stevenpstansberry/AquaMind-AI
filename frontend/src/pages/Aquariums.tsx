@@ -25,14 +25,15 @@ import { useAquarium } from '../util/AquariumContext';
 import AquariumSidebar from '../components/aquarium-components/AquariumSidebar';
 import AquariumWizard from '../components/aquarium-components/aquarium-wizard-components/AquariumWizard';
 import { Box, AppBar, Toolbar, Typography, Grid, CardContent, Card, Icon, Tooltip, Snackbar, Alert } from '@mui/material';
-import { createAquarium, updateAquarium as apiUpdateAquarium } from '../services/APIServices';
+import { createAquarium, updateAquarium as apiUpdateAquarium, deleteAquarium as apiDeleteAquarium } from '../services/APIServices';
 import { ViewSidebar } from '@mui/icons-material';
+import EditAquarium from '../components/aquarium-components/EditAquarium';
 
 
 import { Aquarium, Equipment, Fish, Plant } from '../interfaces/Aquarium';
 
 
-// Import the refactored card components
+// Import the card components
 import FishCard from '../components/aquarium-components/FishCard';
 import PlantCard from '../components/aquarium-components/PlantCard';
 import EquipmentCard from '../components/aquarium-components/EquipmentCard';
@@ -41,10 +42,11 @@ import ParametersCard from '../components/aquarium-components/ParametersCard';
 
 
 const Aquariums: React.FC = () => {
-  const { aquariums = [], addAquarium, updateAquarium } = useAquarium(); 
+  const { aquariums = [], addAquarium, updateAquarium, removeAquarium } = useAquarium(); 
   const [showWizard, setShowWizard] = useState(false);
   const [currentAquarium, setCurrentAquarium] = useState<Aquarium | null>(null);
   const [collapsed, setCollapsed] = useState<boolean>(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const isFirstRender = useRef(true);
 
   // Effect to set the default aquarium when component mounts
@@ -73,6 +75,13 @@ const Aquariums: React.FC = () => {
   const handleOpenWizard = (): void => {
     setShowWizard(true);
   };
+
+  // Function to handle opening the edit dialog
+  const handleOpenEditDialog = (aquarium: Aquarium) => {
+    setCurrentAquarium(aquarium);
+    setIsEditDialogOpen(true);
+  };
+
 
 
   /**
@@ -103,6 +112,35 @@ const Aquariums: React.FC = () => {
       console.error("Failed to add aquarium:", error);
       handleSnackbar('Failed to add aquarium.', 'error', true);
     }
+  };
+
+  // Function to handle saving the updated aquarium
+  const handleSaveAquarium = (updatedAquarium: Aquarium) => {
+    updateAquarium(updatedAquarium);
+    apiUpdateAquarium(updatedAquarium.id, updatedAquarium)
+      .then(() => {
+        console.log('Successfully updated aquarium!');
+      })
+      .catch(error => {
+        console.error('Failed to update aquarium:', error);
+      });
+    setIsEditDialogOpen(false);
+  };
+
+  // Function to handle deleting an aquarium
+  const handleDeleteAquarium = (id: string) => {
+    apiDeleteAquarium(id)
+      .then(() => {
+        removeAquarium(id);
+        console.log('Aquarium deleted successfully!');
+        handleSnackbar('Aquarium deleted successfully!', 'success', true);
+      })
+      .catch(error => {
+        console.error('Failed to delete aquarium:', error);
+        handleSnackbar('Failed to delete aquarium. Please try again later', 'error', true);
+      });
+    setIsEditDialogOpen(false);
+    
   };
 
 
@@ -190,6 +228,7 @@ const Aquariums: React.FC = () => {
         currentAquarium={currentAquarium}
         collapsed={collapsed}
         setCollapsed={setCollapsed}
+        onEditAquarium={handleOpenEditDialog}
       />
       <div
         style={{
@@ -349,6 +388,16 @@ const Aquariums: React.FC = () => {
           {snackbarMessage}
         </Alert>
       </Snackbar>
+      {currentAquarium && (
+          <EditAquarium
+            aquarium={currentAquarium}
+            onSave={handleSaveAquarium}
+            onDelete={handleDeleteAquarium}
+            onClose={() => setIsEditDialogOpen(false)}
+            open={isEditDialogOpen}
+            handleSnackbar={handleSnackbar}
+          />
+        )}
     </div>
   );
 };

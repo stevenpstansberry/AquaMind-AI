@@ -24,9 +24,10 @@ interface AquariumSidebarProps {
   currentAquarium: Aquarium | null;
   collapsed: boolean;
   setCollapsed: React.Dispatch<React.SetStateAction<boolean>>;
+  onEditAquarium: (aquarium: Aquarium) => void;
 }
 
-const AquariumSidebar: React.FC<AquariumSidebarProps> = ({ aquariums, onOpenWizard, setCurrentAquarium, currentAquarium, collapsed, setCollapsed }) => {
+const AquariumSidebar: React.FC<AquariumSidebarProps> = ({ aquariums, onOpenWizard, setCurrentAquarium, currentAquarium, collapsed, setCollapsed, onEditAquarium }) => {
   const theme = useTheme();
 
   return (
@@ -147,6 +148,7 @@ const AquariumSidebar: React.FC<AquariumSidebarProps> = ({ aquariums, onOpenWiza
                       onClick={(e) => {
                         e.stopPropagation(); // prevent triggering the aquarium selection when editing
                         console.log(`Editing aquarium with id: ${aquarium.id}`);
+                        onEditAquarium(aquarium);
                       }}
                       size="small"
                       sx={{
