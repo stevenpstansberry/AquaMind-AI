@@ -91,69 +91,21 @@ type Aquarium struct {
 }
 
 type Species struct {
+    Id                     string  `json:"id"`
     Name                   string  `json:"name"`
     Count                  int     `json:"count"`
-    Role                   string  `json:"role"`
-    Type                   string  `json:"type"`
-    Description            string  `json:"description"`
-    FeedingHabits          string  `json:"feedingHabits"`
-    TankRequirements       string  `json:"tankRequirements"`
-    Compatibility          string  `json:"compatibility"`
-    Lifespan               string  `json:"lifespan"`
-    Size                   string  `json:"size"`
-    WaterParameters        string  `json:"waterParameters"`
-    BreedingInfo           string  `json:"breedingInfo"`
-    Behavior               string  `json:"behavior"`
-    CareLevel              string  `json:"careLevel"`
-    DietaryRestrictions    string  `json:"dietaryRestrictions"`
-    NativeHabitat          string  `json:"nativeHabitat"`
-    StockingRecommendations string `json:"stockingRecommendations"`
-    SpecialConsiderations  string  `json:"specialConsiderations"`
-    MinTankSize            int     `json:"minTankSize"`
 }
 
 type Plant struct {
+    Id                     string  `json:"id"`
     Name                   string  `json:"name"`
     Count                  int     `json:"count"`
-    Role                   string  `json:"role"`
-    Type                   string  `json:"type"`
-    Description            string  `json:"description"`
-    FeedingHabits          string  `json:"feedingHabits"`
-    TankRequirements       string  `json:"tankRequirements"`
-    Compatibility          string  `json:"compatibility"`
-    Lifespan               string  `json:"lifespan"`
-    Size                   string  `json:"size"`
-    WaterParameters        string  `json:"waterParameters"`
-    BreedingInfo           string  `json:"breedingInfo"`
-    Behavior               string  `json:"behavior"`
-    CareLevel              string  `json:"careLevel"`
-    DietaryRestrictions    string  `json:"dietaryRestrictions"`
-    NativeHabitat          string  `json:"nativeHabitat"`
-    StockingRecommendations string `json:"stockingRecommendations"`
-    SpecialConsiderations  string  `json:"specialConsiderations"`
-    MinTankSize            int     `json:"minTankSize"`
 }
 
 type Equipment struct {
+    Id                     string  `json:"id"`
     Name                   string  `json:"name"`
     Count                  int     `json:"count"`
-    Role                   string  `json:"role"`
-    Type                   string  `json:"type"`
-    Description            string  `json:"description"`
-    FeedingHabits          string  `json:"feedingHabits"`
-    TankRequirements       string  `json:"tankRequirements"`
-    Compatibility          string  `json:"compatibility"`
-    Lifespan               string  `json:"lifespan"`
-    Size                   string  `json:"size"`
-    WaterParameters        string  `json:"waterParameters"`
-    BreedingInfo           string  `json:"breedingInfo"`
-    Behavior               string  `json:"behavior"`
-    CareLevel              string  `json:"careLevel"`
-    DietaryRestrictions    string  `json:"dietaryRestrictions"`
-    NativeHabitat          string  `json:"nativeHabitat"`
-    StockingRecommendations string `json:"stockingRecommendations"`
-    SpecialConsiderations  string  `json:"specialConsiderations"`
-    MinTankSize            int     `json:"minTankSize"`
 }
 
 
