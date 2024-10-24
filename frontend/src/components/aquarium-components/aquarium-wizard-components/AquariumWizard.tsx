@@ -21,9 +21,10 @@ import AIChatInterface from '../../ai-components/AIChatInterface';
 interface AquariumWizardProps {
   onClose: () => void;
   handleAddAquarium: (aquariumToAdd: any) => void;
+  handleSnackbar: (message: string, severity: 'success' | 'error' | 'warning' | 'info', open: boolean) => void;
 }
 
-const AquariumWizard: React.FC<AquariumWizardProps> = ({ onClose, handleAddAquarium }) => {
+const AquariumWizard: React.FC<AquariumWizardProps> = ({ onClose, handleAddAquarium, handleSnackbar }) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [aquariumData, setAquariumData] = useState({
     id: '',
@@ -95,6 +96,7 @@ const AquariumWizard: React.FC<AquariumWizardProps> = ({ onClose, handleAddAquar
     console.log("Saving Aquarium:", finalAquariumData); 
     handleAddAquarium(finalAquariumData); // Save the aquarium data
     onClose(); 
+    handleSnackbar('Aquarium setup complete!', 'success', true); // Show success message
     resetWizard(); // Reset the wizard state after closing
   };
 

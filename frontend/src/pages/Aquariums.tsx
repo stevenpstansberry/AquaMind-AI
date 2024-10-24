@@ -233,7 +233,7 @@ const Aquariums: React.FC = () => {
         </Tooltip>
       ) }
         <Box sx={{ flexGrow: 1 }}>
-          {showWizard && <AquariumWizard onClose={() => setShowWizard(false)} handleAddAquarium={handleAddAquarium} />}
+          {showWizard && <AquariumWizard onClose={() => setShowWizard(false)} handleAddAquarium={handleAddAquarium} handleSnackbar={handleSnackbar}/>}
 
           {currentAquarium && (
             <>
