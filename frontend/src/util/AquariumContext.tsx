@@ -45,13 +45,25 @@ export const AquariumProvider: React.FC<{ children: ReactNode }> = ({ children }
       // Retrieve aquariums from local storage for the logged-in user
       const storedAquariums = localStorage.getItem(`aquariums_${user.email}`);
       if (storedAquariums) {
-        setAquariums(JSON.parse(storedAquariums));
+        const parsedAquariums = JSON.parse(storedAquariums);
+        setAquariums(parsedAquariums.length > 0 ? parsedAquariums : []);
       } else {
-        // Simulate fetching from an API if local storage is empty
-        const fetchedAquariums = await getUserAquariums();
-        setAquariums(fetchedAquariums);
-        // Save mock data to local storage for future use
-        localStorage.setItem(`aquariums_${user.email}`, JSON.stringify(fetchedAquariums));
+        // Fetch from the API if local storage is empty
+        try {
+          const fetchedAquariums = await getUserAquariums();
+          if (fetchedAquariums.length > 0) {
+            setAquariums(fetchedAquariums);
+            localStorage.setItem(`aquariums_${user.email}`, JSON.stringify(fetchedAquariums));
+          } else {
+            // If no aquariums exist, initialize with an empty array
+            setAquariums([]);
+            localStorage.setItem(`aquariums_${user.email}`, JSON.stringify([]));
+          }
+        } catch (error) {
+          console.error('Error fetching aquariums:', error);
+          // Optionally set aquariums to an empty array if API call fails
+          setAquariums([]);
+        }
       }
     }
   };
