@@ -93,9 +93,15 @@ type Aquarium struct {
 }
 
 type Species struct {
-    Id                     string  `json:"id"`
-    Name                   string  `json:"name"`
-    Count                  int     `json:"count"`
+    Id             string
+    Name           string
+    Role           string
+    Type           string
+    Description    string
+    FeedingHabits  string
+    TankRequirements string
+    MinTankSize    int
+    Compatibility  string
 }
 
 type Plant struct {
@@ -242,60 +248,53 @@ func DeleteAquarium(id string, userID string) error {
 }
 
 
-// GetDetailByID retrieves a detail (species, plant, or equipment) by its ID for a specific user.
-func GetDetailByID(id string, userID string, detailType string) (interface{}, error) {
-    // Validate detailType to prevent SQL injection
-    var fieldName string
+func GetDetailByID(id string, detailType string) (interface{}, error) {
+    // Validate detailType to prevent SQL injection and ensure it matches one of the expected values
+    var tableName string
     switch detailType {
     case "species":
-        fieldName = "species"
+        tableName = "species"
     case "plant":
-        fieldName = "plants"
+        tableName = "plants"
     case "equipment":
-        fieldName = "equipment"
+        tableName = "equipment"
     default:
         return nil, errors.New("Invalid detail type")
     }
 
-    query := fmt.Sprintf(`
-        SELECT %s_item
-        FROM aquariums
-        WHERE user_id = $2
-        CROSS JOIN LATERAL jsonb_array_elements(%s) AS %s_item
-        WHERE %s_item->>'Id' = $1
-        LIMIT 1
-    `, fieldName, fieldName, fieldName, fieldName)
+    // Construct the query to select the record by ID
+    query := fmt.Sprintf(`SELECT * FROM %s WHERE id = $1`, tableName)
 
-    var detailJSON []byte
-    err := db.QueryRow(query, id, userID).Scan(&detailJSON)
-    if err != nil {
-        return nil, err
-    }
+    // Variable to hold the scanned data based on the type
+    var detail interface{}
 
-    // Unmarshal into the appropriate struct
+    // Depending on the detail type, scan into the appropriate struct
     switch detailType {
     case "species":
         var species Species
-        err = json.Unmarshal(detailJSON, &species)
+        err := db.QueryRow(query, id).Scan(&species.Id, &species.Name, &species.Role, &species.Type, &species.Description, &species.FeedingHabits, &species.TankRequirements, &species.MinTankSize, &species.Compatibility)
         if err != nil {
             return nil, err
         }
-        return &species, nil
+        detail = species
     case "plant":
         var plant Plant
-        err = json.Unmarshal(detailJSON, &plant)
-        if err != nil {
-            return nil, err
-        }
-        return &plant, nil
+        // err := db.QueryRow(query, id).Scan(&plant.Id, &plant.Name, &plant.Description, &plant.Requirements)
+        // if err != nil {
+        //     return nil, err
+        // }
+        detail = plant
     case "equipment":
         var equipment Equipment
-        err = json.Unmarshal(detailJSON, &equipment)
-        if err != nil {
-            return nil, err
-        }
-        return &equipment, nil
+        // err := db.QueryRow(query, id).Scan(&equipment.Id, &equipment.Name, &equipment.Type, &equipment.Description)
+        // if err != nil {
+        //     return nil, err
+        // }
+        detail = equipment
     default:
         return nil, errors.New("Unhandled detail type")
     }
+
+    return detail, nil
 }
+

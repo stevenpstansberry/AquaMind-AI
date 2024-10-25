@@ -416,6 +416,8 @@ func GetDetailHandler(w http.ResponseWriter, r *http.Request) {
     vars := mux.Vars(r)
     id := vars["id"]
 
+
+
     // Read the header parameter "X-Detail-Type"
     detailType := r.Header.Get("X-Detail-Type")
     if detailType == "" {
@@ -423,23 +425,14 @@ func GetDetailHandler(w http.ResponseWriter, r *http.Request) {
         return
     }
 
-    // Extract user information from the JWT token
-    userEmail, err := utils.ExtractEmailFromJWT(r.Header.Get("Authorization"))
-    if err != nil {
-        log.Printf("Error extracting user from token: %v", err)
-        http.Error(w, "Unauthorized", http.StatusUnauthorized)
-        return
-    }
+    // Extract the detail type from the header
+    log.Printf("Requesting detail for ID: %s and type: %s", id, detailType)
 
-    // Get user by email
-    user, err := models.GetUserByEmail(userEmail)
-    if err != nil {
-        log.Printf("Error retrieving user: %v", err)
-        http.Error(w, "User not found", http.StatusNotFound)
-        return
-    }
 
-    result, err := models.GetDetailByID(id, user.ID, detailType)
+
+
+
+    result, err := models.GetDetailByID(id, detailType)
     if err != nil {
         if errors.Is(err, sql.ErrNoRows) {
             http.Error(w, "Not found", http.StatusNotFound)
