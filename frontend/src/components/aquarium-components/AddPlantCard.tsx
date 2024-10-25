@@ -6,6 +6,7 @@ import {
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import AIChatInterface from '../ai-components/AIChatInterface';  // Assuming you have this for AI suggestions
 import PlantInfoCard from './PlantInfoCard';  // Component similar to FishInfoCard
+import { getAllDetails } from '../../services/APIServices';
 import { Aquarium, Plant } from '../../interfaces/Aquarium';  // Ensure Plant interface is imported
 
 interface AddPlantCardProps {
@@ -72,15 +73,27 @@ const AddPlantCard: React.FC<AddPlantCardProps> = ({ open, onClose, aquarium, on
   const [selectedPlant, setSelectedPlant] = useState<Plant | null>(null);  
   const [infoOpen, setInfoOpen] = useState(false);  
   const [localPlantList, setLocalPlantList] = useState<Plant[]>(aquarium.plants);  // Local copy of aquarium plants
+  const [plantList, setPlantList] = useState<Plant[]>([]);  // State for all plants
+  const [filteredPlantList, setFilteredPlantList] = useState<Plant[]>([]);
 
-  const plantList = aquarium.type === 'Freshwater' ? freshwaterPlantList : [];  // Saltwater plants could be added later
 
-   // Extract names of existing plants in the aquarium
-   const existingPlantNames = aquarium.plants.map(plant => plant.name.toLowerCase());
+   /**
+   * Fetch plant data when the component is mounted or when the aquarium type changes
+   */
+   useEffect(() => {
+    const fetchFishData = async () => {
+      try {
 
-  // Filter plant list based on role, care level, minimum tank size, and search query
+        const data = await getAllDetails("plants") as Plant[];
+        setPlantList(data);
+      } catch (error) {
+        console.error("Error fetching Plant data:", error);
+        handleSnackbar("Error fetching Plant data", 'error', true);
+      }
+    };
 
-const [filteredPlantList, setFilteredPlantList] = useState<Plant[]>([]);
+    fetchFishData();
+  }, [aquarium.type, handleSnackbar]);
 
 useEffect(() => {
     if (open) {
