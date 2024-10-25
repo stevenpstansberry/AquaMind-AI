@@ -93,27 +93,28 @@ type Aquarium struct {
 }
 
 type Species struct {
-    Id                   string
-    Name                 string
-    ImageURL             string
-    Role                 string
-    Type                 string
-    Description          string
-    FeedingHabits        string
-    TankRequirements     string
-    Compatibility        string
-    Lifespan             string
-    Size                 string
-    WaterParameters      string
-    BreedingInfo         string
-    Behavior             string
-    CareLevel            string
-    DietaryRestrictions  string
-    NativeHabitat        string
-    StockingRecommendations string
-    SpecialConsiderations string
-    MinTankSize          int
+    Id                      string
+    Name                    string
+    ImageURL                *string
+    Role                    string
+    Type                    string
+    Description             string
+    FeedingHabits           string
+    TankRequirements        string
+    Compatibility           string
+    Lifespan                *string
+    Size                    *string
+    WaterParameters         *string
+    BreedingInfo            *string
+    Behavior                *string
+    CareLevel               *string
+    DietaryRestrictions     *string
+    NativeHabitat           *string
+    StockingRecommendations *string
+    SpecialConsiderations   *string
+    MinTankSize             int
 }
+
 type Plant struct {
     Id                     string  `json:"id"`
     Name                   string  `json:"name"`
@@ -271,7 +272,6 @@ func GetDetailByID(id string, detailType string) (interface{}, error) {
         return nil, errors.New("Invalid detail type")
     }
 
-    // Construct the query to select the record by ID
     var query string
     switch detailType {
     case "species":
