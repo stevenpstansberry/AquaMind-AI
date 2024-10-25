@@ -116,10 +116,26 @@ type Species struct {
 }
 
 type Plant struct {
-    Id                     string  `json:"id"`
-    Name                   string  `json:"name"`
-    Count                  int     `json:"count"`
+    Id                  string
+    Name                string
+    Role                string
+    Type                string
+    Description         string
+    TankRequirements    string
+    MinTankSize         int
+    Compatibility       string
+    Lifespan            *string
+    Size                *string
+    WaterParameters     *string
+    LightingNeeds       *string
+    GrowthRate          *string
+    CareLevel           *string
+    NativeHabitat       *string
+    PropagationMethods  *string
+    SpecialConsiderations *string
+    ImageURL            *string
 }
+
 
 type Equipment struct {
     Id                     string  `json:"id"`
@@ -284,7 +300,9 @@ func GetDetailByID(id string, detailType string) (interface{}, error) {
         `, tableName)
     case "plant":
         query = fmt.Sprintf(`
-            SELECT id, name, count
+            SELECT id, name, role, type, description, tank_requirements, min_tank_size, compatibility, 
+                   lifespan, size, water_parameters, lighting_needs, growth_rate, care_level, native_habitat, 
+                   propagation_methods, special_considerations, image_url
             FROM %s
             WHERE id = $1
         `, tableName)
@@ -334,7 +352,22 @@ func GetDetailByID(id string, detailType string) (interface{}, error) {
         err := db.QueryRow(query, id).Scan(
             &plant.Id,
             &plant.Name,
-            &plant.Count,
+            &plant.Role,
+            &plant.Type,
+            &plant.Description,
+            &plant.TankRequirements,
+            &plant.MinTankSize,
+            &plant.Compatibility,
+            &plant.Lifespan,
+            &plant.Size,
+            &plant.WaterParameters,
+            &plant.LightingNeeds,
+            &plant.GrowthRate,
+            &plant.CareLevel,
+            &plant.NativeHabitat,
+            &plant.PropagationMethods,
+            &plant.SpecialConsiderations,
+            &plant.ImageURL,
         )
         if err != nil {
             return nil, err
@@ -357,4 +390,5 @@ func GetDetailByID(id string, detailType string) (interface{}, error) {
 
     return detail, nil
 }
+
 
