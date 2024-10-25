@@ -93,60 +93,60 @@ type Aquarium struct {
 }
 
 type Species struct {
-    Id                      string
-    Name                    string
-    ImageURL                *string
-    Role                    string
-    Type                    string
-    Description             string
-    FeedingHabits           string
-    TankRequirements        string
-    Compatibility           string
-    Lifespan                *string
-    Size                    *string
-    WaterParameters         *string
-    BreedingInfo            *string
-    Behavior                *string
-    CareLevel               *string
-    DietaryRestrictions     *string
-    NativeHabitat           *string
-    StockingRecommendations *string
-    SpecialConsiderations   *string
-    MinTankSize             int
+    Id                      string  `json:"id"`
+    Name                    string  `json:"name"`
+    ImageURL                *string `json:"image_url"`
+    Role                    string  `json:"role"`
+    Type                    string  `json:"type"`
+    Description             string  `json:"description"`
+    FeedingHabits           string  `json:"feeding_habits"`
+    TankRequirements        string  `json:"tank_requirements"`
+    Compatibility           string  `json:"compatibility"`
+    Lifespan                *string `json:"lifespan"`
+    Size                    *string `json:"size"`
+    WaterParameters         *string `json:"water_parameters"`
+    BreedingInfo            *string `json:"breeding_info"`
+    Behavior                *string `json:"behavior"`
+    CareLevel               *string `json:"care_level"`
+    DietaryRestrictions     *string `json:"dietary_restrictions"`
+    NativeHabitat           *string `json:"native_habitat"`
+    StockingRecommendations *string `json:"stocking_recommendations"`
+    SpecialConsiderations   *string `json:"special_considerations"`
+    MinTankSize             int     `json:"min_tank_size"`
 }
 
 type Plant struct {
-    Id                  string
-    Name                string
-    Role                string
-    Type                string
-    Description         string
-    TankRequirements    string
-    MinTankSize         int
-    Compatibility       string
-    Lifespan            *string
-    Size                *string
-    WaterParameters     *string
-    LightingNeeds       *string
-    GrowthRate          *string
-    CareLevel           *string
-    NativeHabitat       *string
-    PropagationMethods  *string
-    SpecialConsiderations *string
-    ImageURL            *string
+    Id                  string  `json:"id"`
+    Name                string  `json:"name"`
+    Role                string  `json:"role"`
+    Type                string  `json:"type"`
+    Description         string  `json:"description"`
+    TankRequirements    string  `json:"tank_requirements"`
+    MinTankSize         int     `json:"min_tank_size"`
+    Compatibility       string  `json:"compatibility"`
+    Lifespan            *string `json:"lifespan"`
+    Size                *string `json:"size"`
+    WaterParameters     *string `json:"water_parameters"`
+    LightingNeeds       *string `json:"lighting_needs"`
+    GrowthRate          *string `json:"growth_rate"`
+    CareLevel           *string `json:"care_level"`
+    NativeHabitat       *string `json:"native_habitat"`
+    PropagationMethods  *string `json:"propagation_methods"`
+    SpecialConsiderations *string `json:"special_considerations"`
+    ImageURL            *string `json:"image_url"`
 }
 
 
 type Equipment struct {
-    Id                  string
-    Name                string
-    Description         string
-    Role                string
-    Importance          string
-    Usage               string
-    SpecialConsiderations *string
-    Fields              json.RawMessage 
-    Type                string
+    Id                  string          `json:"id"`
+    Name                string          `json:"name"`
+    Description         string          `json:"description"`
+    Role                string          `json:"role"`
+    Importance          string          `json:"importance"`
+    Usage               string          `json:"usage"`
+    SpecialConsiderations *string       `json:"special_considerations"`
+    Fields              json.RawMessage `json:"fields"`
+    Type                string          `json:"type"`
 }
 
 
