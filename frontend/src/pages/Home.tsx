@@ -16,7 +16,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { getDetailsById } from '../services/APIServices';
+import { getDetailsById, getAllDetails } from '../services/APIServices';
 import { useAuth } from '../util/AuthContext';
 
 
@@ -28,7 +28,7 @@ const Home: React.FC = () => {
   useEffect(() => {
     const fetchDetails = async () => {
       try {
-        const response = await getDetailsById("45740f19-6a47-4cf7-80ad-dd921410b4f5", "plant");
+        const response = await getAllDetails("plants");
         setDetails(response);
       } catch (error) {
         console.error("Error fetching details:", error);

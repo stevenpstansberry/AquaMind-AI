@@ -20,6 +20,7 @@ import AIChatInterface from '../ai-components/AIChatInterface';
 import FishInfoCard from './FishInfoCard';
 import { Aquarium, Fish } from '../../interfaces/Aquarium';
 import freshWaterFishData from '../../util/FreshwaterFishData.json';
+
 import saltWaterFishData from '../../util/SaltwaterFishData.json';
 
 interface AddFishCardProps {
