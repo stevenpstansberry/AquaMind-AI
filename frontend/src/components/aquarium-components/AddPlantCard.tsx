@@ -17,49 +17,6 @@ interface AddPlantCardProps {
   handleSnackbar: (message: string, severity: 'success' | 'error' | 'warning' | 'info', open: boolean) => void;
 }
 
-const freshwaterPlantList: Plant[] = [
-  {
-    name: "Anubias",
-    count: 1,
-    role: "Oxygenator",
-    type: "Rooted",
-    description: "Slow-growing, hardy plant that thrives in low light.",
-    tankRequirements: "Does well in low light, attaches to rocks or driftwood.",
-    minTankSize: 5,
-    compatibility: "Compatible with most freshwater fish.",
-    lifespan: "Several years",
-    size: "6-12 inches",
-    waterParameters: "pH 6.0-7.5, Temp 72-82°F",
-    lightingNeeds: "Low",
-    growthRate: "Slow",
-    careLevel: "Easy",
-    nativeHabitat: "West Africa",
-    propagationMethods: "Rhizome division",
-    specialConsiderations: "Do not bury rhizome in substrate.",
-    imageUrl: "",
-  },
-  {
-    name: "Java Fern",
-    count: 1,
-    role: "Decorative",
-    type: "Rooted",
-    description: "Easy-to-care-for plant, great for beginners.",
-    tankRequirements: "Attaches to rocks or driftwood, does not require substrate.",
-    minTankSize: 10,
-    compatibility: "Compatible with most fish.",
-    lifespan: "Several years",
-    size: "10-14 inches",
-    waterParameters: "pH 6.0-7.5, Temp 68-82°F",
-    lightingNeeds: "Low to medium",
-    growthRate: "Slow",
-    careLevel: "Easy",
-    nativeHabitat: "Southeast Asia",
-    propagationMethods: "Rhizome division",
-    specialConsiderations: "Avoid burying the rhizome.",
-    imageUrl: "",
-  },
-  // Add more plants as needed
-];
 
 const AddPlantCard: React.FC<AddPlantCardProps> = ({ open, onClose, aquarium, onAddPlant, handleSnackbar }) => {
   const [roleFilter, setRoleFilter] = useState('');  
