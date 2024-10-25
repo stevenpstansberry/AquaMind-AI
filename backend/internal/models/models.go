@@ -95,24 +95,24 @@ type Aquarium struct {
 type Species struct {
     Id                      string  `json:"id"`
     Name                    string  `json:"name"`
-    ImageURL                *string `json:"image_url"`
+    ImageURL                *string `json:"imageUrl"`
     Role                    string  `json:"role"`
     Type                    string  `json:"type"`
     Description             string  `json:"description"`
-    FeedingHabits           string  `json:"feeding_habits"`
-    TankRequirements        string  `json:"tank_requirements"`
+    FeedingHabits           string  `json:"feedingHabits"`
+    TankRequirements        string  `json:"tankRequirements"`
     Compatibility           string  `json:"compatibility"`
     Lifespan                *string `json:"lifespan"`
     Size                    *string `json:"size"`
-    WaterParameters         *string `json:"water_parameters"`
+    WaterParameters         *string `json:"waterParameters"`
     BreedingInfo            *string `json:"breeding_info"`
     Behavior                *string `json:"behavior"`
-    CareLevel               *string `json:"care_level"`
-    DietaryRestrictions     *string `json:"dietary_restrictions"`
-    NativeHabitat           *string `json:"native_habitat"`
-    StockingRecommendations *string `json:"stocking_recommendations"`
-    SpecialConsiderations   *string `json:"special_considerations"`
-    MinTankSize             int     `json:"min_tank_size"`
+    CareLevel               *string `json:"careLevel"`
+    DietaryRestrictions     *string `json:"dietaryRestrictions"`
+    NativeHabitat           *string `json:"nativeHabitat"`
+    StockingRecommendations *string `json:"stockingRecommendations"`
+    SpecialConsiderations   *string `json:"specialConsiderations"`
+    MinTankSize             int     `json:"minTankSize"`
 }
 
 type Plant struct {
@@ -121,19 +121,19 @@ type Plant struct {
     Role                string  `json:"role"`
     Type                string  `json:"type"`
     Description         string  `json:"description"`
-    TankRequirements    string  `json:"tank_requirements"`
-    MinTankSize         int     `json:"min_tank_size"`
+    TankRequirements    string  `json:"tankRequirements"`
+    MinTankSize         int     `json:"minTankSize"`
     Compatibility       string  `json:"compatibility"`
     Lifespan            *string `json:"lifespan"`
     Size                *string `json:"size"`
-    WaterParameters     *string `json:"water_parameters"`
-    LightingNeeds       *string `json:"lighting_needs"`
-    GrowthRate          *string `json:"growth_rate"`
-    CareLevel           *string `json:"care_level"`
-    NativeHabitat       *string `json:"native_habitat"`
-    PropagationMethods  *string `json:"propagation_methods"`
-    SpecialConsiderations *string `json:"special_considerations"`
-    ImageURL            *string `json:"image_url"`
+    WaterParameters     *string `json:"waterParameters"`
+    LightingNeeds       *string `json:"lightingNeeds"`
+    GrowthRate          *string `json:"growthRate"`
+    CareLevel           *string `json:"careLevel"`
+    NativeHabitat       *string `json:"nativeHabitat"`
+    PropagationMethods  *string `json:"propagationMethods"`
+    SpecialConsiderations *string `json:"specialConsiderations"`
+    ImageURL            *string `json:"imageUrl"`
 }
 
 
@@ -144,7 +144,7 @@ type Equipment struct {
     Role                string          `json:"role"`
     Importance          string          `json:"importance"`
     Usage               string          `json:"usage"`
-    SpecialConsiderations *string       `json:"special_considerations"`
+    SpecialConsiderations *string       `json:"specialConsiderations"`
     Fields              json.RawMessage `json:"fields"`
     Type                string          `json:"type"`
 }
