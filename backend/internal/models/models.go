@@ -93,17 +93,27 @@ type Aquarium struct {
 }
 
 type Species struct {
-    Id             string
-    Name           string
-    Role           string
-    Type           string
-    Description    string
-    FeedingHabits  string
-    TankRequirements string
-    MinTankSize    int
-    Compatibility  string
+    Id                   string
+    Name                 string
+    ImageURL             string
+    Role                 string
+    Type                 string
+    Description          string
+    FeedingHabits        string
+    TankRequirements     string
+    Compatibility        string
+    Lifespan             string
+    Size                 string
+    WaterParameters      string
+    BreedingInfo         string
+    Behavior             string
+    CareLevel            string
+    DietaryRestrictions  string
+    NativeHabitat        string
+    StockingRecommendations string
+    SpecialConsiderations string
+    MinTankSize          int
 }
-
 type Plant struct {
     Id                     string  `json:"id"`
     Name                   string  `json:"name"`
@@ -249,7 +259,6 @@ func DeleteAquarium(id string, userID string) error {
 
 
 func GetDetailByID(id string, detailType string) (interface{}, error) {
-    // Validate detailType to prevent SQL injection and ensure it matches one of the expected values
     var tableName string
     switch detailType {
     case "species":
@@ -263,33 +272,84 @@ func GetDetailByID(id string, detailType string) (interface{}, error) {
     }
 
     // Construct the query to select the record by ID
-    query := fmt.Sprintf(`SELECT * FROM %s WHERE id = $1`, tableName)
+    var query string
+    switch detailType {
+    case "species":
+        query = fmt.Sprintf(`
+            SELECT id, name, image_url, role, type, description, feeding_habits, tank_requirements, 
+                   compatibility, lifespan, size, water_parameters, breeding_info, behavior, care_level,
+                   dietary_restrictions, native_habitat, stocking_recommendations, special_considerations, min_tank_size
+            FROM %s
+            WHERE id = $1
+        `, tableName)
+    case "plant":
+        query = fmt.Sprintf(`
+            SELECT id, name, count
+            FROM %s
+            WHERE id = $1
+        `, tableName)
+    case "equipment":
+        query = fmt.Sprintf(`
+            SELECT id, name, count
+            FROM %s
+            WHERE id = $1
+        `, tableName)
+    default:
+        return nil, errors.New("Unhandled detail type")
+    }
 
-    // Variable to hold the scanned data based on the type
     var detail interface{}
 
-    // Depending on the detail type, scan into the appropriate struct
     switch detailType {
     case "species":
         var species Species
-        err := db.QueryRow(query, id).Scan(&species.Id, &species.Name, &species.Role, &species.Type, &species.Description, &species.FeedingHabits, &species.TankRequirements, &species.MinTankSize, &species.Compatibility)
+        err := db.QueryRow(query, id).Scan(
+            &species.Id,
+            &species.Name,
+            &species.ImageURL,
+            &species.Role,
+            &species.Type,
+            &species.Description,
+            &species.FeedingHabits,
+            &species.TankRequirements,
+            &species.Compatibility,
+            &species.Lifespan,
+            &species.Size,
+            &species.WaterParameters,
+            &species.BreedingInfo,
+            &species.Behavior,
+            &species.CareLevel,
+            &species.DietaryRestrictions,
+            &species.NativeHabitat,
+            &species.StockingRecommendations,
+            &species.SpecialConsiderations,
+            &species.MinTankSize,
+        )
         if err != nil {
             return nil, err
         }
         detail = species
     case "plant":
         var plant Plant
-        // err := db.QueryRow(query, id).Scan(&plant.Id, &plant.Name, &plant.Description, &plant.Requirements)
-        // if err != nil {
-        //     return nil, err
-        // }
+        err := db.QueryRow(query, id).Scan(
+            &plant.Id,
+            &plant.Name,
+            &plant.Count,
+        )
+        if err != nil {
+            return nil, err
+        }
         detail = plant
     case "equipment":
         var equipment Equipment
-        // err := db.QueryRow(query, id).Scan(&equipment.Id, &equipment.Name, &equipment.Type, &equipment.Description)
-        // if err != nil {
-        //     return nil, err
-        // }
+        err := db.QueryRow(query, id).Scan(
+            &equipment.Id,
+            &equipment.Name,
+            &equipment.Count,
+        )
+        if err != nil {
+            return nil, err
+        }
         detail = equipment
     default:
         return nil, errors.New("Unhandled detail type")
