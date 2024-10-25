@@ -138,10 +138,17 @@ type Plant struct {
 
 
 type Equipment struct {
-    Id                     string  `json:"id"`
-    Name                   string  `json:"name"`
-    Count                  int     `json:"count"`
+    Id                  string
+    Name                string
+    Description         string
+    Role                string
+    Importance          string
+    Usage               string
+    SpecialConsiderations *string
+    Fields              json.RawMessage 
+    Type                string
 }
+
 
 
 // CreateAquarium inserts a new aquarium into the database.
@@ -308,7 +315,7 @@ func GetDetailByID(id string, detailType string) (interface{}, error) {
         `, tableName)
     case "equipment":
         query = fmt.Sprintf(`
-            SELECT id, name, count
+            SELECT id, name, description, role, importance, usage, special_considerations, fields, type
             FROM %s
             WHERE id = $1
         `, tableName)
@@ -378,7 +385,13 @@ func GetDetailByID(id string, detailType string) (interface{}, error) {
         err := db.QueryRow(query, id).Scan(
             &equipment.Id,
             &equipment.Name,
-            &equipment.Count,
+            &equipment.Description,
+            &equipment.Role,
+            &equipment.Importance,
+            &equipment.Usage,
+            &equipment.SpecialConsiderations,
+            &equipment.Fields,
+            &equipment.Type,
         )
         if err != nil {
             return nil, err
