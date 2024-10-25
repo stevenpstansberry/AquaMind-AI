@@ -16,17 +16,37 @@
  */
 
 import React, { useState, useEffect } from 'react';
+import { getDetailsById, getAllDetails } from '../services/APIServices';
 import { useAuth } from '../util/AuthContext';
+
 
 
 const Home: React.FC = () => {
   const { isLoggedIn, user, logout } = useAuth(); // Access isLoggedIn and logout function
+  const [details, setDetails] = useState<any>(null);
 
+  useEffect(() => {
+    const fetchDetails = async () => {
+      try {
+        const response = await getAllDetails("plants");
+        setDetails(response);
+      } catch (error) {
+        console.error("Error fetching details:", error);
+      }
+    };
 
+    fetchDetails();
+  }, []);
+
+  const renderDetails = () => {
+    if (!details) return <p>Loading details...</p>;
+    return <pre>{JSON.stringify(details, null, 2)}</pre>;
+  };
 
   return (
     <div>
       {isLoggedIn ? <h1>Hello, {user?.email}!</h1> : <h1>Welcome to the homepage!</h1>}
+      {renderDetails()}
     </div>
   );
 };

@@ -6,6 +6,7 @@ import {
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import AIChatInterface from '../ai-components/AIChatInterface';  // Assuming you have this for AI suggestions
 import PlantInfoCard from './PlantInfoCard';  // Component similar to FishInfoCard
+import { getAllDetails } from '../../services/APIServices';
 import { Aquarium, Plant } from '../../interfaces/Aquarium';  // Ensure Plant interface is imported
 
 interface AddPlantCardProps {
@@ -16,49 +17,6 @@ interface AddPlantCardProps {
   handleSnackbar: (message: string, severity: 'success' | 'error' | 'warning' | 'info', open: boolean) => void;
 }
 
-const freshwaterPlantList: Plant[] = [
-  {
-    name: "Anubias",
-    count: 1,
-    role: "Oxygenator",
-    type: "Rooted",
-    description: "Slow-growing, hardy plant that thrives in low light.",
-    tankRequirements: "Does well in low light, attaches to rocks or driftwood.",
-    minTankSize: 5,
-    compatibility: "Compatible with most freshwater fish.",
-    lifespan: "Several years",
-    size: "6-12 inches",
-    waterParameters: "pH 6.0-7.5, Temp 72-82°F",
-    lightingNeeds: "Low",
-    growthRate: "Slow",
-    careLevel: "Easy",
-    nativeHabitat: "West Africa",
-    propagationMethods: "Rhizome division",
-    specialConsiderations: "Do not bury rhizome in substrate.",
-    imageUrl: "",
-  },
-  {
-    name: "Java Fern",
-    count: 1,
-    role: "Decorative",
-    type: "Rooted",
-    description: "Easy-to-care-for plant, great for beginners.",
-    tankRequirements: "Attaches to rocks or driftwood, does not require substrate.",
-    minTankSize: 10,
-    compatibility: "Compatible with most fish.",
-    lifespan: "Several years",
-    size: "10-14 inches",
-    waterParameters: "pH 6.0-7.5, Temp 68-82°F",
-    lightingNeeds: "Low to medium",
-    growthRate: "Slow",
-    careLevel: "Easy",
-    nativeHabitat: "Southeast Asia",
-    propagationMethods: "Rhizome division",
-    specialConsiderations: "Avoid burying the rhizome.",
-    imageUrl: "",
-  },
-  // Add more plants as needed
-];
 
 const AddPlantCard: React.FC<AddPlantCardProps> = ({ open, onClose, aquarium, onAddPlant, handleSnackbar }) => {
   const [roleFilter, setRoleFilter] = useState('');  
@@ -72,15 +30,27 @@ const AddPlantCard: React.FC<AddPlantCardProps> = ({ open, onClose, aquarium, on
   const [selectedPlant, setSelectedPlant] = useState<Plant | null>(null);  
   const [infoOpen, setInfoOpen] = useState(false);  
   const [localPlantList, setLocalPlantList] = useState<Plant[]>(aquarium.plants);  // Local copy of aquarium plants
+  const [plantList, setPlantList] = useState<Plant[]>([]);  // State for all plants
+  const [filteredPlantList, setFilteredPlantList] = useState<Plant[]>([]);
 
-  const plantList = aquarium.type === 'Freshwater' ? freshwaterPlantList : [];  // Saltwater plants could be added later
 
-   // Extract names of existing plants in the aquarium
-   const existingPlantNames = aquarium.plants.map(plant => plant.name.toLowerCase());
+   /**
+   * Fetch plant data when the component is mounted or when the aquarium type changes
+   */
+   useEffect(() => {
+    const fetchFishData = async () => {
+      try {
 
-  // Filter plant list based on role, care level, minimum tank size, and search query
+        const data = await getAllDetails("plants") as Plant[];
+        setPlantList(data);
+      } catch (error) {
+        console.error("Error fetching Plant data:", error);
+        handleSnackbar("Error fetching Plant data", 'error', true);
+      }
+    };
 
-const [filteredPlantList, setFilteredPlantList] = useState<Plant[]>([]);
+    fetchFishData();
+  }, [aquarium.type, handleSnackbar]);
 
 useEffect(() => {
     if (open) {

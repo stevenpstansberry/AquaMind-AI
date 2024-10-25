@@ -242,6 +242,43 @@ export const getAquariumById = async (aquariumId) => {
 };
 
 /**
+ * Retrieves a specific aquarium by ID for the authenticated user.
+ *
+ * @async
+ * @function getDetailsById
+ * @param {string} detailsId - The ID of the aquarium to retrieve.
+ * @param {string} type - The type of the item which details are being retrieved. (species, plant, equipment)
+ * @returns {Promise<Object>} The aquarium object.
+ */
+export const getDetailsById = async (detailsId, type) => {
+  return getFromAPI(`/details/${detailsId}`, {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+      "X-Detail-Type": `${type}`,
+    },
+  });
+};
+
+/**
+ * Retrieves a specific aquarium by ID for the authenticated user.
+ *
+ * @async
+ * @function getAllDetails
+ * @param {string} type - The type of the item which details are being retrieved. (species, plants, equipment)
+ * @returns {Promise<Object>} The aquarium object.
+ */
+export const getAllDetails = async (type) => {
+  return getFromAPI(`/details/all/${type}`, {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+      "X-Detail-Type": `${type}`,
+    },
+  });
+};
+
+/**
  * Updates an existing aquarium by sending a PUT request to the API.
  *
  * @async

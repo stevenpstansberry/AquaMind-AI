@@ -93,60 +93,60 @@ type Aquarium struct {
 }
 
 type Species struct {
-    Id                      string
-    Name                    string
-    ImageURL                *string
-    Role                    string
-    Type                    string
-    Description             string
-    FeedingHabits           string
-    TankRequirements        string
-    Compatibility           string
-    Lifespan                *string
-    Size                    *string
-    WaterParameters         *string
-    BreedingInfo            *string
-    Behavior                *string
-    CareLevel               *string
-    DietaryRestrictions     *string
-    NativeHabitat           *string
-    StockingRecommendations *string
-    SpecialConsiderations   *string
-    MinTankSize             int
+    Id                      string  `json:"id"`
+    Name                    string  `json:"name"`
+    ImageURL                *string `json:"imageUrl"`
+    Role                    string  `json:"role"`
+    Type                    string  `json:"type"`
+    Description             string  `json:"description"`
+    FeedingHabits           string  `json:"feedingHabits"`
+    TankRequirements        string  `json:"tankRequirements"`
+    Compatibility           string  `json:"compatibility"`
+    Lifespan                *string `json:"lifespan"`
+    Size                    *string `json:"size"`
+    WaterParameters         *string `json:"waterParameters"`
+    BreedingInfo            *string `json:"breeding_info"`
+    Behavior                *string `json:"behavior"`
+    CareLevel               *string `json:"careLevel"`
+    DietaryRestrictions     *string `json:"dietaryRestrictions"`
+    NativeHabitat           *string `json:"nativeHabitat"`
+    StockingRecommendations *string `json:"stockingRecommendations"`
+    SpecialConsiderations   *string `json:"specialConsiderations"`
+    MinTankSize             int     `json:"minTankSize"`
 }
 
 type Plant struct {
-    Id                  string
-    Name                string
-    Role                string
-    Type                string
-    Description         string
-    TankRequirements    string
-    MinTankSize         int
-    Compatibility       string
-    Lifespan            *string
-    Size                *string
-    WaterParameters     *string
-    LightingNeeds       *string
-    GrowthRate          *string
-    CareLevel           *string
-    NativeHabitat       *string
-    PropagationMethods  *string
-    SpecialConsiderations *string
-    ImageURL            *string
+    Id                  string  `json:"id"`
+    Name                string  `json:"name"`
+    Role                string  `json:"role"`
+    Type                string  `json:"type"`
+    Description         string  `json:"description"`
+    TankRequirements    string  `json:"tankRequirements"`
+    MinTankSize         int     `json:"minTankSize"`
+    Compatibility       string  `json:"compatibility"`
+    Lifespan            *string `json:"lifespan"`
+    Size                *string `json:"size"`
+    WaterParameters     *string `json:"waterParameters"`
+    LightingNeeds       *string `json:"lightingNeeds"`
+    GrowthRate          *string `json:"growthRate"`
+    CareLevel           *string `json:"careLevel"`
+    NativeHabitat       *string `json:"nativeHabitat"`
+    PropagationMethods  *string `json:"propagationMethods"`
+    SpecialConsiderations *string `json:"specialConsiderations"`
+    ImageURL            *string `json:"imageUrl"`
 }
 
 
 type Equipment struct {
-    Id                  string
-    Name                string
-    Description         string
-    Role                string
-    Importance          string
-    Usage               string
-    SpecialConsiderations *string
-    Fields              json.RawMessage 
-    Type                string
+    Id                  string          `json:"id"`
+    Name                string          `json:"name"`
+    Description         string          `json:"description"`
+    Role                string          `json:"role"`
+    Importance          string          `json:"importance"`
+    Usage               string          `json:"usage"`
+    SpecialConsiderations *string       `json:"specialConsiderations"`
+    Fields              json.RawMessage `json:"fields"`
+    Type                string          `json:"type"`
 }
 
 
@@ -405,3 +405,118 @@ func GetDetailByID(id string, detailType string) (interface{}, error) {
 }
 
 
+// GetAllDetails retrieves all records of a given type (species, plants, equipment) from the database.
+func GetAllDetails(detailType string) (interface{}, error) {
+    var query string
+    switch detailType {
+    case "species":
+        query = `SELECT id, name, image_url, role, type, description, feeding_habits, tank_requirements,
+                 compatibility, lifespan, size, water_parameters, breeding_info, behavior, care_level,
+                 dietary_restrictions, native_habitat, stocking_recommendations, special_considerations, min_tank_size
+                 FROM species`
+    case "plants":
+        query = `SELECT id, name, role, type, description, tank_requirements, min_tank_size, compatibility,
+                 lifespan, size, water_parameters, lighting_needs, growth_rate, care_level, native_habitat,
+                 propagation_methods, special_considerations, image_url
+                 FROM plants`
+    case "equipment":
+        query = `SELECT id, name, description, role, importance, usage, special_considerations, fields, type
+                 FROM equipment`
+    default:
+        return nil, errors.New("Invalid detail type")
+    }
+
+    rows, err := db.Query(query)
+    if err != nil {
+        return nil, err
+    }
+    defer rows.Close()
+
+    switch detailType {
+    case "species":
+        var speciesList []Species
+        for rows.Next() {
+            var species Species
+            err := rows.Scan(
+                &species.Id,
+                &species.Name,
+                &species.ImageURL,
+                &species.Role,
+                &species.Type,
+                &species.Description,
+                &species.FeedingHabits,
+                &species.TankRequirements,
+                &species.Compatibility,
+                &species.Lifespan,
+                &species.Size,
+                &species.WaterParameters,
+                &species.BreedingInfo,
+                &species.Behavior,
+                &species.CareLevel,
+                &species.DietaryRestrictions,
+                &species.NativeHabitat,
+                &species.StockingRecommendations,
+                &species.SpecialConsiderations,
+                &species.MinTankSize,
+            )
+            if err != nil {
+                return nil, err
+            }
+            speciesList = append(speciesList, species)
+        }
+        return speciesList, nil
+    case "plants":
+        var plants []Plant
+        for rows.Next() {
+            var plant Plant
+            err := rows.Scan(
+                &plant.Id,
+                &plant.Name,
+                &plant.Role,
+                &plant.Type,
+                &plant.Description,
+                &plant.TankRequirements,
+                &plant.MinTankSize,
+                &plant.Compatibility,
+                &plant.Lifespan,
+                &plant.Size,
+                &plant.WaterParameters,
+                &plant.LightingNeeds,
+                &plant.GrowthRate,
+                &plant.CareLevel,
+                &plant.NativeHabitat,
+                &plant.PropagationMethods,
+                &plant.SpecialConsiderations,
+                &plant.ImageURL,
+            )
+            if err != nil {
+                return nil, err
+            }
+            plants = append(plants, plant)
+        }
+        return plants, nil
+    case "equipment":
+        var equipmentList []Equipment
+        for rows.Next() {
+            var equipment Equipment
+            err := rows.Scan(
+                &equipment.Id,
+                &equipment.Name,
+                &equipment.Description,
+                &equipment.Role,
+                &equipment.Importance,
+                &equipment.Usage,
+                &equipment.SpecialConsiderations,
+                &equipment.Fields,
+                &equipment.Type,
+            )
+            if err != nil {
+                return nil, err
+            }
+            equipmentList = append(equipmentList, equipment)
+        }
+        return equipmentList, nil
+    default:
+        return nil, errors.New("Unhandled detail type")
+    }
+}

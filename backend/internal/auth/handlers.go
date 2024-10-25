@@ -447,3 +447,19 @@ func GetDetailHandler(w http.ResponseWriter, r *http.Request) {
     w.Header().Set("Content-Type", "application/json")
     json.NewEncoder(w).Encode(result)
 }
+
+// GetAllDetailsHandler retrieves all records of the specified type.
+func GetAllDetailsHandler(w http.ResponseWriter, r *http.Request) {
+    detailType := mux.Vars(r)["type"]
+    log.Printf("Requesting all details of type: %s", detailType)
+
+    result, err := models.GetAllDetails(detailType)
+    if err != nil {
+        log.Printf("Error retrieving details: %v", err)
+        http.Error(w, "Error retrieving details", http.StatusInternalServerError)
+        return
+    }
+
+    w.Header().Set("Content-Type", "application/json")
+    json.NewEncoder(w).Encode(result)
+}

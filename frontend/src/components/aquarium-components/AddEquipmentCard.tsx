@@ -7,6 +7,7 @@ import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import EquipmentInfoCard from './EquipmentInfoCard';
 import { Aquarium, Equipment } from '../../interfaces/Aquarium';
 import equipmentData from '../../util/EquipmentData.json';
+import { getAllDetails } from '../../services/APIServices';
 
 interface EquipmentFromDB {
   name: string;
@@ -51,9 +52,27 @@ const AddEquipmentCard: React.FC<AddEquipmentCardProps> = ({ open, onClose, onAd
   const [infoOpen, setInfoOpen] = useState(false);
   const [equipmentInfo, setEquipmentInfo] = useState<Equipment | null>(null);
   const [filteredEquipmentList, setFilteredEquipmentList] = useState<EquipmentFromDB[]>([]);
+  const [equipmentList, setEquipmentList] = useState<EquipmentFromDB[]>([]);
 
-  // Mocked equipment list from DB
-  const equipmentList: EquipmentFromDB[] = equipmentData as EquipmentFromDB[];
+
+
+  useEffect(() => {
+    const fetchEquipmentData = async () => {
+      try {
+        // Fetch the data
+        const data = await getAllDetails("equipment") as EquipmentFromDB[];
+  
+
+        setEquipmentList(data);
+      } catch (error) {
+        console.error("Error fetching fish data:", error);
+        handleSnackbar("Error fetching fish data", 'error', true);
+      }
+    };
+  
+    fetchEquipmentData();
+  }, [aquarium.type, handleSnackbar]);
+  
 
   // Re-filter the equipment list whenever the modal is opened or the aquarium equipment changes
   useEffect(() => {
