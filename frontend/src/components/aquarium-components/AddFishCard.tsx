@@ -20,7 +20,7 @@ import AIChatInterface from '../ai-components/AIChatInterface';
 import FishInfoCard from './FishInfoCard';
 import { Aquarium, Fish } from '../../interfaces/Aquarium';
 import freshWaterFishData from '../../util/FreshwaterFishData.json';
-
+import { getAllDetails } from '../../services/APIServices';
 import saltWaterFishData from '../../util/SaltwaterFishData.json';
 
 interface AddFishCardProps {
@@ -31,7 +31,6 @@ interface AddFishCardProps {
   handleSnackbar: (message: string, severity: 'success' | 'error' | 'warning' | 'info', open: boolean) => void;
 }
 
-const freshwaterFishList = freshWaterFishData;
 const saltwaterFishList = saltWaterFishData;
 
 
@@ -60,9 +59,25 @@ const AddFishCard: React.FC<AddFishCardProps> = ({ open, onClose, aquarium, onAd
   const [selectedFish, setSelectedFish] = useState<Fish | null>(null);  
   const [infoOpen, setInfoOpen] = useState(false);  
   const [filteredFishList, setFilteredFishList] = useState<Fish[]>([]);
+  const [fishList, setFishList] = useState<Fish[]>([]);
 
-  // Select fish list based on aquarium type
-  const fishList = aquarium.type === 'Freshwater' ? freshwaterFishList : saltwaterFishList;
+  /**
+   * Fetch fish data when the component is mounted or when the aquarium type changes
+   */
+  useEffect(() => {
+    const fetchFishData = async () => {
+      try {
+
+        const data = await getAllDetails("species") as Fish[];
+        setFishList(data);
+      } catch (error) {
+        console.error("Error fetching fish data:", error);
+        handleSnackbar("Error fetching fish data", 'error', true);
+      }
+    };
+
+    fetchFishData();
+  }, [aquarium.type, handleSnackbar]);
 
     /**
    * @function useEffect
@@ -71,36 +86,44 @@ const AddFishCard: React.FC<AddFishCardProps> = ({ open, onClose, aquarium, onAd
    * 
    * @param {boolean} open - Indicates if the dialog is open.
    */
-  useEffect(() => {
-    console.log("Aquarium species:", aquarium.species);
-    if (open) {
-
-      // Map the names of fish that already exist in the aquarium
-      const existingFishNames = aquarium.species.map(fish => fish.name.toLowerCase());
-
-      // Filter the fish list based on the current aquarium state and available fish
-      const availableFish = fishList.filter(fish => {
-        const isExisting = existingFishNames.includes(fish.name.toLowerCase());
-        return !isExisting; // Exclude existing fish
-      });
-
-
-      // Apply other filters: role, care level, tank size, search query
-      const filteredFish = availableFish.filter(fish => {
-        const matchesRole = !roleFilter || fish.role === roleFilter;
-        const matchesCareLevel = !careLevelFilter || fish.careLevel === careLevelFilter;
-        const matchesTankSize = !minTankSizeFilter || Number(fish.minTankSize) <= minTankSizeFilter;
-        const matchesSearch = !searchQuery || fish.name.toLowerCase().includes(searchQuery.toLowerCase());
-
-
-        return matchesRole && matchesCareLevel && matchesTankSize && matchesSearch;
-      });
-
-      console.log("Filtered fish list:", filteredFish);
-
-      setFilteredFishList(filteredFish);
-    }
+    useEffect(() => {
+      console.log("Aquarium species:", aquarium.species);
+      console.log("Fish list:", fishList);
+  
+      if (open) {
+          // Map the names of fish that already exist in the aquarium
+          const existingFishNames = aquarium.species
+              .filter(fish => fish && fish.name)  
+              .map(fish => fish.name.toLowerCase());
+  
+          // Filter the fish list based on the current aquarium state and available fish
+          const availableFish = fishList.filter(fish => {
+            if (!fish || !fish.name) {
+                console.warn("Fish object missing name property or fish object itself is null:", fish);
+                return false; // Skip any fish that is missing a name or is null/undefined
+            }
+            const isExisting = existingFishNames.includes(fish.name.toLowerCase());
+            if (isExisting) {
+                console.log(`Fish removed (already exists in aquarium): ${fish.name}`);
+            }
+            return !isExisting; // Exclude existing fish
+        });
+  
+          // Apply other filters: role, care level, tank size, search query
+          const filteredFish = availableFish.filter(fish => {
+              const matchesRole = !roleFilter || fish.role === roleFilter;
+              const matchesCareLevel = !careLevelFilter || fish.careLevel === careLevelFilter;
+              const matchesTankSize = !minTankSizeFilter || Number(fish.minTankSize) <= minTankSizeFilter;
+              const matchesSearch = !searchQuery || (fish.name && fish.name.toLowerCase().includes(searchQuery.toLowerCase()));
+  
+              return matchesRole && matchesCareLevel && matchesTankSize && matchesSearch;
+          });
+  
+          console.log("Filtered fish list:", filteredFish);
+          setFilteredFishList(filteredFish);
+      }
   }, [open, aquarium.species, roleFilter, careLevelFilter, minTankSizeFilter, searchQuery]);
+  
 
 
   /**
