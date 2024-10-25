@@ -5,6 +5,8 @@ package models
 import (
     "database/sql"
     "encoding/json"
+    "errors"
+    "fmt"
     _ "github.com/lib/pq" // PostgreSQL driver
 )
 
@@ -237,4 +239,63 @@ func DeleteAquarium(id string, userID string) error {
     }
 
     return nil
+}
+
+
+// GetDetailByID retrieves a detail (species, plant, or equipment) by its ID for a specific user.
+func GetDetailByID(id string, userID string, detailType string) (interface{}, error) {
+    // Validate detailType to prevent SQL injection
+    var fieldName string
+    switch detailType {
+    case "species":
+        fieldName = "species"
+    case "plant":
+        fieldName = "plants"
+    case "equipment":
+        fieldName = "equipment"
+    default:
+        return nil, errors.New("Invalid detail type")
+    }
+
+    query := fmt.Sprintf(`
+        SELECT %s_item
+        FROM aquariums
+        WHERE user_id = $2
+        CROSS JOIN LATERAL jsonb_array_elements(%s) AS %s_item
+        WHERE %s_item->>'Id' = $1
+        LIMIT 1
+    `, fieldName, fieldName, fieldName, fieldName)
+
+    var detailJSON []byte
+    err := db.QueryRow(query, id, userID).Scan(&detailJSON)
+    if err != nil {
+        return nil, err
+    }
+
+    // Unmarshal into the appropriate struct
+    switch detailType {
+    case "species":
+        var species Species
+        err = json.Unmarshal(detailJSON, &species)
+        if err != nil {
+            return nil, err
+        }
+        return &species, nil
+    case "plant":
+        var plant Plant
+        err = json.Unmarshal(detailJSON, &plant)
+        if err != nil {
+            return nil, err
+        }
+        return &plant, nil
+    case "equipment":
+        var equipment Equipment
+        err = json.Unmarshal(detailJSON, &equipment)
+        if err != nil {
+            return nil, err
+        }
+        return &equipment, nil
+    default:
+        return nil, errors.New("Unhandled detail type")
+    }
 }

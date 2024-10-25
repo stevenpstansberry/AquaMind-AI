@@ -9,6 +9,7 @@ import (
     "encoding/json"
     "log"
     "net/http"
+    "errors"
 
     "github.com/gorilla/mux"
     "github.com/stevenpstansberry/AquaMind-AI/internal/models"
@@ -407,4 +408,49 @@ func DeleteAquariumHandler(w http.ResponseWriter, r *http.Request) {
 
     // Respond with no content status
     w.WriteHeader(http.StatusNoContent)
+}
+
+// GetDetailHandler handles the retrieval of species, plant, or equipment details by ID.
+func GetDetailHandler(w http.ResponseWriter, r *http.Request) {
+    // Extract the ID from the URL path
+    vars := mux.Vars(r)
+    id := vars["id"]
+
+    // Read the header parameter "X-Detail-Type"
+    detailType := r.Header.Get("X-Detail-Type")
+    if detailType == "" {
+        http.Error(w, "Missing X-Detail-Type header", http.StatusBadRequest)
+        return
+    }
+
+    // Extract user information from the JWT token
+    userEmail, err := utils.ExtractEmailFromJWT(r.Header.Get("Authorization"))
+    if err != nil {
+        log.Printf("Error extracting user from token: %v", err)
+        http.Error(w, "Unauthorized", http.StatusUnauthorized)
+        return
+    }
+
+    // Get user by email
+    user, err := models.GetUserByEmail(userEmail)
+    if err != nil {
+        log.Printf("Error retrieving user: %v", err)
+        http.Error(w, "User not found", http.StatusNotFound)
+        return
+    }
+
+    result, err := models.GetDetailByID(id, user.ID, detailType)
+    if err != nil {
+        if errors.Is(err, sql.ErrNoRows) {
+            http.Error(w, "Not found", http.StatusNotFound)
+        } else {
+            log.Printf("Error retrieving detail: %v", err)
+            http.Error(w, "Error retrieving detail", http.StatusInternalServerError)
+        }
+        return
+    }
+
+    // Respond with the retrieved detail
+    w.Header().Set("Content-Type", "application/json")
+    json.NewEncoder(w).Encode(result)
 }
