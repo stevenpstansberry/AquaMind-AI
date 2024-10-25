@@ -9,6 +9,7 @@ import (
     "encoding/json"
     "log"
     "net/http"
+    "errors"
 
     "github.com/gorilla/mux"
     "github.com/stevenpstansberry/AquaMind-AI/internal/models"
@@ -407,4 +408,42 @@ func DeleteAquariumHandler(w http.ResponseWriter, r *http.Request) {
 
     // Respond with no content status
     w.WriteHeader(http.StatusNoContent)
+}
+
+// GetDetailHandler handles the retrieval of species, plant, or equipment details by ID.
+func GetDetailHandler(w http.ResponseWriter, r *http.Request) {
+    // Extract the ID from the URL path
+    vars := mux.Vars(r)
+    id := vars["id"]
+
+
+
+    // Read the header parameter "X-Detail-Type"
+    detailType := r.Header.Get("X-Detail-Type")
+    if detailType == "" {
+        http.Error(w, "Missing X-Detail-Type header", http.StatusBadRequest)
+        return
+    }
+
+    // Extract the detail type from the header
+    log.Printf("Requesting detail for ID: %s and type: %s", id, detailType)
+
+
+
+
+
+    result, err := models.GetDetailByID(id, detailType)
+    if err != nil {
+        if errors.Is(err, sql.ErrNoRows) {
+            http.Error(w, "Not found", http.StatusNotFound)
+        } else {
+            log.Printf("Error retrieving detail: %v", err)
+            http.Error(w, "Error retrieving detail", http.StatusInternalServerError)
+        }
+        return
+    }
+
+    // Respond with the retrieved detail
+    w.Header().Set("Content-Type", "application/json")
+    json.NewEncoder(w).Encode(result)
 }

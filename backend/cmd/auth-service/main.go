@@ -82,6 +82,9 @@ func main() {
     router.Handle("/aquariums/{id}", auth.JWTAuthMiddleware(http.HandlerFunc(auth.UpdateAquariumHandler))).Methods("PUT")
     router.Handle("/aquariums/{id}", auth.JWTAuthMiddleware(http.HandlerFunc(auth.DeleteAquariumHandler))).Methods("DELETE")
 
+    
+    router.Handle("/details/{id}", auth.JWTAuthMiddleware(http.HandlerFunc(auth.GetDetailHandler))).Methods("GET")
+
     // Apply the CORS middleware to all routes
     corsHandler := enableCORS(router)
 
