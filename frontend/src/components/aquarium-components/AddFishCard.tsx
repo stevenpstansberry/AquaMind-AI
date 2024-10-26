@@ -18,6 +18,7 @@ import {
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';  
 import AIChatInterface from '../ai-components/AIChatInterface'; 
 import FishInfoCard from './FishInfoCard';
+
 import { Aquarium, Fish } from '../../interfaces/Aquarium';
 import freshWaterFishData from '../../util/FreshwaterFishData.json';
 import { getAllDetails } from '../../services/APIServices';
