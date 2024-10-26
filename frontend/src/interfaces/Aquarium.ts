@@ -52,6 +52,7 @@ export interface Fish {
 
 export interface Plant {
   name: string;
+  scientificName?: string;    // Scientific name of the plant
   count: number;              // Number of plants
   role: string;               // Role in the aquarium (e.g., "Oxygenator", "Decorative")
   type: string;               // Plant type (e.g., "Floating", "Rooted", "Carpet")
