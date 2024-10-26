@@ -27,6 +27,7 @@ export interface Aquarium {
 
 export interface Fish {
   name: string;
+  scientificName?: string;
   count: number;
   role: string;
   type: string;  
