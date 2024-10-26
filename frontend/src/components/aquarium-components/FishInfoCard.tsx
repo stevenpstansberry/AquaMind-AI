@@ -6,9 +6,10 @@
  * @author Steven Stansberry
  */
 
-import React from 'react';
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Typography, Box, Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
+import React, { useState } from 'react';
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Typography, Box, Accordion, AccordionSummary, AccordionDetails, IconButton } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import ZoomInIcon from '@mui/icons-material/ZoomIn';
 import { Fish } from '../../interfaces/Aquarium';
 
 interface FishInfoCardProps {
@@ -18,11 +19,21 @@ interface FishInfoCardProps {
 }
 
 const FishInfoCard: React.FC<FishInfoCardProps> = ({ open, onClose, fish }) => {
+  const [imageDialogOpen, setImageDialogOpen] = useState(false);
+
   if (!fish) return null;
+
+  const handleImageClick = () => {
+    setImageDialogOpen(true);
+  };
+
+  const handleImageDialogClose = () => {
+    setImageDialogOpen(false);
+  };
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
-      <DialogTitle>Fish Information</DialogTitle>
+      <DialogTitle>{fish.name} Information</DialogTitle>
       <DialogContent>
         <Box>
 
@@ -33,9 +44,22 @@ const FishInfoCard: React.FC<FishInfoCardProps> = ({ open, onClose, fish }) => {
             </AccordionSummary>
             <AccordionDetails>
               {/* Fish Image Placeholder */}
-              <Box sx={{ textAlign: 'center', mb: 2 }}>
+              <Box sx={{ textAlign: 'center', mb: 2, position: 'relative' }}>
                 {fish.imageUrl ? (
-                  <img src={fish.imageUrl} alt={fish.name} style={{ maxHeight: '200px', maxWidth: '100%' }} />
+                  <>
+                    <img 
+                      src={fish.imageUrl} 
+                      alt={fish.name} 
+                      style={{ maxHeight: '200px', maxWidth: '100%', cursor: 'pointer' }} 
+                      onClick={handleImageClick}
+                    />
+                    <IconButton 
+                      sx={{ position: 'absolute', bottom: 8, right: 8 }} 
+                      onClick={handleImageClick}
+                    >
+                      <ZoomInIcon />
+                    </IconButton>
+                  </>
                 ) : (
                   <Box sx={{ height: '150px', width: '100%', backgroundColor: '#f0f0f0', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                     <Typography variant="body2" color="textSecondary">
@@ -48,6 +72,9 @@ const FishInfoCard: React.FC<FishInfoCardProps> = ({ open, onClose, fish }) => {
               {/* Fish Details */}
               <Typography variant="body2">
                 <strong>Name:</strong> {fish.name}
+              </Typography>
+              <Typography variant="body2">
+                <strong>Scientific Name:</strong> {fish.scientificName || 'Scientific name not specified.'}
               </Typography>
               <Typography variant="body2">
                 <strong>Count:</strong> {fish.count}
@@ -150,7 +177,26 @@ const FishInfoCard: React.FC<FishInfoCardProps> = ({ open, onClose, fish }) => {
           Close
         </Button>
       </DialogActions>
+      {/* Image Dialog */}
+      {fish.imageUrl && (
+        <Dialog open={imageDialogOpen} onClose={handleImageDialogClose} maxWidth="lg">
+          <DialogContent sx={{ textAlign: 'center' }}>
+            <img 
+              src={fish.imageUrl} 
+              alt={fish.name} 
+              style={{ width: '100%', maxHeight: '80vh' }} 
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleImageDialogClose} color="primary">
+              Close
+            </Button>
+          </DialogActions>
+        </Dialog>
+      )}
     </Dialog>
+
+    
   );
 };
 
