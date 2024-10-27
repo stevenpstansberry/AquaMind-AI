@@ -18,7 +18,7 @@ import {
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';  
 import AIChatInterface from '../ai-components/AIChatInterface'; 
 import FishInfoCard from './FishInfoCard';
-
+import AquariumInhabitantInfoCard from './AquariumInhabitantInfoCard';
 import { Aquarium, Fish } from '../../interfaces/Aquarium';
 import freshWaterFishData from '../../util/FreshwaterFishData.json';
 import { getAllDetails } from '../../services/APIServices';
@@ -159,13 +159,13 @@ const AddFishCard: React.FC<AddFishCardProps> = ({ open, onClose, aquarium, onAd
 
   /**
    * @function handleFishClick
-   * @description Opens the FishInfoCard modal with information about the selected fish.
+   * @description Opens the AquariumInhabitantInfoCard modal with information about the selected fish.
    * 
-   * @param {Fish} fish - The fish object to display in the FishInfoCard modal.
+   * @param {Fish} fish - The fish object to display in the AquariumInhabitantInfoCard modal.
    */
   const handleFishClick = (fish: Fish) => {
     setSelectedFish(fish);
-    setInfoOpen(true);  // Open the FishInfoCard modal
+    setInfoOpen(true);  // Open the AquariumInhabitantInfoCard modal
   };
 
 
@@ -404,10 +404,10 @@ const AddFishCard: React.FC<AddFishCardProps> = ({ open, onClose, aquarium, onAd
 
         {/* Fish Info Modal using FishInfoCard */}
         {selectedFish && (
-          <FishInfoCard 
+          <AquariumInhabitantInfoCard 
             open={infoOpen} 
             onClose={handleCloseInfo} 
-            fish={selectedFish} 
+            inhabitant={selectedFish} 
           />
         )}
       </Dialog>

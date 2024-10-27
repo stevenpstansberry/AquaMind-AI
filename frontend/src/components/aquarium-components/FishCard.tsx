@@ -8,6 +8,7 @@ import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import FishInfoCard from './FishInfoCard';  
 import AddFishCard from './AddFishCard';  
 import { Aquarium, Fish } from '../../interfaces/Aquarium';
+import AquariumInhabitantInfoCard from './AquariumInhabitantInfoCard';
 
 interface FishCardProps {
   aquarium: Aquarium; 
@@ -322,8 +323,8 @@ const FishCard: React.FC<FishCardProps> = ({ aquarium, onUpdateSpecies, handleSn
         </Menu>
       </Card>
 
-      {/* Fish Info Modal */}
-      <FishInfoCard open={infoCardOpen} onClose={handleCloseFishInfo} fish={selectedFish} />
+      {/* AquariumInhabitantInfoCard Modal */}
+      <AquariumInhabitantInfoCard open={infoCardOpen} onClose={handleCloseFishInfo} inhabitant={selectedFish} />
 
       {/* Add Fish Modal */}
       <AddFishCard

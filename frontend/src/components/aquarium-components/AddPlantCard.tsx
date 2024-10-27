@@ -5,7 +5,7 @@ import {
 } from '@mui/material';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import AIChatInterface from '../ai-components/AIChatInterface';  // Assuming you have this for AI suggestions
-import PlantInfoCard from './PlantInfoCard';  // Component similar to FishInfoCard
+import AquariumInhabitantInfoCard from './AquariumInhabitantInfoCard';
 import { getAllDetails } from '../../services/APIServices';
 import { Aquarium, Plant } from '../../interfaces/Aquarium';  // Ensure Plant interface is imported
 
@@ -330,10 +330,10 @@ useEffect(() => {
 
         {/* Plant Info Modal using PlantInfoCard */}
         {selectedPlant && (
-          <PlantInfoCard 
+          <AquariumInhabitantInfoCard 
             open={infoOpen} 
             onClose={handleCloseInfo} 
-            plant={selectedPlant} 
+            inhabitant={selectedPlant} 
           />
         )}
       </Dialog>
