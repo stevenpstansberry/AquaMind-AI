@@ -28,6 +28,8 @@ import { Box, AppBar, Toolbar, Typography, Grid, CardContent, Card, Icon, Toolti
 import { createAquarium, updateAquarium as apiUpdateAquarium, deleteAquarium as apiDeleteAquarium } from '../services/APIServices';
 import { ViewSidebar } from '@mui/icons-material';
 import EditAquarium from '../components/aquarium-components/EditAquarium';
+import { fetchSpeciesDetails, fetchPlantDetails, fetchEquipmentDetails } from '../util/DetailsService';
+
 
 
 import { Aquarium, Equipment, Fish, Plant } from '../interfaces/Aquarium';
@@ -60,6 +62,27 @@ const Aquariums: React.FC = () => {
       isFirstRender.current = false;
     }
   }, [aquariums]);
+
+
+    // Fetch all details when Aquariums component mounts
+    useEffect(() => {
+      const fetchAllDetails = async () => {
+        try {
+          const species = await fetchSpeciesDetails();
+          const plants = await fetchPlantDetails();
+          const equipment = await fetchEquipmentDetails();
+  
+          if (species) console.log("Fetched species:", species);
+          if (plants) console.log("Fetched plants:", plants);
+          if (equipment) console.log("Fetched equipment:", equipment);
+        } catch (error) {
+          console.error("Error fetching details:", error);
+          handleSnackbar("Failed to fetch aquarium details.", "error", true);
+        }
+      };
+  
+      fetchAllDetails();
+    }, []);
 
   // Snackbar state
   const [snackbarMessage, setSnackbarMessage] = useState<string>('');

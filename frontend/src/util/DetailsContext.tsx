@@ -32,9 +32,9 @@ export const DetailsProvider: React.FC<{ children: ReactNode }> = ({ children })
       fetchEquipmentDetails(),
     ]);
 
-    setSpecies(speciesData || []);
-    setPlants(plantsData || []);
-    setEquipment(equipmentData || []);
+    setSpecies(Array.isArray(speciesData) ? speciesData : []);
+    setPlants(Array.isArray(plantsData) ? plantsData : []);
+    setEquipment(Array.isArray(equipmentData) ? equipmentData : []);
   };
 
   // Fetch details when the component mounts
