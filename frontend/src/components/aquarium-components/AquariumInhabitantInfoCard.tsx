@@ -12,9 +12,10 @@
  */
 
 import React, { useState } from 'react';
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Typography, Box, Accordion, AccordionSummary, AccordionDetails, IconButton } from '@mui/material';
+import { Dialog, DialogTitle, DialogContent, Typography, Box, Accordion, AccordionSummary, AccordionDetails, IconButton, DialogActions, Button, } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ZoomInIcon from '@mui/icons-material/ZoomIn';
+import CloseIcon from '@mui/icons-material/Close';
 import { Fish, Plant } from '../../interfaces/Aquarium';
 
 type AquariumInhabitant = Fish | Plant;
@@ -44,7 +45,16 @@ const AquariumInhabitantInfoCard: React.FC<AquariumInhabitantInfoCardProps> = ({
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
-      <DialogTitle>{inhabitant.name} Information</DialogTitle>
+      <DialogTitle>{inhabitant.name} Information
+        <IconButton
+            onClick={onClose}
+            sx={{ position: 'absolute', right: 8, top: 8 }}
+            aria-label="close"
+            >
+          <CloseIcon />
+        </IconButton>
+      </DialogTitle>
+
       <DialogContent>
         <Box>
 
@@ -203,16 +213,18 @@ const AquariumInhabitantInfoCard: React.FC<AquariumInhabitantInfoCardProps> = ({
           </Accordion>
         </Box>
       </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose} color="primary">
-          Close
-        </Button>
-      </DialogActions>
 
       {/* Image Dialog */}
       {inhabitant.imageUrl && (
         <Dialog open={imageDialogOpen} onClose={handleImageDialogClose} maxWidth="lg">
           <DialogContent sx={{ textAlign: 'center' }}>
+          <IconButton
+              onClick={handleImageDialogClose}
+              sx={{ position: 'absolute', right: 8, top: 8 }}
+              aria-label="close image dialog"
+            >
+              <CloseIcon />
+            </IconButton>
             <img 
               src={inhabitant.imageUrl} 
               alt={inhabitant.name} 
@@ -220,9 +232,6 @@ const AquariumInhabitantInfoCard: React.FC<AquariumInhabitantInfoCardProps> = ({
             />
           </DialogContent>
           <DialogActions>
-            <Button onClick={handleImageDialogClose} color="primary">
-              Close
-            </Button>
           </DialogActions>
         </Dialog>
       )}
