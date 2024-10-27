@@ -5,7 +5,6 @@ import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'; 
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';  
-import FishInfoCard from './FishInfoCard';  
 import AddFishCard from './AddFishCard';  
 import { Aquarium, Fish } from '../../interfaces/Aquarium';
 import AquariumInhabitantInfoCard from './AquariumInhabitantInfoCard';
