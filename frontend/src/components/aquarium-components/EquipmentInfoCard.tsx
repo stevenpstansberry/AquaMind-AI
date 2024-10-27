@@ -3,12 +3,18 @@
  * @location src/components/aquarium-components/aquarium-wizard-components/EquipmentInfoCard.tsx
  * @description This component renders a detailed information card for a selected piece of equipment in the aquarium setup wizard. The card displays information such as the equipment's role, importance, usage, and any special considerations.
  * 
- * @author Steven Stansberry
+ * @param {Object} props - The props for the component.
+ * @property {boolean} open - Determines whether the dialog is open or closed.
+ * @property {() => void} onClose - Function to close the dialog.
+ * @property {Equipment | null} equipment - The aquarium equipment to display.
+ * 
+ * @component
  */
 
 import React from 'react';
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Typography, Box, Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
+import { Dialog, DialogTitle, DialogContent, Typography, Box, Accordion, AccordionSummary, AccordionDetails, IconButton } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import CloseIcon from '@mui/icons-material/Close';
 import { Equipment } from '../../interfaces/Aquarium';
 
 interface EquipmentInfoCardProps {
@@ -22,7 +28,16 @@ const EquipmentInfoCard: React.FC<EquipmentInfoCardProps> = ({ open, onClose, eq
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
-      <DialogTitle>{`${equipment.name} Information`}</DialogTitle>
+      <DialogTitle>
+        {`${equipment.name} Information`}
+        <IconButton
+          onClick={onClose}
+          sx={{ position: 'absolute', right: 8, top: 8 }}
+          aria-label="close"
+        >
+          <CloseIcon />
+        </IconButton>
+      </DialogTitle>
       <DialogContent>
         <Box>
 
@@ -91,9 +106,6 @@ const EquipmentInfoCard: React.FC<EquipmentInfoCardProps> = ({ open, onClose, eq
 
         </Box>
       </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose} color="primary">Close</Button>
-      </DialogActions>
     </Dialog>
   );
 };

@@ -4,8 +4,8 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import AddIcon from '@mui/icons-material/Add';  
 import RemoveIcon from '@mui/icons-material/Remove';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'; 
-import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';  // Import the Outlined Info icon
-import PlantInfoCard from './PlantInfoCard';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';  
+import AquariumInhabitantInfoCard from './AquariumInhabitantInfoCard';
 import AddPlantCard from './AddPlantCard';
 import { Aquarium, Plant } from '../../interfaces/Aquarium';
 
@@ -352,8 +352,8 @@ const handleConfirmDelete = () => {
           </Menu>
       </Card>
 
-      {/* Plant Info Modal */}
-      <PlantInfoCard open={infoCardOpen} onClose={handleInfoCardClose} plant={selectedPlant} />
+      {/* AquariumInhabitantInfoCard Modal */}
+      <AquariumInhabitantInfoCard open={infoCardOpen} onClose={handleInfoCardClose} inhabitant={selectedPlant} />
 
       {/* Add Plant Modal */}
       <AddPlantCard open={addPlantOpen} onClose={handleCloseAddPlant} aquarium={aquarium} onAddPlant={handleAddPlant} handleSnackbar={handleSnackbar}/>
