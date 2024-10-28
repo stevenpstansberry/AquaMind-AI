@@ -42,7 +42,7 @@ export const saveToLocalStorage = (key: string, data: any) => {
     console.log("Fetching plant details...");
     const data = await getAllDetails("plants");
     if (data) {
-      localStorage.setItem("plants", JSON.stringify(data));
+      localStorage.setItem("details_plants", JSON.stringify(data));
       console.log("Plant details saved to local storage:", data);
     }
     return data;
@@ -52,7 +52,7 @@ export const saveToLocalStorage = (key: string, data: any) => {
     console.log("Fetching equipment details...");
     const data = await getAllDetails("equipment");
     if (data) {
-      localStorage.setItem("equipment", JSON.stringify(data));
+      localStorage.setItem("details_equipment", JSON.stringify(data));
       console.log("Equipment details saved to local storage:", data);
     }
     return data;

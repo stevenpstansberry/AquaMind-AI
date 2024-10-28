@@ -39,12 +39,12 @@ const AddPlantCard: React.FC<AddPlantCardProps> = ({ open, onClose, aquarium, on
    */
 useEffect(() => {
   if (open) {
-    const speciesData = localStorage.getItem('plants'); // Call speciesList() to get the actual array
-    const parsedSpeciesData = speciesData ? JSON.parse(speciesData) : [];
+    const plantsData = localStorage.getItem('details_plants'); // Call speciesList() to get the actual array
+    const parsedPlantsData = plantsData ? JSON.parse(plantsData) : [];
     console.log("Add PlantCard opened. Setting plantList to species data from DetailsContext.");
-    setPlantList(parsedSpeciesData); // Set plantList to the array returned by speciesList()
-    console.log("Current plantList:", parsedSpeciesData);
-    console.log("Local storage for plants:", localStorage.getItem('plants'));
+    setPlantList(parsedPlantsData); // Set plantList to the array returned by speciesList()
+    console.log("Current plantList:", parsedPlantsData);
+    console.log("Local storage for plants:", localStorage.getItem('details_plants'));
     }
   }, [open]); // Run this effect when species or open changes
 
