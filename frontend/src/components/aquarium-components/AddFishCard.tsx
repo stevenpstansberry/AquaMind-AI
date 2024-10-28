@@ -246,11 +246,12 @@ useEffect(() => {
   };
 
   const handleFishQuantityChange = (fish: Fish, quantity: number) => {
-    if (quantity < 1) return;
+    if (quantity < 1 || isNaN(quantity)) return;
     setSelectedFishList((prevList) =>
       prevList.map((f) => (f.name === fish.name ? { ...f, count: quantity } : f))
     );
   };
+  
 
   // Handle remove fish
   const handleRemoveFish = (fish: Fish) => {

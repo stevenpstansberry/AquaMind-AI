@@ -170,12 +170,13 @@ useEffect(() => {
     };
 
       // Handle quantity change
-  const handlePlantQuantityChange = (plant: Plant, quantity: number) => {
-    if (quantity < 1) return;
-    setSelectedPlantList((prevList) =>
-      prevList.map((p) => (p.name === plant.name ? { ...p, count: quantity } : p))
-    );
-  };
+      const handlePlantQuantityChange = (plant: Plant, quantity: number) => {
+        if (quantity < 1 || isNaN(quantity)) return;
+        setSelectedPlantList((prevList) =>
+          prevList.map((p) => (p.name === plant.name ? { ...p, count: quantity } : p))
+        );
+      };
+      
 
   // Handle remove plant
   const handleRemovePlant = (plant: Plant) => {

@@ -22,7 +22,7 @@ interface SelectedInhabitantsListProps<T> {
   buttonText: string;
   onQuantityChange: (item: T, quantity: number) => void;
   onRemoveItem: (item: T) => void;
-  onInfoClick: (item: T) => void; // New prop for info click handler
+  onInfoClick: (item: T) => void;
 }
 
 function SelectedInhabitantsList<T extends { name: string; count: number }>(
@@ -58,17 +58,17 @@ function SelectedInhabitantsList<T extends { name: string; count: number }>(
                 <TableCell align="center">
                   <IconButton
                     aria-label="decrease quantity"
-                    onClick={() => onQuantityChange(item, item.count - 1)}
-                    disabled={item.count <= 1}
+                    onClick={() => onQuantityChange(item, (item.count || 1) - 1)}
+                    disabled={(item.count || 1) <= 1}
                   >
                     <Remove />
                   </IconButton>
                   <Typography variant="body1" display="inline" mx={1}>
-                    {item.count}
+                    {item.count ?? 1}
                   </Typography>
                   <IconButton
                     aria-label="increase quantity"
-                    onClick={() => onQuantityChange(item, item.count + 1)}
+                    onClick={() => onQuantityChange(item, (item.count || 1) + 1)}
                   >
                     <Add />
                   </IconButton>
