@@ -8,6 +8,10 @@ import AIChatInterface from '../ai-components/AIChatInterface';  // Assuming you
 import AquariumInhabitantInfoCard from './AquariumInhabitantInfoCard';
 import { getAllDetails } from '../../services/APIServices';
 import { Aquarium, Plant } from '../../interfaces/Aquarium';  // Ensure Plant interface is imported
+import SelectedInhabitantsList from './SelectedInhabitantsList';
+import FilterPanel from './FilterPanel';
+import InhabitantTable from './InhabitantTable';
+
 
 interface AddPlantCardProps {
   open: boolean;
@@ -165,176 +169,106 @@ useEffect(() => {
       }
     };
 
-  return (
-    <>
-      <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
-        <DialogTitle>Add New Plants</DialogTitle>
-        <DialogContent>
-          <Box>
-            {/* Filter by Role */}
-            <FormControl fullWidth margin="normal">
-              <InputLabel shrink>Filter by Role</InputLabel>
-              <Select
-                label="Filter by Role"
-                value={roleFilter}
-                onChange={(e) => setRoleFilter(e.target.value)}
-                displayEmpty
-              >
-                <MenuItem value="">All Roles</MenuItem>
-                <MenuItem value="Oxygenator">Oxygenator</MenuItem>
-                <MenuItem value="Decorative">Decorative</MenuItem>
-                <MenuItem value="Carpet">Carpet</MenuItem>
-              </Select>
-            </FormControl>
+      // Handle quantity change
+      const handlePlantQuantityChange = (plant: Plant, quantity: number) => {
+        if (quantity < 1 || isNaN(quantity)) return;
+        setSelectedPlantList((prevList) =>
+          prevList.map((p) => (p.name === plant.name ? { ...p, count: quantity } : p))
+        );
+      };
+      
 
-            {/* Filter by Care Level */}
-            <FormControl fullWidth margin="normal">
-              <InputLabel shrink>Filter by Care Level</InputLabel>
-              <Select
-                label="Filter by Care Level"
-                value={careLevelFilter}
-                onChange={(e) => setCareLevelFilter(e.target.value)}
-                displayEmpty
-              >
-                <MenuItem value="">All Care Levels</MenuItem>
-                <MenuItem value="Easy">Easy</MenuItem>
-                <MenuItem value="Moderate">Moderate</MenuItem>
-                <MenuItem value="Difficult">Difficult</MenuItem>
-              </Select>
-            </FormControl>
+  // Handle remove plant
+  const handleRemovePlant = (plant: Plant) => {
+    setSelectedPlantList((prevList) => prevList.filter((p) => p.name !== plant.name));
+    handleSnackbar(`${plant.name} removed from selection.`, 'info', true);
+  };
 
-            {/* Filter by Minimum Tank Size */}
-            <TextField
-              label="Filter by Minimum Tank Size (gallons)"
-              type="number"
-              value={minTankSizeFilter}
-              onChange={(e) => setMinTankSizeFilter(parseInt(e.target.value))}  // Update based on user input
-              fullWidth
-              margin="normal"
+    return (
+      <>
+        <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
+          <DialogTitle>Add New Plants</DialogTitle>
+          <DialogContent>
+            {/* Filter Panel */}
+            <FilterPanel
+              roleFilter={roleFilter}
+              setRoleFilter={setRoleFilter}
+              careLevelFilter={careLevelFilter}
+              setCareLevelFilter={setCareLevelFilter}
+              minTankSizeFilter={minTankSizeFilter}
+              setMinTankSizeFilter={setMinTankSizeFilter}
+              searchQuery={searchQuery}
+              setSearchQuery={setSearchQuery}
+              roles={['Oxygenator', 'Decorative', 'Carpet']}
+              careLevels={['Easy', 'Moderate', 'Difficult']}
+              searchLabel="Search Plant"
             />
-
-            {/* Search by Plant Name */}
-            <TextField
-              label="Search Plant"
-              variant="outlined"
-              fullWidth
-              margin="normal"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-
+  
             {/* Plant Table */}
-            <TableContainer component={Paper}>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell sx={{ fontWeight: 'bold' }}>Plant Name</TableCell>
-                    <TableCell sx={{ fontWeight: 'bold' }}>Role</TableCell>
-                    <TableCell sx={{ fontWeight: 'bold' }}>Care Level</TableCell>
-                    <TableCell sx={{ fontWeight: 'bold' }}>Min Tank Size</TableCell>
-                    <TableCell sx={{ fontWeight: 'bold' }}>Add</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {filteredPlantList.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((plant) => (
-                    <TableRow
-                      key={plant.name}
-                      hover
-                      sx={{
-                        cursor: 'pointer',
-                        backgroundColor: isPlantSelected(plant) ? 'rgba(0, 123, 255, 0.1)' : 'inherit',
-                      }}
-                      onClick={() => handlePlantClick(plant)}  
-                    >
-                      <TableCell>{plant.name}</TableCell>
-                      <TableCell>{plant.role}</TableCell>
-                      <TableCell>{plant.careLevel}</TableCell>
-                      <TableCell>{plant.minTankSize}</TableCell>
-                      <TableCell>
-                        <IconButton
-                          onClick={(event) => {
-                            event.stopPropagation();  
-                            handleSelectPlant(plant);
-                          }}
-                          color={isPlantSelected(plant) ? "secondary" : "primary"}
-                        >
-                          <AddCircleOutlineIcon />
-                        </IconButton>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-
-            {/* Pagination */}
-            <TablePagination
-              rowsPerPageOptions={[5, 10, 25]}
-              component="div"
-              count={filteredPlantList.length}
-              rowsPerPage={rowsPerPage}
+            <InhabitantTable<Plant>
+              data={filteredPlantList}
               page={page}
-              onPageChange={handleChangePage}
-              onRowsPerPageChange={handleChangeRowsPerPage}
-            />
-
-            {/* Selected Plants and Add Button */}
-            {selectedPlantList.length > 0 && (
-              <Box mt={2} display="flex" justifyContent="flex-end" alignItems="flex-end" textAlign="right">
-                <Box>
-                  <Typography variant="h6">Selected Plants to Add:</Typography>
-                  <List>
-                    {selectedPlantList.map(plant => (
-                      <ListItem key={plant.name} sx={{ padding: 0 }}>
-                        <Typography variant="body2">• {plant.name}</Typography>
-                      </ListItem>
-                    ))}
-                  </List>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={handleAddAllPlants}
-                  >
-                    ADD SELECTED PLANTS TO AQUARIUM
-                  </Button>
-                </Box>
-              </Box>
-            )}
-          </Box>
-
-          {/* AI Chat Interface */}
-          <Box mt={2}>
-            <Button variant="outlined" onClick={() => setShowChat(!showChat)}>
-              {showChat ? 'Hide' : 'Show'} AI Suggestions
-            </Button>
-            <AIChatInterface
-              showChat={showChat}
-              onClose={() => setShowChat(false)}
-              aquarium={aquarium}
-              suggestions={[
-                "What is a plant can I add to this tank?", 
-                "Do the plants in my tank need any special care?",
+              rowsPerPage={rowsPerPage}
+              handleChangePage={handleChangePage}
+              handleChangeRowsPerPage={handleChangeRowsPerPage}
+              onRowClick={handlePlantClick}
+              onSelectItem={handleSelectPlant}
+              isItemSelected={isPlantSelected}
+              columns={[
+                { field: 'name', headerName: 'Plant Name' },
+                { field: 'role', headerName: 'Role' },
+                { field: 'careLevel', headerName: 'Care Level' },
+                { field: 'minTankSize', headerName: 'Min Tank Size' },
               ]}
-              onAddItem={handleAddPlantGPT} 
+              addButtonColor="primary"
             />
-          </Box>
-        </DialogContent>
-
-        <DialogActions>
-          <Button onClick={onClose} color="secondary">Cancel</Button>
-        </DialogActions>
-
-        {/* Plant Info Modal using PlantInfoCard */}
-        {selectedPlant && (
-          <AquariumInhabitantInfoCard 
-            open={infoOpen} 
-            onClose={handleCloseInfo} 
-            inhabitant={selectedPlant} 
-          />
-        )}
-      </Dialog>
-    </>
-  );
-};
-
-export default AddPlantCard;
+  
+            {/* Selected Plants and Add Button */}
+            <SelectedInhabitantsList<Plant>
+              selectedItems={selectedPlantList}
+              onAddAll={handleAddAllPlants}
+              label="Selected Plants to Add:"
+              buttonText="ADD SELECTED PLANTS TO AQUARIUM"
+              onQuantityChange={handlePlantQuantityChange}
+              onRemoveItem={handleRemovePlant}
+              onInfoClick={handlePlantClick} // Pass the existing handlePlantClick function
+            />
+  
+            {/* AI Chat Interface */}
+            <Box mt={2}>
+              <Button variant="outlined" onClick={() => setShowChat(!showChat)}>
+                {showChat ? 'Hide' : 'Show'} AI Suggestions
+              </Button>
+              <AIChatInterface
+                showChat={showChat}
+                onClose={() => setShowChat(false)}
+                aquarium={aquarium}
+                suggestions={[
+                  'What plants can I add to this tank?',
+                  'Do the plants in my tank need any special care?',
+                ]}
+                onAddItem={handleAddPlantGPT}
+              />
+            </Box>
+          </DialogContent>
+  
+          <DialogActions>
+            <Button onClick={onClose} color="secondary">
+              Cancel
+            </Button>
+          </DialogActions>
+  
+          {/* Plant Info Modal */}
+          {selectedPlant && (
+            <AquariumInhabitantInfoCard
+              open={infoOpen}
+              onClose={handleCloseInfo}
+              inhabitant={selectedPlant}
+            />
+          )}
+        </Dialog>
+      </>
+    );
+  };
+  
+  export default AddPlantCard;
