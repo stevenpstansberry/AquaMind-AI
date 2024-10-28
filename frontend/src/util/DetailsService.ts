@@ -32,13 +32,13 @@ export const saveToLocalStorage = (key: string, data: any) => {
     console.log("Fetching species details...");
     const data = await getAllDetails("species");
     if (data) {
-      localStorage.setItem("species", JSON.stringify(data));
-      console.log("Species details saved to local storage:", data);
+      localStorage.setItem("details_species", JSON.stringify(data));
+      console.log("Species details saved to local storage:", data)
     }
     return data;
   };
   
-  export const fetchPlantDetails = async () => {
+  export const fetchPlantDetails = async (): Promise<any> => {
     console.log("Fetching plant details...");
     const data = await getAllDetails("plants");
     if (data) {
