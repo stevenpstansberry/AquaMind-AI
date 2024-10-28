@@ -245,6 +245,19 @@ useEffect(() => {
     }
   };
 
+  const handleFishQuantityChange = (fish: Fish, quantity: number) => {
+    if (quantity < 1) return;
+    setSelectedFishList((prevList) =>
+      prevList.map((f) => (f.name === fish.name ? { ...f, count: quantity } : f))
+    );
+  };
+
+  // Handle remove fish
+  const handleRemoveFish = (fish: Fish) => {
+    setSelectedFishList((prevList) => prevList.filter((f) => f.name !== fish.name));
+    handleSnackbar(`${fish.name} removed from selection.`, 'info', true);
+  };
+
   return (
     <>
       <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
@@ -286,11 +299,14 @@ useEffect(() => {
 
           {/* Selected Fish and Add Button */}
           <SelectedInhabitantsList<Fish>
-            selectedItems={selectedFishList}
-            onAddAll={handleAddAllFish}
-            label="Selected Fish to Add:"
-            buttonText="ADD SELECTED FISH TO AQUARIUM"
-          />
+          selectedItems={selectedFishList}
+          onAddAll={handleAddAllFish}
+          label="Selected Fish to Add:"
+          buttonText="ADD SELECTED FISH TO AQUARIUM"
+          onQuantityChange={handleFishQuantityChange}
+          onRemoveItem={handleRemoveFish}
+          onInfoClick={handleFishClick} // Pass the existing handleFishClick function
+        />
 
           {/* AI Chat Interface */}
           <Box mt={2}>

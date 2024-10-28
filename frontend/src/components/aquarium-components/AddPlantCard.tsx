@@ -169,6 +169,20 @@ useEffect(() => {
       }
     };
 
+      // Handle quantity change
+  const handlePlantQuantityChange = (plant: Plant, quantity: number) => {
+    if (quantity < 1) return;
+    setSelectedPlantList((prevList) =>
+      prevList.map((p) => (p.name === plant.name ? { ...p, count: quantity } : p))
+    );
+  };
+
+  // Handle remove plant
+  const handleRemovePlant = (plant: Plant) => {
+    setSelectedPlantList((prevList) => prevList.filter((p) => p.name !== plant.name));
+    handleSnackbar(`${plant.name} removed from selection.`, 'info', true);
+  };
+
     return (
       <>
         <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
@@ -214,6 +228,9 @@ useEffect(() => {
               onAddAll={handleAddAllPlants}
               label="Selected Plants to Add:"
               buttonText="ADD SELECTED PLANTS TO AQUARIUM"
+              onQuantityChange={handlePlantQuantityChange}
+              onRemoveItem={handleRemovePlant}
+              onInfoClick={handlePlantClick} // Pass the existing handlePlantClick function
             />
   
             {/* AI Chat Interface */}
