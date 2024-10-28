@@ -21,6 +21,7 @@ import AquariumInhabitantInfoCard from './AquariumInhabitantInfoCard';
 import { Aquarium, Fish } from '../../interfaces/Aquarium';
 import { getAllDetails } from '../../services/APIServices';
 import saltWaterFishData from '../../util/SaltwaterFishData.json';
+import { useDetails } from '../../util/DetailsContext';
 
 interface AddFishCardProps {
   open: boolean;
@@ -47,6 +48,10 @@ const saltwaterFishList = saltWaterFishData;
  * @returns {JSX.Element} - The rendered component.
  */
 const AddFishCard: React.FC<AddFishCardProps> = ({ open, onClose, aquarium, onAddFish, handleSnackbar }) => {
+  const { species, speciesList } = useDetails();
+
+  console.log("species list from context" , species);
+
   const [roleFilter, setRoleFilter] = useState('');  
   const [careLevelFilter, setCareLevelFilter] = useState('');  // New filter for care level
   const [minTankSizeFilter, setMinTankSizeFilter] = useState<number>(parseInt(aquarium.size));  // Default to aquarium size
@@ -60,24 +65,20 @@ const AddFishCard: React.FC<AddFishCardProps> = ({ open, onClose, aquarium, onAd
   const [filteredFishList, setFilteredFishList] = useState<Fish[]>([]);
   const [fishList, setFishList] = useState<Fish[]>([]);
 
-  /**
-   * Fetch fish data when the component is mounted or when the aquarium type changes
-   */
-  useEffect(() => {
-    const fetchFishData = async () => {
-      try {
 
-        const data = await getAllDetails("species") as Fish[];
-        setFishList(data);
-      } catch (error) {
-        console.error("Error fetching fish data:", error);
-        handleSnackbar("Error fetching fish data", 'error', true);
-      }
-    };
+// Update fishList when species changes or when the component opens
+useEffect(() => {
+  if (open) {
+    const speciesData = localStorage.getItem('details_species'); // Call speciesList() to get the actual array
+    const parsedSpeciesData = speciesData ? JSON.parse(speciesData) : [];
+    console.log("AddFishCard opened. Setting fishList to species data from DetailsContext.");
+    setFishList(parsedSpeciesData); // Set fishList to the array returned by speciesList()
+    console.log("Current fishList:", parsedSpeciesData);
+    console.log("Local storage for details_species:", localStorage.getItem('details_species'));
+  }
+}, [species, open]); // Run this effect when species or open changes
 
-    fetchFishData();
-  }, [aquarium.type, handleSnackbar]);
-
+  
     /**
    * @function useEffect
    * @description Filters the fish list based on the role, care level, minimum tank size, and search query. 

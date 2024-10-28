@@ -37,22 +37,18 @@ const AddPlantCard: React.FC<AddPlantCardProps> = ({ open, onClose, aquarium, on
    /**
    * Fetch plant data when the component is mounted or when the aquarium type changes
    */
-   useEffect(() => {
-    const fetchFishData = async () => {
-      try {
-
-        const data = await getAllDetails("plants") as Plant[];
-        setPlantList(data);
-      } catch (error) {
-        console.error("Error fetching Plant data:", error);
-        handleSnackbar("Error fetching Plant data", 'error', true);
-      }
-    };
-
-    fetchFishData();
-  }, [aquarium.type, handleSnackbar]);
-
 useEffect(() => {
+  if (open) {
+    const plantsData = localStorage.getItem('details_plants'); // Call speciesList() to get the actual array
+    const parsedPlantsData = plantsData ? JSON.parse(plantsData) : [];
+    console.log("Add PlantCard opened. Setting plantList to species data from DetailsContext.");
+    setPlantList(parsedPlantsData); // Set plantList to the array returned by speciesList()
+    console.log("Current plantList:", parsedPlantsData);
+    console.log("Local storage for plants:", localStorage.getItem('details_plants'));
+    }
+  }, [open]); // Run this effect when species or open changes
+
+  useEffect(() => {
     if (open) {
       console.log("Opened Add Plant Card");
       console.log("Aquarium data:", aquarium);

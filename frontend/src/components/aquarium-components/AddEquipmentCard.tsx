@@ -72,6 +72,19 @@ const AddEquipmentCard: React.FC<AddEquipmentCardProps> = ({ open, onClose, onAd
   
     fetchEquipmentData();
   }, [aquarium.type, handleSnackbar]);
+
+
+  // Update equipmentList when species changes or when the component opens
+useEffect(() => {
+  if (open) {
+    const equipmentData = localStorage.getItem('details_equipment'); // Call speciesList() to get the actual array
+    const parsedEquipmentData = equipmentData ? JSON.parse(equipmentData) : [];
+    console.log("AddEquipmentCard opened. Setting equipmentList to species data from DetailsContext.");
+    setEquipmentList(parsedEquipmentData); // Set equipmentList to the array returned by speciesList()
+    console.log("Current equipmentList:", parsedEquipmentData);
+    console.log("Local storage for equipment:", localStorage.getItem('details_equipment'));
+  }
+}, [open]); // Run this effect when species or open changes
   
 
   // Re-filter the equipment list whenever the modal is opened or the aquarium equipment changes
