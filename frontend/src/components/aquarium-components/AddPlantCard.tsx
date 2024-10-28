@@ -8,6 +8,8 @@ import AIChatInterface from '../ai-components/AIChatInterface';  // Assuming you
 import AquariumInhabitantInfoCard from './AquariumInhabitantInfoCard';
 import { getAllDetails } from '../../services/APIServices';
 import { Aquarium, Plant } from '../../interfaces/Aquarium';  // Ensure Plant interface is imported
+import SelectedInhabitantsList from './SelectedInhabitantsList';
+
 
 interface AddPlantCardProps {
   open: boolean;
@@ -280,25 +282,12 @@ useEffect(() => {
 
             {/* Selected Plants and Add Button */}
             {selectedPlantList.length > 0 && (
-              <Box mt={2} display="flex" justifyContent="flex-end" alignItems="flex-end" textAlign="right">
-                <Box>
-                  <Typography variant="h6">Selected Plants to Add:</Typography>
-                  <List>
-                    {selectedPlantList.map(plant => (
-                      <ListItem key={plant.name} sx={{ padding: 0 }}>
-                        <Typography variant="body2">• {plant.name}</Typography>
-                      </ListItem>
-                    ))}
-                  </List>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={handleAddAllPlants}
-                  >
-                    ADD SELECTED PLANTS TO AQUARIUM
-                  </Button>
-                </Box>
-              </Box>
+              <SelectedInhabitantsList<Plant>
+                selectedItems={selectedPlantList}
+                onAddAll={handleAddAllPlants}
+                label="Selected Plants to Add:"
+                buttonText="ADD SELECTED PLANTS TO AQUARIUM"
+              />
             )}
           </Box>
 

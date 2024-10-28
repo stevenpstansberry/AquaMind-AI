@@ -22,6 +22,8 @@ import { Aquarium, Fish } from '../../interfaces/Aquarium';
 import { getAllDetails } from '../../services/APIServices';
 import saltWaterFishData from '../../util/SaltwaterFishData.json';
 import { useDetails } from '../../util/DetailsContext';
+import SelectedInhabitantsList from './SelectedInhabitantsList';
+
 
 interface AddFishCardProps {
   open: boolean;
@@ -357,25 +359,12 @@ useEffect(() => {
 
             {/* Selected Fish and Add Button */}
             {selectedFishList.length > 0 && (
-              <Box mt={2} display="flex" justifyContent="flex-end" alignItems="flex-end" textAlign="right">
-                <Box>
-                  <Typography variant="h6">Selected Fish to Add:</Typography>
-                  <List>
-                    {selectedFishList.map(fish => (
-                      <ListItem key={fish.name} sx={{ padding: 0 }}>
-                        <Typography variant="body2">• {fish.name}</Typography>
-                      </ListItem>
-                    ))}
-                  </List>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={handleAddAllFish}
-                  >
-                    ADD SELECTED FISH TO AQUARIUM
-                  </Button>
-                </Box>
-              </Box>
+              <SelectedInhabitantsList<Fish>
+                selectedItems={selectedFishList}
+                onAddAll={handleAddAllFish}
+                label="Selected Fish to Add:"
+                buttonText="ADD SELECTED FISH TO AQUARIUM"
+              />
             )}
           </Box>
 
