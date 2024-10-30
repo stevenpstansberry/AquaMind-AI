@@ -31,11 +31,19 @@ const ParameterLoggingModal: React.FC<ParameterLoggingModalProps> = ({ open, onC
       aquariumId: aquarium.id,
       id: uuidv4(),
       timestamp: Date.now(),
-      temperature: typeof temperature === 'number' ? temperature : 0,
-      ph: typeof ph === 'number' ? ph : 0,
-      hardness: typeof hardness === 'number' ? hardness : 0,
-      // Add more parameters
     };
+  
+    if (typeof temperature === 'number') {
+      newEntry.temperature = temperature;
+    }
+    if (typeof ph === 'number') {
+      newEntry.ph = ph;
+    }
+    if (typeof hardness === 'number') {
+      newEntry.hardness = hardness;
+    }
+    // Add more parameters as needed
+  
     onAddEntry(newEntry);
   };
 

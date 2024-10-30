@@ -49,6 +49,41 @@ enum DisplayMode {
   AGGREGATED_RANGES,
 }
 
+
+interface LatestParameter {
+  value: number;
+  timestamp: number;
+}
+
+interface LatestParameters {
+  temperature?: LatestParameter;
+  ph?: LatestParameter;
+  hardness?: LatestParameter;
+  // Add other parameters as needed
+}
+
+// Function to get the latest value of each parameter
+const getLatestParameters = (entries: WaterParameterEntry[]): LatestParameters => {
+  const latestParameters: LatestParameters = {};
+  const sortedEntries = entries.slice().sort((a, b) => b.timestamp - a.timestamp);
+
+  for (const entry of sortedEntries) {
+    if (!latestParameters.temperature && entry.temperature !== undefined) {
+      latestParameters.temperature = { value: entry.temperature, timestamp: entry.timestamp };
+    }
+    if (!latestParameters.ph && entry.ph !== undefined) {
+      latestParameters.ph = { value: entry.ph, timestamp: entry.timestamp };
+    }
+    if (!latestParameters.hardness && entry.hardness !== undefined) {
+      latestParameters.hardness = { value: entry.hardness, timestamp: entry.timestamp };
+    }
+    // Add checks for other parameters
+    // if (Object.keys(latestParameters).length === totalParametersCount) break;
+  }
+
+  return latestParameters;
+};
+
 const ParametersCard: React.FC<ParametersCardProps> = ({ aquarium, onUpdateParameters, handleSnackbar }) => {
   const [displayMode, setDisplayMode] = useState<DisplayMode>(DisplayMode.CURRENT_PARAMETERS);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -87,6 +122,8 @@ const ParametersCard: React.FC<ParametersCardProps> = ({ aquarium, onUpdateParam
     setLoggingModalOpen(false);
   };
 
+
+
   const handleAddParameterEntry = (newEntry: WaterParameterEntry) => {
     const updatedEntries = [...parameterEntries, newEntry];
     setParameterEntries(updatedEntries);
@@ -120,20 +157,30 @@ const ParametersCard: React.FC<ParametersCardProps> = ({ aquarium, onUpdateParam
   };
 
   const renderCurrentParameters = () => {
-    const latestEntry = parameterEntries.slice().sort((a, b) => b.timestamp - a.timestamp)[0];
-    if (!latestEntry) {
+    if (parameterEntries.length === 0) {
       return <Typography variant="body2">No parameter entries available.</Typography>;
     }
+  
+    const latestParameters = getLatestParameters(parameterEntries);
+    const lastUpdatedTimestamp = Math.max(
+      ...Object.values(latestParameters)
+        .map((param) => param?.timestamp || 0)
+    );
+  
     return (
       <Box sx={{ marginTop: 2 }}>
         <Typography variant="body2">
-          Temperature: {(latestEntry.temperature).toFixed(1)} °F
+          Temperature: {latestParameters.temperature ? latestParameters.temperature.value.toFixed(1) : 'N/A'} °F
         </Typography>
-        <Typography variant="body2">pH: {latestEntry.ph}</Typography>
-        <Typography variant="body2">Hardness: {latestEntry.hardness} dGH</Typography>
+        <Typography variant="body2">
+          pH: {latestParameters.ph ? latestParameters.ph.value : 'N/A'}
+        </Typography>
+        <Typography variant="body2">
+          Hardness: {latestParameters.hardness ? latestParameters.hardness.value : 'N/A'} dGH
+        </Typography>
         {/* Add more parameters as needed */}
         <Typography variant="caption" sx={{ display: 'block', marginTop: 1 }}>
-          Last Updated: {new Date(latestEntry.timestamp).toLocaleString()}
+          Last Updated: {lastUpdatedTimestamp ? new Date(lastUpdatedTimestamp).toLocaleString() : 'N/A'}
         </Typography>
       </Box>
     );
@@ -163,7 +210,7 @@ const ParametersCard: React.FC<ParametersCardProps> = ({ aquarium, onUpdateParam
           label: selectedParameter.charAt(0).toUpperCase() + selectedParameter.slice(1),
           data: filteredEntries.map((entry) =>
             selectedParameter === 'temperature'
-              ? celsiusToFahrenheit(entry[selectedParameter]).toFixed(1)
+              ? entry[selectedParameter]?.toFixed(1)
               : entry[selectedParameter]
           ),
           fill: false,
@@ -243,7 +290,7 @@ const ParametersCard: React.FC<ParametersCardProps> = ({ aquarium, onUpdateParam
           pH: `${minPh.toFixed(1)} - ${maxPh.toFixed(1)}`,
         };
   
-        if (latestEntry.temperature < minTemp || latestEntry.temperature > maxTemp) {
+        if (latestEntry.temperature !== undefined && (latestEntry.temperature < minTemp || latestEntry.temperature > maxTemp)) {
           issues.push({
             parameter: 'Temperature',
             message: `Temperature out of range for ${fish.name}.`,
@@ -252,7 +299,7 @@ const ParametersCard: React.FC<ParametersCardProps> = ({ aquarium, onUpdateParam
             idealRange: speciesParameters[fish.name]['Temperature'],
           });
         }
-        if (latestEntry.ph < minPh || latestEntry.ph > maxPh) {
+        if (latestEntry.ph !== undefined && (latestEntry.ph < minPh || latestEntry.ph > maxPh)) {
           issues.push({
             parameter: 'pH',
             message: `pH out of range for ${fish.name}.`,
@@ -273,7 +320,7 @@ const ParametersCard: React.FC<ParametersCardProps> = ({ aquarium, onUpdateParam
           pH: `${minPh.toFixed(1)} - ${maxPh.toFixed(1)}`,
         };
   
-        if (latestEntry.temperature < minTemp || latestEntry.temperature > maxTemp) {
+        if (latestEntry.temperature !== undefined && (latestEntry.temperature < minTemp || latestEntry.temperature > maxTemp)) {
           issues.push({
             parameter: 'Temperature',
             message: `Temperature out of range for ${plant.name}.`,
@@ -282,7 +329,7 @@ const ParametersCard: React.FC<ParametersCardProps> = ({ aquarium, onUpdateParam
             idealRange: speciesParameters[plant.name]['Temperature'],
           });
         }
-        if (latestEntry.ph < minPh || latestEntry.ph > maxPh) {
+        if (latestEntry.ph !== undefined && (latestEntry.ph < minPh || latestEntry.ph > maxPh)) {
           issues.push({
             parameter: 'pH',
             message: `pH out of range for ${plant.name}.`,
