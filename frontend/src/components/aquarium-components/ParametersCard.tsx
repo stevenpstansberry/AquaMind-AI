@@ -1,208 +1,225 @@
-import React, { useState } from 'react';
-import { Card, CardContent, Typography, IconButton, Menu, MenuItem } from '@mui/material';
-import MoreVertIcon from '@mui/icons-material/MoreVert';  // Vertical three-dot icon (kebab menu)
-import AquariumParameters from './AquariumParameters';
+// src/components/aquarium-components/ParametersCard.tsx
 
-// Define possible display modes
-enum DisplayMode {
-  CURRENT_PARAMETERS,
-  WATER_QUALITY_GRAPH,
-  PLANT_PARAMETER_GRAPH,
-  FISH_HEALTH_GRAPH,
-  SUGGESTED_PARAMETERS
-}
+import React, { useState, useEffect } from 'react';
+import {
+  Card,
+  CardContent,
+  Typography,
+  IconButton,
+  Menu,
+  MenuItem,
+  Box,
+  Button,
+  Tooltip,
+} from '@mui/material';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import { Aquarium, WaterParameterEntry } from '../../interfaces/Aquarium';
+import { Line } from 'react-chartjs-2';
+import { Chart, LineController, LineElement, PointElement, LinearScale, Title, CategoryScale } from 'chart.js';
+import ParameterLoggingModal from './ParameterLoggingModal';
+
+Chart.register(LineController, LineElement, PointElement, LinearScale, Title, CategoryScale);
 
 interface ParametersCardProps {
-  parameters: {
-    temperature: number;
-    ph: number;
-    ammonia: number;
-    nitrite?: number;
-    nitrate?: number;
-    gh?: number;
-    kh?: number;
-    co2?: number;
-    salinity?: number;
-    calcium?: number;
-    magnesium?: number;
-    alkalinity?: number;
-    phosphate?: number;
-  };
-  onUpdateParameters: (newParams: {
-    temperature: number;
-    ph: number;
-    ammonia: number;
-    nitrite?: number;
-    nitrate?: number;
-    gh?: number;
-    kh?: number;
-    co2?: number;
-    salinity?: number;
-    calcium?: number;
-    magnesium?: number;
-    alkalinity?: number;
-    phosphate?: number;
-  }) => void;
-  aquariumData: { type: string; species: { name: string; count: number }[] };
+  aquarium: Aquarium;
+  onUpdateParameters: (newParameters: WaterParameterEntry[]) => void;
+  handleSnackbar: (message: string, severity: 'success' | 'error' | 'warning' | 'info', open: boolean) => void;
 }
 
-const ParametersCard: React.FC<ParametersCardProps> = ({ parameters, onUpdateParameters, aquariumData }) => {
-  const [displayMode, setDisplayMode] = useState<DisplayMode>(DisplayMode.CURRENT_PARAMETERS);  // Track current display mode
-  const [showParametersModal, setShowParametersModal] = useState(false);  // For editing modal
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);  // For menu anchor
+enum DisplayMode {
+  CURRENT_PARAMETERS,
+  TEMPERATURE_GRAPH,
+  PH_GRAPH,
+}
 
-  // Handle saving parameters
-  const handleSave = (newParams: { temperature: number; ph: number; ammonia: number; salinity?: number }) => {
-    console.log("Saving parameters:", newParams);  
-    onUpdateParameters(newParams);
-    setShowParametersModal(false);
-  };
+const ParametersCard: React.FC<ParametersCardProps> = ({ aquarium, onUpdateParameters, handleSnackbar }) => {
+  const [displayMode, setDisplayMode] = useState<DisplayMode>(DisplayMode.CURRENT_PARAMETERS);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [loggingModalOpen, setLoggingModalOpen] = useState(false);
+  const [parameterEntries, setParameterEntries] = useState<WaterParameterEntry[]>(aquarium.parameterEntries || []);
 
-  // Get numeric values from the DisplayMode enum
-  const validModes = Object.values(DisplayMode).filter(value => typeof value === 'number');
+  useEffect(() => {
+    setParameterEntries(aquarium.parameterEntries || []);
+  }, [aquarium]);
 
-  // Handle cycling through different views
-  const cycleDisplayMode = () => {
-    setDisplayMode((prevMode) => {
-      const nextMode = (prevMode + 1) % validModes.length;
-      console.log("Cycling display mode (before rounding):", nextMode);  
-      return Math.floor(nextMode);  // Ensure the next mode is an integer
-    });
-  };
-
-  // Handle menu opening and closing
   const handleMenuOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
-    event.stopPropagation();  // Prevent the card's click handler from being triggered
+    event.stopPropagation();
     setAnchorEl(event.currentTarget);
   };
+
   const handleMenuClose = () => {
     setAnchorEl(null);
   };
 
-  // Text for each display mode
-  const displayModeText = {
-    [DisplayMode.CURRENT_PARAMETERS]: 'Current Display: Aquarium Parameters',
-    [DisplayMode.WATER_QUALITY_GRAPH]: 'Current Display: Water Quality Graphs',
-    [DisplayMode.PLANT_PARAMETER_GRAPH]: 'Current Display: Plant Growth Parameters',
-    [DisplayMode.FISH_HEALTH_GRAPH]: 'Current Display: Fish Health and Stability',
-    [DisplayMode.SUGGESTED_PARAMETERS]: 'Current Display: Suggested Parameters'
+  const cycleDisplayMode = () => {
+    if (!anchorEl) {
+      const validModes = Object.values(DisplayMode).filter((value) => typeof value === 'number');
+      setDisplayMode((prevMode) => ((prevMode + 1) % validModes.length) as DisplayMode);
+    }
   };
 
-  // Dynamically include parameters based on aquarium type
-  const aquariumType = aquariumData.type.toLowerCase();
+  const handleOpenLoggingModal = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    setLoggingModalOpen(true);
+  };
+
+  const handleCloseLoggingModal = () => {
+    setLoggingModalOpen(false);
+  };
+
+  const handleAddParameterEntry = (newEntry: WaterParameterEntry) => {
+    const updatedEntries = [...parameterEntries, newEntry];
+    setParameterEntries(updatedEntries);
+    onUpdateParameters(updatedEntries);
+    handleSnackbar('New parameter entry added.', 'success', true);
+    setLoggingModalOpen(false);
+  };
+
+  const displayModeText = {
+    [DisplayMode.CURRENT_PARAMETERS]: 'Current Parameters',
+    [DisplayMode.TEMPERATURE_GRAPH]: 'Temperature Over Time',
+    [DisplayMode.PH_GRAPH]: 'pH Over Time',
+    // Add more display mode texts as needed
+  };
+
+  const renderContent = () => {
+    switch (displayMode) {
+      case DisplayMode.CURRENT_PARAMETERS:
+        const latestEntry = parameterEntries.slice().sort((a, b) => b.timestamp - a.timestamp)[0];
+        if (!latestEntry) {
+          return <Typography variant="body2">No parameter entries available.</Typography>;
+        }
+        return (
+          <Box sx={{ marginTop: 2 }}>
+            <Typography variant="body2">Temperature: {latestEntry.temperature} °C</Typography>
+            <Typography variant="body2">pH: {latestEntry.ph}</Typography>
+            <Typography variant="body2">Hardness: {latestEntry.hardness} dGH</Typography>
+            {/* Add more parameters as needed */}
+            <Typography variant="caption" sx={{ display: 'block', marginTop: 1 }}>
+              Last Updated: {new Date(latestEntry.timestamp).toLocaleString()}
+            </Typography>
+          </Box>
+        );
+      case DisplayMode.TEMPERATURE_GRAPH:
+        return renderParameterGraph('temperature', 'Temperature (°C)');
+      case DisplayMode.PH_GRAPH:
+        return renderParameterGraph('ph', 'pH Level');
+      // Add more cases for different parameters
+      default:
+        return null;
+    }
+  };
+
+  const renderParameterGraph = (parameterKey: keyof WaterParameterEntry, label: string) => {
+    const sortedEntries = parameterEntries.slice().sort((a, b) => a.timestamp - b.timestamp);
+    const data = {
+      labels: sortedEntries.map((entry) => new Date(entry.timestamp).toLocaleDateString()),
+      datasets: [
+        {
+          label: label,
+          data: sortedEntries.map((entry) => entry[parameterKey]),
+          fill: false,
+          borderColor: 'rgba(75,192,192,1)',
+          tension: 0.1,
+        },
+      ],
+    };
+    return (
+      <Box sx={{ marginTop: 2 }}>
+        <Line data={data} />
+      </Box>
+    );
+  };
 
   return (
     <>
-      <Card
-        sx={{
-          height: '100%',
-          position: 'relative',
-          border: '1px solid #e0e0e0',
-          boxShadow: '0px 2px 5px rgba(0, 0, 0, 0.05)',
-          borderRadius: '8px',
-          backgroundColor: '#fafafa',
-          transition: 'transform 0.15s ease-in-out, boxShadow 0.15s ease-in-out',
-          userSelect: 'none',  // Prevent text selection
-          '&:hover': {
-            cursor: 'pointer',
-            transform: 'scale(1.01)',
-            boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.1)'
-          }
-        }}
-        onClick={cycleDisplayMode}  // Cycle view on click
-      >
+      <Card sx={cardStyle} onClick={cycleDisplayMode}>
         <CardContent>
-          {/* Display the current mode text */}
-          <Typography variant="h6">Aquarium Parameters</Typography>
-          <Typography variant="body1">
-            {displayModeText[displayMode] || 'Unknown display mode'}
-          </Typography>
+          <Typography variant="h6">Water Parameters</Typography>
+          <Typography variant="body1">{displayModeText[displayMode]}</Typography>
 
-          {/* Only display parameters if the current mode is CURRENT_PARAMETERS */}
-          {displayMode === DisplayMode.CURRENT_PARAMETERS && (
-            <Typography variant="body2">
-              Temperature: {parameters.temperature}°F
-              <br />
-              pH: {parameters.ph}
-              <br />
-              Ammonia: {parameters.ammonia} ppm
-              <br />
-              {parameters.nitrite !== undefined && `Nitrite: ${parameters.nitrite} ppm`}
-              <br />
-              {parameters.nitrate !== undefined && `Nitrate: ${parameters.nitrate} ppm`}
-              <br />
-              {aquariumType === 'freshwater' && parameters.gh !== undefined && `General Hardness (GH): ${parameters.gh} dGH`}
-              <br />
-              {aquariumType === 'freshwater' && parameters.kh !== undefined && `Carbonate Hardness (KH): ${parameters.kh} dKH`}
-              <br />
-              {aquariumType === 'freshwater' && parameters.co2 !== undefined && `CO2: ${parameters.co2} ppm`}
-              <br />
-              {aquariumType === 'saltwater' && parameters.salinity !== undefined && `Salinity: ${parameters.salinity} ppt`}
-              <br />
-              {aquariumType === 'saltwater' && parameters.calcium !== undefined && `Calcium: ${parameters.calcium} ppm`}
-              <br />
-              {aquariumType === 'saltwater' && parameters.magnesium !== undefined && `Magnesium: ${parameters.magnesium} ppm`}
-              <br />
-              {aquariumType === 'saltwater' && parameters.alkalinity !== undefined && `Alkalinity: ${parameters.alkalinity} dKH`}
-              <br />
-              {aquariumType === 'saltwater' && parameters.phosphate !== undefined && `Phosphate: ${parameters.phosphate} ppm`}
+          {renderContent()}
+
+          {/* Add New Parameter Entry */}
+          <Box sx={{ display: 'flex', alignItems: 'center', marginTop: 2 }}>
+            <Typography variant="body2" sx={{ flexGrow: 1 }}>
+              Log New Parameters
             </Typography>
-          )}
+
+            <Tooltip title="Log New Parameters">
+              <IconButton color="primary" onClick={handleOpenLoggingModal}>
+                <AddCircleOutlineIcon />
+              </IconButton>
+            </Tooltip>
+          </Box>
         </CardContent>
 
-        {/* Vertical three-dot (kebab) menu icon */}
-        <IconButton
-          color="primary"
-          sx={{ position: 'absolute', top: '10px', right: '10px', color: '#B0BEC5' }}
-          aria-label="menu options"
-          onClick={handleMenuOpen}  // Open the menu
-        >
+        <IconButton color="primary" sx={iconStyle} onClick={handleMenuOpen}>
           <MoreVertIcon />
         </IconButton>
 
-        {/* Menu Options */}
-        <Menu
-          anchorEl={anchorEl}
-          open={Boolean(anchorEl)}
-          onClose={handleMenuClose}
-        >
-          {/* Log new parameters */}
-          <MenuItem onClick={() => {
-            setShowParametersModal(true);  // Open the modal for logging new parameters
-            handleMenuClose();  // Close the menu
-          }}>
-            Log new parameters
+        <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
+          <MenuItem
+            onClick={(e) => {
+              e.stopPropagation();
+              setDisplayMode(DisplayMode.CURRENT_PARAMETERS);
+            }}
+          >
+            Current Parameters
           </MenuItem>
-
-          {/* Edit Graph TimeFrame */}
-          <MenuItem onClick={() => {
-            console.log("Edit Graph TimeFrame clicked");  // Placeholder action
-            handleMenuClose();
-          }}>
-            Edit Graph TimeFrame
+          <MenuItem
+            onClick={(e) => {
+              e.stopPropagation();
+              setDisplayMode(DisplayMode.TEMPERATURE_GRAPH);
+            }}
+          >
+            Temperature Graph
           </MenuItem>
-
-          {/* Aquarium Parameters Settings */}
-          <MenuItem onClick={() => {
-            console.log("Aquarium Parameters Settings clicked");  // Placeholder action
-            handleMenuClose();
-          }}>
-            Aquarium Parameters Settings
+          <MenuItem
+            onClick={(e) => {
+              e.stopPropagation();
+              setDisplayMode(DisplayMode.PH_GRAPH);
+            }}
+          >
+            pH Graph
           </MenuItem>
+          {/* Add more menu items for other parameters */}
         </Menu>
       </Card>
 
-      {/* Modal for logging new parameters */}
-      {showParametersModal && (
-        <AquariumParameters
-            parameters={parameters}
-            onUpdateParameters={handleSave}
-            onClose={() => setShowParametersModal(false)}
-            aquariumType={aquariumData.type}  // Pass the type of aquarium (Freshwater or Saltwater)
-        />
-      )}
+      {/* Parameter Logging Modal */}
+      <ParameterLoggingModal
+        open={loggingModalOpen}
+        onClose={handleCloseLoggingModal}
+        onAddEntry={handleAddParameterEntry}
+      />
     </>
   );
+};
+
+const cardStyle = {
+  height: '100%',
+  position: 'relative',
+  transition: 'transform 0.15s ease-in-out, boxShadow 0.15s ease-in-out',
+  border: '1px solid #e0e0e0',
+  boxShadow: '0px 2px 5px rgba(0, 0, 0, 0.05)',
+  borderRadius: '8px',
+  backgroundColor: '#fafafa',
+  userSelect: 'none',
+  '&:hover': {
+    cursor: 'pointer',
+    transform: 'scale(1.01)',
+    boxShadow: '0px 2px 10px rgba(0, 0, 0, 0.12)',
+  },
+};
+
+const iconStyle = {
+  position: 'absolute',
+  top: '10px',
+  right: '10px',
+  color: '#B0BEC5',
+  fontSize: '20px',
 };
 
 export default ParametersCard;
