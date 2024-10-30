@@ -378,11 +378,11 @@ const ParametersCard: React.FC<ParametersCardProps> = ({ aquarium, onUpdateParam
       name: key,
       min:
         key === 'Temperature'
-          ? celsiusToFahrenheit(parameters[key].min).toFixed(1)
+          ? (parameters[key].min).toFixed(1)
           : parameters[key].min.toFixed(1),
       max:
         key === 'Temperature'
-          ? celsiusToFahrenheit(parameters[key].max).toFixed(1)
+          ? (parameters[key].max).toFixed(1)
           : parameters[key].max.toFixed(1),
       unit: parameters[key].unit,
     }));
