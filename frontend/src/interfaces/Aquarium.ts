@@ -7,21 +7,7 @@ export interface Aquarium {
     species: Fish[]; 
     plants:  Plant[]; 
     equipment: Equipment[];
-    parameters?: {
-      temperature?: number;
-      ph?: number;
-      ammonia?: number;
-      nitrite?: number;
-      nitrate?: number;
-      gh?: number;
-      kh?: number;
-      co2?: number;
-      salinity?: number;
-      calcium?: number;
-      magnesium?: number;
-      alkalinity?: number;
-      phosphate?: number;
-    };
+    parameterEntries?: WaterParameterEntry[];
     owner?: string; // User id of the aquarium owner
   }
 
@@ -86,4 +72,10 @@ export interface Equipment {
   type: 'filtration' | 'lighting' | 'heating' | 'feeding' | 'test_chemicals' | 'other'; // Category for display mode
 }
   
-  
+export interface WaterParameterEntry {
+  timestamp: number;
+  temperature: number;
+  ph: number;
+  hardness: number;
+  // Add more parameters as needed
+}
