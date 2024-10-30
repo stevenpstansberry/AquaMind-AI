@@ -193,6 +193,7 @@ const ParametersCard: React.FC<ParametersCardProps> = ({ aquarium, onUpdateParam
         open={loggingModalOpen}
         onClose={handleCloseLoggingModal}
         onAddEntry={handleAddParameterEntry}
+        aquarium={aquarium}
       />
     </>
   );

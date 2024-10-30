@@ -73,6 +73,8 @@ export interface Equipment {
 }
   
 export interface WaterParameterEntry {
+  id: string; // Unique identifier for the parameter entry
+  aquariumId: string; // Foreign key to link the entry to an aquarium
   timestamp: number;
   temperature: number;
   ph: number;

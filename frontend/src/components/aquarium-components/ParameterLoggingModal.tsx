@@ -10,14 +10,17 @@ import {
   Button,
 } from '@mui/material';
 import { WaterParameterEntry } from '../../interfaces/Aquarium';
+import { v4 as uuidv4 } from 'uuid';
+import { Aquarium } from '../../interfaces/Aquarium';
 
 interface ParameterLoggingModalProps {
   open: boolean;
   onClose: () => void;
   onAddEntry: (entry: WaterParameterEntry) => void;
+  aquarium: Aquarium;
 }
 
-const ParameterLoggingModal: React.FC<ParameterLoggingModalProps> = ({ open, onClose, onAddEntry }) => {
+const ParameterLoggingModal: React.FC<ParameterLoggingModalProps> = ({ open, onClose, onAddEntry, aquarium }) => {
   const [temperature, setTemperature] = useState<number | ''>('');
   const [ph, setPh] = useState<number | ''>('');
   const [hardness, setHardness] = useState<number | ''>('');
@@ -25,6 +28,8 @@ const ParameterLoggingModal: React.FC<ParameterLoggingModalProps> = ({ open, onC
 
   const handleSubmit = () => {
     const newEntry: WaterParameterEntry = {
+      aquariumId: aquarium.id,
+      id: uuidv4(),
       timestamp: Date.now(),
       temperature: typeof temperature === 'number' ? temperature : 0,
       ph: typeof ph === 'number' ? ph : 0,
