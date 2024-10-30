@@ -127,7 +127,7 @@ const ParametersCard: React.FC<ParametersCardProps> = ({ aquarium, onUpdateParam
     return (
       <Box sx={{ marginTop: 2 }}>
         <Typography variant="body2">
-          Temperature: {celsiusToFahrenheit(latestEntry.temperature).toFixed(1)} °F
+          Temperature: {(latestEntry.temperature).toFixed(1)} °F
         </Typography>
         <Typography variant="body2">pH: {latestEntry.ph}</Typography>
         <Typography variant="body2">Hardness: {latestEntry.hardness} dGH</Typography>
@@ -225,9 +225,7 @@ const ParametersCard: React.FC<ParametersCardProps> = ({ aquarium, onUpdateParam
     aquarium.species.forEach((fish) => {
       if (fish.waterParameters) {
         const { minTemp, maxTemp, minPh, maxPh } = parseWaterParameters(fish.waterParameters);
-        const minTempF = celsiusToFahrenheit(minTemp);
-        const maxTempF = celsiusToFahrenheit(maxTemp);
-        if (latestEntry.temperature < minTempF || latestEntry.temperature > maxTempF) {
+        if (latestEntry.temperature < minTemp || latestEntry.temperature > maxTemp) {
           issues.push({
             parameter: 'Temperature',
             message: `Temperature out of range for ${fish.name}.`,
