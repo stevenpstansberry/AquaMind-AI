@@ -211,25 +211,45 @@ const ParametersCard: React.FC<ParametersCardProps> = ({ aquarium, onUpdateParam
   const renderHealthCheck = () => {
     if (aquarium.species.length === 0 && aquarium.plants.length === 0) {
       return <Typography variant="body2">No aquarium inhabitants</Typography>;
-    }    
-    
+    }
+  
     const latestEntry = parameterEntries.slice().sort((a, b) => b.timestamp - a.timestamp)[0];
-
+  
     if (!latestEntry) {
       return <Typography variant="body2">No parameter entries available for health check.</Typography>;
     }
   
-    const issues: { parameter: string; message: string; severity: string }[] = [];
+    const issues: {
+      parameter: string;
+      message: string;
+      severity: string;
+      species: string;
+      idealRange: string;
+    }[] = [];
   
-    // Example comparison logic
+    // Calculate aggregated parameters
+    const aggregatedParameters = calculateAggregatedParameters();
+  
+    // Collect ideal ranges for species and plants
+    const speciesParameters: { [name: string]: { [parameter: string]: string } } = {};
+  
+    // Comparison logic
     aquarium.species.forEach((fish) => {
       if (fish.waterParameters) {
         const { minTemp, maxTemp, minPh, maxPh } = parseWaterParameters(fish.waterParameters);
+  
+        speciesParameters[fish.name] = {
+          Temperature: `${minTemp.toFixed(1)}°F - ${maxTemp.toFixed(1)}°F`,
+          pH: `${minPh.toFixed(1)} - ${maxPh.toFixed(1)}`,
+        };
+  
         if (latestEntry.temperature < minTemp || latestEntry.temperature > maxTemp) {
           issues.push({
             parameter: 'Temperature',
             message: `Temperature out of range for ${fish.name}.`,
             severity: 'critical',
+            species: fish.name,
+            idealRange: speciesParameters[fish.name]['Temperature'],
           });
         }
         if (latestEntry.ph < minPh || latestEntry.ph > maxPh) {
@@ -237,6 +257,8 @@ const ParametersCard: React.FC<ParametersCardProps> = ({ aquarium, onUpdateParam
             parameter: 'pH',
             message: `pH out of range for ${fish.name}.`,
             severity: 'warning',
+            species: fish.name,
+            idealRange: speciesParameters[fish.name]['pH'],
           });
         }
       }
@@ -245,13 +267,19 @@ const ParametersCard: React.FC<ParametersCardProps> = ({ aquarium, onUpdateParam
     aquarium.plants.forEach((plant) => {
       if (plant.waterParameters) {
         const { minTemp, maxTemp, minPh, maxPh } = parseWaterParameters(plant.waterParameters);
-        const minTempF = celsiusToFahrenheit(minTemp);
-        const maxTempF = celsiusToFahrenheit(maxTemp);
-        if (latestEntry.temperature < minTempF || latestEntry.temperature > maxTempF) {
+  
+        speciesParameters[plant.name] = {
+          Temperature: `${minTemp.toFixed(1)}°F - ${maxTemp.toFixed(1)}°F`,
+          pH: `${minPh.toFixed(1)} - ${maxPh.toFixed(1)}`,
+        };
+  
+        if (latestEntry.temperature < minTemp || latestEntry.temperature > maxTemp) {
           issues.push({
             parameter: 'Temperature',
             message: `Temperature out of range for ${plant.name}.`,
             severity: 'critical',
+            species: plant.name,
+            idealRange: speciesParameters[plant.name]['Temperature'],
           });
         }
         if (latestEntry.ph < minPh || latestEntry.ph > maxPh) {
@@ -259,6 +287,8 @@ const ParametersCard: React.FC<ParametersCardProps> = ({ aquarium, onUpdateParam
             parameter: 'pH',
             message: `pH out of range for ${plant.name}.`,
             severity: 'warning',
+            species: plant.name,
+            idealRange: speciesParameters[plant.name]['pH'],
           });
         }
       }
@@ -280,11 +310,15 @@ const ParametersCard: React.FC<ParametersCardProps> = ({ aquarium, onUpdateParam
         return obj;
       }, {} as { [key: string]: typeof issues });
   
-    const latestEntryDate = latestEntry ? new Date(latestEntry.timestamp).toLocaleString() : 'No entries yet';
+    const latestEntryDate = latestEntry
+      ? new Date(latestEntry.timestamp).toLocaleString()
+      : 'No entries yet';
   
     return (
       <Box sx={{ marginTop: 2 }}>
-        <Typography variant="h6">Health Check (Latest Entry: {latestEntryDate})</Typography>
+        <Typography variant="h6">
+          Health Check (Latest Entry: {latestEntryDate})
+        </Typography>
         {issues.length === 0 ? (
           <Typography variant="body2" sx={{ marginTop: 2 }}>
             All parameters are within ideal ranges for your species and plants.
@@ -312,14 +346,28 @@ const ParametersCard: React.FC<ParametersCardProps> = ({ aquarium, onUpdateParam
                   </Typography>
                 </AccordionSummary>
                 <AccordionDetails>
+                  {/* Display aggregated ideal range for the parameter */}
+                  <Typography variant="body2" sx={{ fontWeight: 'bold', marginBottom: 1 }}>
+                    Aquarium Ideal Range:{' '}
+                    {aggregatedParameters.find((p) => p.name === parameter)?.min} -{' '}
+                    {aggregatedParameters.find((p) => p.name === parameter)?.max}{' '}
+                    {aggregatedParameters.find((p) => p.name === parameter)?.unit}
+                  </Typography>
+                  {/* Display issues with species-specific ideal ranges */}
                   {issues.map((issue, idx) => (
-                    <Typography
-                      variant="body2"
-                      sx={{ color: issue.severity === 'critical' ? 'error.main' : 'warning.main' }}
-                      key={idx}
-                    >
-                      - {issue.message}
-                    </Typography>
+                    <Box key={idx} sx={{ marginBottom: 1 }}>
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          color: issue.severity === 'critical' ? 'error.main' : 'warning.main',
+                        }}
+                      >
+                        - {issue.message}
+                      </Typography>
+                      <Typography variant="body2" sx={{ marginLeft: 2 }}>
+                        {issue.species} Ideal Range: {issue.idealRange}
+                      </Typography>
+                    </Box>
                   ))}
                 </AccordionDetails>
               </Accordion>
