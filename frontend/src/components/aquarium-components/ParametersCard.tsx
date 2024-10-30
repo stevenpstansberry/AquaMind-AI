@@ -400,6 +400,10 @@ const ParametersCard: React.FC<ParametersCardProps> = ({ aquarium, onUpdateParam
                     {aggregatedParameters.find((p) => p.name === parameter)?.max}{' '}
                     {aggregatedParameters.find((p) => p.name === parameter)?.unit}
                   </Typography>
+                  {/* Display latest logged parameter */}
+                  <Typography variant="body2" sx={{ marginBottom: 1 }}>
+                    Latest Logged {parameter}: {latestEntry[parameter.toLowerCase() as keyof WaterParameterEntry] ?? 'N/A'}
+                  </Typography>
                   {/* Display issues with species-specific ideal ranges */}
                   {issues.map((issue, idx) => (
                     <Box key={idx} sx={{ marginBottom: 1 }}>
