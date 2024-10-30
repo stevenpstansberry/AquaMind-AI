@@ -32,7 +32,7 @@ import { fetchSpeciesDetails, fetchPlantDetails, fetchEquipmentDetails } from '.
 
 
 
-import { Aquarium, Equipment, Fish, Plant } from '../interfaces/Aquarium';
+import { Aquarium, Equipment, Fish, Plant, WaterParameterEntry } from '../interfaces/Aquarium';
 
 
 // Import the card components
@@ -137,7 +137,7 @@ const Aquariums: React.FC = () => {
     }
   };
 
-  // Function to handle saving the updated aquarium
+  // Function to handle saving the updated aquariums
   const handleSaveAquarium = (updatedAquarium: Aquarium) => {
     updateAquarium(updatedAquarium);
     apiUpdateAquarium(updatedAquarium.id, updatedAquarium)
@@ -167,21 +167,30 @@ const Aquariums: React.FC = () => {
   };
 
 
-  /**
-   * Updates the parameters of the currently selected aquarium.
-   * 
-   * @param {Object} newParams - The new parameters to update the current aquarium with.
-   * @param {number} newParams.temperature - The temperature of the water.
-   * @param {number} newParams.ph - The pH level of the water.
-   * @param {number} newParams.ammonia - The ammonia level of the water.
-   * @returns {void}
-   */
-  const handleUpdateParameters = (newParams: { temperature: number; ph: number; ammonia: number }): void => {
+  // /**
+  //  * Updates the parameters of the currently selected aquarium.
+  //  * 
+  //  * @param {Object} newParams - The new parameters to update the current aquarium with.
+  //  * @param {number} newParams.temperature - The temperature of the water.
+  //  * @param {number} newParams.ph - The pH level of the water.
+  //  * @param {number} newParams.ammonia - The ammonia level of the water.
+  //  * @returns {void}
+  //  */
+  const handleUpdateParameters = (newEntries: WaterParameterEntry[]): void => {
     if (currentAquarium) {
-      setCurrentAquarium({
+      const updatedAquarium = {
         ...currentAquarium,
-        parameters: newParams,  // Update parameters
-      });
+        parameterEntries: newEntries,
+      };
+      setCurrentAquarium(updatedAquarium);
+      updateAquarium(updatedAquarium);
+      apiUpdateAquarium(updatedAquarium.id, updatedAquarium)
+        .then((response) => {
+          console.log('API updated aquarium:', response);
+        })
+        .catch((error) => {
+          console.error('Failed to update aquarium via API:', error);
+        });
     }
   };
 
@@ -351,23 +360,9 @@ const Aquariums: React.FC = () => {
                         {/* Aquarium Parameters Card */}
                         <Grid item xs={12} md={6} lg={8}>
                           <ParametersCard
-                            parameters={{
-                              temperature: currentAquarium.parameters?.temperature ?? 0,
-                              ph: currentAquarium.parameters?.ph ?? 0,
-                              ammonia: currentAquarium.parameters?.ammonia ?? 0,
-                              nitrite: currentAquarium.parameters?.nitrite,
-                              nitrate: currentAquarium.parameters?.nitrate,
-                              gh: currentAquarium.parameters?.gh,
-                              kh: currentAquarium.parameters?.kh,
-                              co2: currentAquarium.parameters?.co2,
-                              salinity: currentAquarium.parameters?.salinity,
-                              calcium: currentAquarium.parameters?.calcium,
-                              magnesium: currentAquarium.parameters?.magnesium,
-                              alkalinity: currentAquarium.parameters?.alkalinity,
-                              phosphate: currentAquarium.parameters?.phosphate,
-                            }}
                             onUpdateParameters={handleUpdateParameters}
-                            aquariumData={currentAquarium}
+                            aquarium={currentAquarium}
+                            handleSnackbar={handleSnackbar}
                           />
                         </Grid>
                       </Grid>
