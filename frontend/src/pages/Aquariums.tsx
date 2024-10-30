@@ -137,7 +137,7 @@ const Aquariums: React.FC = () => {
     }
   };
 
-  // Function to handle saving the updated aquarium
+  // Function to handle saving the updated aquariums
   const handleSaveAquarium = (updatedAquarium: Aquarium) => {
     updateAquarium(updatedAquarium);
     apiUpdateAquarium(updatedAquarium.id, updatedAquarium)
