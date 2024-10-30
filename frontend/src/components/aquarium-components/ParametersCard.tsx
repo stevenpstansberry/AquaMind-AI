@@ -140,6 +140,11 @@ const ParametersCard: React.FC<ParametersCardProps> = ({ aquarium, onUpdateParam
   };
 
   const renderParameterGraph = () => {
+    const latestEntry = parameterEntries.slice().sort((a, b) => b.timestamp - a.timestamp)[0];
+    if (!latestEntry) {
+      return <Typography variant="body2">No parameter entries available for graph.</Typography>;
+    }
+
     const filteredEntries = parameterEntries
       .slice()
       .sort((a, b) => a.timestamp - b.timestamp)
@@ -204,7 +209,12 @@ const ParametersCard: React.FC<ParametersCardProps> = ({ aquarium, onUpdateParam
   };
 
   const renderHealthCheck = () => {
+    if (aquarium.species.length === 0 && aquarium.plants.length === 0) {
+      return <Typography variant="body2">No aquarium inhabitants</Typography>;
+    }    
+    
     const latestEntry = parameterEntries.slice().sort((a, b) => b.timestamp - a.timestamp)[0];
+
     if (!latestEntry) {
       return <Typography variant="body2">No parameter entries available for health check.</Typography>;
     }
@@ -323,6 +333,10 @@ const ParametersCard: React.FC<ParametersCardProps> = ({ aquarium, onUpdateParam
   };
 
   const renderAggregatedRanges = () => {
+    if (aquarium.species.length === 0 && aquarium.plants.length === 0) {
+      return <Typography variant="body2">No aquarium inhabitants</Typography>;
+    }    
+
     const aggregatedParameters = calculateAggregatedParameters();
 
     return (
