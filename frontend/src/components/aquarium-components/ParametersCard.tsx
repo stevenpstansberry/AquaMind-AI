@@ -9,11 +9,14 @@ import {
   Menu,
   MenuItem,
   Box,
-  Button,
   Tooltip,
+  Select,
+  FormControl,
+  InputLabel,
+  Button,
 } from '@mui/material';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import CreateIcon from '@mui/icons-material/Create';
 import { Aquarium, WaterParameterEntry } from '../../interfaces/Aquarium';
 import { Line } from 'react-chartjs-2';
 import { Chart, LineController, LineElement, PointElement, LinearScale, Title, CategoryScale } from 'chart.js';
@@ -29,8 +32,8 @@ interface ParametersCardProps {
 
 enum DisplayMode {
   CURRENT_PARAMETERS,
-  TEMPERATURE_GRAPH,
-  PH_GRAPH,
+  PARAMETER_GRAPH,
+  HEALTH_CHECK,
 }
 
 const ParametersCard: React.FC<ParametersCardProps> = ({ aquarium, onUpdateParameters, handleSnackbar }) => {
@@ -38,6 +41,8 @@ const ParametersCard: React.FC<ParametersCardProps> = ({ aquarium, onUpdateParam
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [loggingModalOpen, setLoggingModalOpen] = useState(false);
   const [parameterEntries, setParameterEntries] = useState<WaterParameterEntry[]>(aquarium.parameterEntries || []);
+  const [selectedParameter, setSelectedParameter] = useState<keyof WaterParameterEntry>('temperature');
+  const [timeFrame, setTimeFrame] = useState<string>('All Time');
 
   useEffect(() => {
     setParameterEntries(aquarium.parameterEntries || []);
@@ -78,9 +83,8 @@ const ParametersCard: React.FC<ParametersCardProps> = ({ aquarium, onUpdateParam
 
   const displayModeText = {
     [DisplayMode.CURRENT_PARAMETERS]: 'Current Parameters',
-    [DisplayMode.TEMPERATURE_GRAPH]: 'Temperature Over Time',
-    [DisplayMode.PH_GRAPH]: 'pH Over Time',
-    // Add more display mode texts as needed
+    [DisplayMode.PARAMETER_GRAPH]: 'Parameter Graph',
+    [DisplayMode.HEALTH_CHECK]: 'Health Check',
   };
 
   const renderContent = () => {
@@ -101,35 +105,137 @@ const ParametersCard: React.FC<ParametersCardProps> = ({ aquarium, onUpdateParam
             </Typography>
           </Box>
         );
-      case DisplayMode.TEMPERATURE_GRAPH:
-        return renderParameterGraph('temperature', 'Temperature (°C)');
-      case DisplayMode.PH_GRAPH:
-        return renderParameterGraph('ph', 'pH Level');
-      // Add more cases for different parameters
+      case DisplayMode.PARAMETER_GRAPH:
+        return renderParameterGraph();
+      case DisplayMode.HEALTH_CHECK:
+        return renderHealthCheck();
       default:
         return null;
     }
   };
 
-  const renderParameterGraph = (parameterKey: keyof WaterParameterEntry, label: string) => {
-    const sortedEntries = parameterEntries.slice().sort((a, b) => a.timestamp - b.timestamp);
+  const renderParameterGraph = () => {
+    const filteredEntries = parameterEntries
+      .slice()
+      .sort((a, b) => a.timestamp - b.timestamp)
+      .filter((entry) => {
+        if (timeFrame === 'All Time') return true;
+        const timeDifference = Date.now() - entry.timestamp;
+        if (timeFrame === 'Last Week') return timeDifference <= 7 * 24 * 60 * 60 * 1000;
+        if (timeFrame === 'Last Month') return timeDifference <= 30 * 24 * 60 * 60 * 1000;
+        return true;
+      });
+
     const data = {
-      labels: sortedEntries.map((entry) => new Date(entry.timestamp).toLocaleDateString()),
+      labels: filteredEntries.map((entry) => new Date(entry.timestamp).toLocaleDateString()),
       datasets: [
         {
-          label: label,
-          data: sortedEntries.map((entry) => entry[parameterKey]),
+          label: selectedParameter.charAt(0).toUpperCase() + selectedParameter.slice(1),
+          data: filteredEntries.map((entry) => entry[selectedParameter]),
           fill: false,
           borderColor: 'rgba(75,192,192,1)',
           tension: 0.1,
         },
       ],
     };
+
     return (
       <Box sx={{ marginTop: 2 }}>
+        <FormControl fullWidth>
+          <InputLabel>Parameter</InputLabel>
+          <Select
+            value={selectedParameter}
+            label="Parameter"
+            onChange={(e) => setSelectedParameter(e.target.value as keyof WaterParameterEntry)}
+          >
+            <MenuItem value="temperature">Temperature</MenuItem>
+            <MenuItem value="ph">pH</MenuItem>
+            <MenuItem value="hardness">Hardness</MenuItem>
+            {/* Add more parameters as needed */}
+          </Select>
+        </FormControl>
+        <FormControl fullWidth sx={{ marginTop: 2 }}>
+          <InputLabel>Time Frame</InputLabel>
+          <Select value={timeFrame} label="Time Frame" onChange={(e) => setTimeFrame(e.target.value)}>
+            <MenuItem value="All Time">All Time</MenuItem>
+            <MenuItem value="Last Week">Last Week</MenuItem>
+            <MenuItem value="Last Month">Last Month</MenuItem>
+            {/* Add more time frames as needed */}
+          </Select>
+        </FormControl>
         <Line data={data} />
       </Box>
     );
+  };
+
+  const renderHealthCheck = () => {
+    const latestEntry = parameterEntries.slice().sort((a, b) => b.timestamp - a.timestamp)[0];
+    if (!latestEntry) {
+      return <Typography variant="body2">No parameter entries available for health check.</Typography>;
+    }
+
+    const issues: string[] = [];
+
+    // Example comparison logic
+    aquarium.species.forEach((fish) => {
+      if (fish.waterParameters) {
+        // Parse ideal parameters from fish.waterParameters
+        const { minTemp, maxTemp, minPh, maxPh } = parseWaterParameters(fish.waterParameters);
+        if (latestEntry.temperature < minTemp || latestEntry.temperature > maxTemp) {
+          issues.push(`Temperature out of range for ${fish.name}.`);
+        }
+        if (latestEntry.ph < minPh || latestEntry.ph > maxPh) {
+          issues.push(`pH out of range for ${fish.name}.`);
+        }
+      }
+    });
+
+    aquarium.plants.forEach((plant) => {
+      if (plant.waterParameters) {
+        const { minTemp, maxTemp, minPh, maxPh } = parseWaterParameters(plant.waterParameters);
+        if (latestEntry.temperature < minTemp || latestEntry.temperature > maxTemp) {
+          issues.push(`Temperature out of range for ${plant.name}.`);
+        }
+        if (latestEntry.ph < minPh || latestEntry.ph > maxPh) {
+          issues.push(`pH out of range for ${plant.name}.`);
+        }
+      }
+    });
+
+    if (issues.length === 0) {
+      return (
+        <Typography variant="body2" sx={{ marginTop: 2 }}>
+          All parameters are within ideal ranges for your species and plants.
+        </Typography>
+      );
+    } else {
+      return (
+        <Box sx={{ marginTop: 2 }}>
+          <Typography variant="body2">Health Check Issues:</Typography>
+          {issues.map((issue, index) => (
+            <Typography variant="body2" color="error" key={index}>
+              - {issue}
+            </Typography>
+          ))}
+        </Box>
+      );
+    }
+  };
+
+  const parseWaterParameters = (params: string) => {
+    // Example parser, assumes format like "pH 6.0-7.0, Temperature 72-78°F"
+    const result = { minTemp: 0, maxTemp: 100, minPh: 0, maxPh: 14 };
+    const tempMatch = params.match(/Temperature\s*(\d+)-(\d+)/);
+    const phMatch = params.match(/pH\s*(\d+\.?\d*)-(\d+\.?\d*)/);
+    if (tempMatch) {
+      result.minTemp = parseFloat(tempMatch[1]);
+      result.maxTemp = parseFloat(tempMatch[2]);
+    }
+    if (phMatch) {
+      result.minPh = parseFloat(phMatch[1]);
+      result.maxPh = parseFloat(phMatch[2]);
+    }
+    return result;
   };
 
   return (
@@ -141,7 +247,7 @@ const ParametersCard: React.FC<ParametersCardProps> = ({ aquarium, onUpdateParam
 
           {renderContent()}
 
-          {/* Add New Parameter Entry */}
+          {/* Log New Parameters */}
           <Box sx={{ display: 'flex', alignItems: 'center', marginTop: 2 }}>
             <Typography variant="body2" sx={{ flexGrow: 1 }}>
               Log New Parameters
@@ -149,7 +255,7 @@ const ParametersCard: React.FC<ParametersCardProps> = ({ aquarium, onUpdateParam
 
             <Tooltip title="Log New Parameters">
               <IconButton color="primary" onClick={handleOpenLoggingModal}>
-                <AddCircleOutlineIcon />
+                <CreateIcon />
               </IconButton>
             </Tooltip>
           </Box>
@@ -164,6 +270,7 @@ const ParametersCard: React.FC<ParametersCardProps> = ({ aquarium, onUpdateParam
             onClick={(e) => {
               e.stopPropagation();
               setDisplayMode(DisplayMode.CURRENT_PARAMETERS);
+              handleMenuClose();
             }}
           >
             Current Parameters
@@ -171,20 +278,21 @@ const ParametersCard: React.FC<ParametersCardProps> = ({ aquarium, onUpdateParam
           <MenuItem
             onClick={(e) => {
               e.stopPropagation();
-              setDisplayMode(DisplayMode.TEMPERATURE_GRAPH);
+              setDisplayMode(DisplayMode.PARAMETER_GRAPH);
+              handleMenuClose();
             }}
           >
-            Temperature Graph
+            Parameter Graph
           </MenuItem>
           <MenuItem
             onClick={(e) => {
               e.stopPropagation();
-              setDisplayMode(DisplayMode.PH_GRAPH);
+              setDisplayMode(DisplayMode.HEALTH_CHECK);
+              handleMenuClose();
             }}
           >
-            pH Graph
+            Health Check
           </MenuItem>
-          {/* Add more menu items for other parameters */}
         </Menu>
       </Card>
 
