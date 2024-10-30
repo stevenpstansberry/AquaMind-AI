@@ -13,13 +13,25 @@ import {
   Select,
   FormControl,
   InputLabel,
-  Button,
+  TextField,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
 } from '@mui/material';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import CreateIcon from '@mui/icons-material/Create';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { Aquarium, WaterParameterEntry } from '../../interfaces/Aquarium';
 import { Line } from 'react-chartjs-2';
-import { Chart, LineController, LineElement, PointElement, LinearScale, Title, CategoryScale } from 'chart.js';
+import {
+  Chart,
+  LineController,
+  LineElement,
+  PointElement,
+  LinearScale,
+  Title,
+  CategoryScale,
+} from 'chart.js';
 import ParameterLoggingModal from './ParameterLoggingModal';
 
 Chart.register(LineController, LineElement, PointElement, LinearScale, Title, CategoryScale);
@@ -34,6 +46,7 @@ enum DisplayMode {
   CURRENT_PARAMETERS,
   PARAMETER_GRAPH,
   HEALTH_CHECK,
+  AGGREGATED_RANGES,
 }
 
 const ParametersCard: React.FC<ParametersCardProps> = ({ aquarium, onUpdateParameters, handleSnackbar }) => {
@@ -43,6 +56,7 @@ const ParametersCard: React.FC<ParametersCardProps> = ({ aquarium, onUpdateParam
   const [parameterEntries, setParameterEntries] = useState<WaterParameterEntry[]>(aquarium.parameterEntries || []);
   const [selectedParameter, setSelectedParameter] = useState<keyof WaterParameterEntry>('temperature');
   const [timeFrame, setTimeFrame] = useState<string>('All Time');
+  const [filter, setFilter] = useState<string>('');
 
   useEffect(() => {
     setParameterEntries(aquarium.parameterEntries || []);
@@ -85,33 +99,44 @@ const ParametersCard: React.FC<ParametersCardProps> = ({ aquarium, onUpdateParam
     [DisplayMode.CURRENT_PARAMETERS]: 'Current Parameters',
     [DisplayMode.PARAMETER_GRAPH]: 'Parameter Graph',
     [DisplayMode.HEALTH_CHECK]: 'Health Check',
+    [DisplayMode.AGGREGATED_RANGES]: 'Aggregated Ranges',
   };
+
+  const celsiusToFahrenheit = (celsius: number) => (celsius * 9) / 5 + 32;
 
   const renderContent = () => {
     switch (displayMode) {
       case DisplayMode.CURRENT_PARAMETERS:
-        const latestEntry = parameterEntries.slice().sort((a, b) => b.timestamp - a.timestamp)[0];
-        if (!latestEntry) {
-          return <Typography variant="body2">No parameter entries available.</Typography>;
-        }
-        return (
-          <Box sx={{ marginTop: 2 }}>
-            <Typography variant="body2">Temperature: {latestEntry.temperature} °C</Typography>
-            <Typography variant="body2">pH: {latestEntry.ph}</Typography>
-            <Typography variant="body2">Hardness: {latestEntry.hardness} dGH</Typography>
-            {/* Add more parameters as needed */}
-            <Typography variant="caption" sx={{ display: 'block', marginTop: 1 }}>
-              Last Updated: {new Date(latestEntry.timestamp).toLocaleString()}
-            </Typography>
-          </Box>
-        );
+        return renderCurrentParameters();
       case DisplayMode.PARAMETER_GRAPH:
         return renderParameterGraph();
       case DisplayMode.HEALTH_CHECK:
         return renderHealthCheck();
+      case DisplayMode.AGGREGATED_RANGES:
+        return renderAggregatedRanges();
       default:
         return null;
     }
+  };
+
+  const renderCurrentParameters = () => {
+    const latestEntry = parameterEntries.slice().sort((a, b) => b.timestamp - a.timestamp)[0];
+    if (!latestEntry) {
+      return <Typography variant="body2">No parameter entries available.</Typography>;
+    }
+    return (
+      <Box sx={{ marginTop: 2 }}>
+        <Typography variant="body2">
+          Temperature: {celsiusToFahrenheit(latestEntry.temperature).toFixed(1)} °F
+        </Typography>
+        <Typography variant="body2">pH: {latestEntry.ph}</Typography>
+        <Typography variant="body2">Hardness: {latestEntry.hardness} dGH</Typography>
+        {/* Add more parameters as needed */}
+        <Typography variant="caption" sx={{ display: 'block', marginTop: 1 }}>
+          Last Updated: {new Date(latestEntry.timestamp).toLocaleString()}
+        </Typography>
+      </Box>
+    );
   };
 
   const renderParameterGraph = () => {
@@ -131,7 +156,11 @@ const ParametersCard: React.FC<ParametersCardProps> = ({ aquarium, onUpdateParam
       datasets: [
         {
           label: selectedParameter.charAt(0).toUpperCase() + selectedParameter.slice(1),
-          data: filteredEntries.map((entry) => entry[selectedParameter]),
+          data: filteredEntries.map((entry) =>
+            selectedParameter === 'temperature'
+              ? celsiusToFahrenheit(entry[selectedParameter]).toFixed(1)
+              : entry[selectedParameter]
+          ),
           fill: false,
           borderColor: 'rgba(75,192,192,1)',
           tension: 0.1,
@@ -147,6 +176,7 @@ const ParametersCard: React.FC<ParametersCardProps> = ({ aquarium, onUpdateParam
             value={selectedParameter}
             label="Parameter"
             onChange={(e) => setSelectedParameter(e.target.value as keyof WaterParameterEntry)}
+            onClick={(e) => e.stopPropagation()}
           >
             <MenuItem value="temperature">Temperature</MenuItem>
             <MenuItem value="ph">pH</MenuItem>
@@ -156,7 +186,12 @@ const ParametersCard: React.FC<ParametersCardProps> = ({ aquarium, onUpdateParam
         </FormControl>
         <FormControl fullWidth sx={{ marginTop: 2 }}>
           <InputLabel>Time Frame</InputLabel>
-          <Select value={timeFrame} label="Time Frame" onChange={(e) => setTimeFrame(e.target.value)}>
+          <Select 
+          value={timeFrame} 
+          label="Time Frame" 
+          onChange={(e) => setTimeFrame(e.target.value)} 
+          onClick={(e) => e.stopPropagation()}
+          >
             <MenuItem value="All Time">All Time</MenuItem>
             <MenuItem value="Last Week">Last Week</MenuItem>
             <MenuItem value="Last Month">Last Month</MenuItem>
@@ -173,60 +208,191 @@ const ParametersCard: React.FC<ParametersCardProps> = ({ aquarium, onUpdateParam
     if (!latestEntry) {
       return <Typography variant="body2">No parameter entries available for health check.</Typography>;
     }
-
-    const issues: string[] = [];
-
+  
+    const issues: { parameter: string; message: string; severity: string }[] = [];
+  
     // Example comparison logic
     aquarium.species.forEach((fish) => {
       if (fish.waterParameters) {
-        // Parse ideal parameters from fish.waterParameters
         const { minTemp, maxTemp, minPh, maxPh } = parseWaterParameters(fish.waterParameters);
-        if (latestEntry.temperature < minTemp || latestEntry.temperature > maxTemp) {
-          issues.push(`Temperature out of range for ${fish.name}.`);
+        const minTempF = celsiusToFahrenheit(minTemp);
+        const maxTempF = celsiusToFahrenheit(maxTemp);
+        if (latestEntry.temperature < minTempF || latestEntry.temperature > maxTempF) {
+          issues.push({
+            parameter: 'Temperature',
+            message: `Temperature out of range for ${fish.name}.`,
+            severity: 'critical',
+          });
         }
         if (latestEntry.ph < minPh || latestEntry.ph > maxPh) {
-          issues.push(`pH out of range for ${fish.name}.`);
+          issues.push({
+            parameter: 'pH',
+            message: `pH out of range for ${fish.name}.`,
+            severity: 'warning',
+          });
         }
       }
     });
-
+  
     aquarium.plants.forEach((plant) => {
       if (plant.waterParameters) {
         const { minTemp, maxTemp, minPh, maxPh } = parseWaterParameters(plant.waterParameters);
-        if (latestEntry.temperature < minTemp || latestEntry.temperature > maxTemp) {
-          issues.push(`Temperature out of range for ${plant.name}.`);
+        const minTempF = celsiusToFahrenheit(minTemp);
+        const maxTempF = celsiusToFahrenheit(maxTemp);
+        if (latestEntry.temperature < minTempF || latestEntry.temperature > maxTempF) {
+          issues.push({
+            parameter: 'Temperature',
+            message: `Temperature out of range for ${plant.name}.`,
+            severity: 'critical',
+          });
         }
         if (latestEntry.ph < minPh || latestEntry.ph > maxPh) {
-          issues.push(`pH out of range for ${plant.name}.`);
+          issues.push({
+            parameter: 'pH',
+            message: `pH out of range for ${plant.name}.`,
+            severity: 'warning',
+          });
         }
       }
     });
-
-    if (issues.length === 0) {
-      return (
-        <Typography variant="body2" sx={{ marginTop: 2 }}>
-          All parameters are within ideal ranges for your species and plants.
-        </Typography>
-      );
-    } else {
-      return (
-        <Box sx={{ marginTop: 2 }}>
-          <Typography variant="body2">Health Check Issues:</Typography>
-          {issues.map((issue, index) => (
-            <Typography variant="body2" color="error" key={index}>
-              - {issue}
+  
+    const groupedIssues = issues.reduce((groups, issue) => {
+      const { parameter } = issue;
+      if (!groups[parameter]) {
+        groups[parameter] = [];
+      }
+      groups[parameter].push(issue);
+      return groups;
+    }, {} as { [key: string]: typeof issues });
+  
+    const filteredGroupedIssues = Object.entries(groupedIssues)
+      .filter(([parameter]) => parameter.toLowerCase().includes(filter.toLowerCase()))
+      .reduce((obj, [parameter, issues]) => {
+        obj[parameter] = issues;
+        return obj;
+      }, {} as { [key: string]: typeof issues });
+  
+    const latestEntryDate = latestEntry ? new Date(latestEntry.timestamp).toLocaleString() : 'No entries yet';
+  
+    return (
+      <Box sx={{ marginTop: 2 }}>
+        <Typography variant="h6">Health Check (Latest Entry: {latestEntryDate})</Typography>
+        {issues.length === 0 ? (
+          <Typography variant="body2" sx={{ marginTop: 2 }}>
+            All parameters are within ideal ranges for your species and plants.
+          </Typography>
+        ) : (
+          <>
+            <Typography variant="body2" color="error">
+              Total Issues: {issues.length}
             </Typography>
-          ))}
-        </Box>
-      );
-    }
+            <TextField
+              label="Filter Issues"
+              variant="outlined"
+              size="small"
+              onChange={(e) => setFilter(e.target.value)}
+              sx={{ marginY: 2 }}
+            />
+            {Object.entries(filteredGroupedIssues).map(([parameter, issues]) => (
+              <Accordion key={parameter}>
+                <AccordionSummary
+                  expandIcon={<ExpandMoreIcon />}
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <Typography variant="body2">
+                    {parameter} ({issues.length})
+                  </Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                  {issues.map((issue, idx) => (
+                    <Typography
+                      variant="body2"
+                      sx={{ color: issue.severity === 'critical' ? 'error.main' : 'warning.main' }}
+                      key={idx}
+                    >
+                      - {issue.message}
+                    </Typography>
+                  ))}
+                </AccordionDetails>
+              </Accordion>
+            ))}
+          </>
+        )}
+      </Box>
+    );
+  };
+
+  const renderAggregatedRanges = () => {
+    const aggregatedParameters = calculateAggregatedParameters();
+
+    return (
+      <Box>
+        <Typography variant="h6" sx={{ marginTop: 2 }}>
+          Aggregated Acceptable Parameter Ranges
+        </Typography>
+        {aggregatedParameters.map((param, index) => (
+          <Typography key={index} variant="body2">
+            {param.name}: {param.min} - {param.max} {param.unit}
+          </Typography>
+        ))}
+      </Box>
+    );
+  };
+
+  const calculateAggregatedParameters = () => {
+    const parameters: {
+      [key: string]: { min: number; max: number; unit: string };
+    } = {};
+
+    const speciesList = [...aquarium.species, ...aquarium.plants];
+
+    speciesList.forEach((item) => {
+      if (item.waterParameters) {
+        const params = parseWaterParameters(item.waterParameters);
+        if (!parameters['Temperature']) {
+          parameters['Temperature'] = {
+            min: params.minTemp,
+            max: params.maxTemp,
+            unit: '°F',
+          };
+        } else {
+          parameters['Temperature'].min = Math.max(parameters['Temperature'].min, params.minTemp);
+          parameters['Temperature'].max = Math.min(parameters['Temperature'].max, params.maxTemp);
+        }
+
+        if (!parameters['pH']) {
+          parameters['pH'] = {
+            min: params.minPh,
+            max: params.maxPh,
+            unit: '',
+          };
+        } else {
+          parameters['pH'].min = Math.max(parameters['pH'].min, params.minPh);
+          parameters['pH'].max = Math.min(parameters['pH'].max, params.maxPh);
+        }
+        // Add more parameters as needed
+      }
+    });
+
+    return Object.keys(parameters).map((key) => ({
+      name: key,
+      min:
+        key === 'Temperature'
+          ? celsiusToFahrenheit(parameters[key].min).toFixed(1)
+          : parameters[key].min.toFixed(1),
+      max:
+        key === 'Temperature'
+          ? celsiusToFahrenheit(parameters[key].max).toFixed(1)
+          : parameters[key].max.toFixed(1),
+      unit: parameters[key].unit,
+    }));
   };
 
   const parseWaterParameters = (params: string) => {
-    // Example parser, assumes format like "pH 6.0-7.0, Temperature 72-78°F"
+    // Example parser, assumes format like "pH 6.0-7.0, Temperature 22-26°C"
     const result = { minTemp: 0, maxTemp: 100, minPh: 0, maxPh: 14 };
-    const tempMatch = params.match(/Temperature\s*(\d+)-(\d+)/);
-    const phMatch = params.match(/pH\s*(\d+\.?\d*)-(\d+\.?\d*)/);
+    const tempMatch = params.match(/Temperature\s*(\d+\.?\d*)-(\d+\.?\d*)[°]?[CF]/i);
+    const phMatch = params.match(/pH\s*(\d+\.?\d*)-(\d+\.?\d*)/i);
     if (tempMatch) {
       result.minTemp = parseFloat(tempMatch[1]);
       result.maxTemp = parseFloat(tempMatch[2]);
@@ -292,6 +458,15 @@ const ParametersCard: React.FC<ParametersCardProps> = ({ aquarium, onUpdateParam
             }}
           >
             Health Check
+          </MenuItem>
+          <MenuItem
+            onClick={(e) => {
+              e.stopPropagation();
+              setDisplayMode(DisplayMode.AGGREGATED_RANGES);
+              handleMenuClose();
+            }}
+          >
+            Aggregated Ranges
           </MenuItem>
         </Menu>
       </Card>
