@@ -44,7 +44,7 @@ const ParameterLoggingModal: React.FC<ParameterLoggingModalProps> = ({ open, onC
       <DialogTitle>Log New Water Parameters</DialogTitle>
       <DialogContent>
         <TextField
-          label="Temperature (°C)"
+          label="Temperature (°F)"
           type="number"
           fullWidth
           margin="normal"
