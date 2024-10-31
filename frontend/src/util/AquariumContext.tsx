@@ -47,6 +47,7 @@ export const AquariumProvider: React.FC<{ children: ReactNode }> = ({ children }
       if (storedAquariums) {
         const parsedAquariums = JSON.parse(storedAquariums);
         setAquariums(parsedAquariums.length > 0 ? parsedAquariums : []);
+        console.log('Fetched aquariums from local storage:', parsedAquariums);  
       } else {
         // Fetch from the API if local storage is empty
         try {
@@ -54,14 +55,16 @@ export const AquariumProvider: React.FC<{ children: ReactNode }> = ({ children }
           if (fetchedAquariums.length > 0) {
             setAquariums(fetchedAquariums);
             localStorage.setItem(`aquariums_${user.email}`, JSON.stringify(fetchedAquariums));
+            console.log('Fetched aquariums from API:', fetchedAquariums);
           } else {
             // If no aquariums exist, initialize with an empty array
             setAquariums([]);
             localStorage.setItem(`aquariums_${user.email}`, JSON.stringify([]));
+            console.log('No aquariums found for user:', user.email);
           }
         } catch (error) {
           console.error('Error fetching aquariums:', error);
-          // Optionally set aquariums to an empty array if API call fails
+          console.log('Setting aquariums to an empty array');
           setAquariums([]);
         }
       }
