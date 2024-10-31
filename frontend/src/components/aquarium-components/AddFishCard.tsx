@@ -68,6 +68,8 @@ const AddFishCard: React.FC<AddFishCardProps> = ({ open, onClose, aquarium, onAd
   const [infoOpen, setInfoOpen] = useState(false);  
   const [filteredFishList, setFilteredFishList] = useState<Fish[]>([]);
   const [fishList, setFishList] = useState<Fish[]>([]);
+  const [localFishList, setLocalFishList] = useState<Fish[]>(aquarium.species);
+
 
 
 // Update fishList when species changes or when the component opens
@@ -91,42 +93,23 @@ useEffect(() => {
    * @param {boolean} open - Indicates if the dialog is open.
    */
     useEffect(() => {
-      console.log("Aquarium species:", aquarium.species);
-      console.log("Fish list:", fishList);
-  
       if (open) {
-          // Map the names of fish that already exist in the aquarium
-          const existingFishNames = aquarium.species
-              .filter(fish => fish && fish.name)  
-              .map(fish => fish.name.toLowerCase());
-  
-          // Filter the fish list based on the current aquarium state and available fish
-          const availableFish = fishList.filter(fish => {
-            if (!fish || !fish.name) {
-                console.warn("Fish object missing name property or fish object itself is null:", fish);
-                return false; // Skip any fish that is missing a name or is null/undefined
-            }
-            const isExisting = existingFishNames.includes(fish.name.toLowerCase());
-            if (isExisting) {
-                console.log(`Fish removed (already exists in aquarium): ${fish.name}`);
-            }
-            return !isExisting; // Exclude existing fish
+        const existingFishNames = localFishList.map(fish => fish.name.toLowerCase());
+        
+        const filtered = fishList.filter(fish => {
+          const matchesRole = !roleFilter || fish.role === roleFilter;
+          const matchesCareLevel = !careLevelFilter || fish.careLevel === careLevelFilter;
+          const matchesTankSize = !minTankSizeFilter || Number(fish.minTankSize) <= minTankSizeFilter;
+          const matchesSearch = !searchQuery || fish.name.toLowerCase().includes(searchQuery.toLowerCase());
+          const notInExisting = !existingFishNames.includes(fish.name.toLowerCase());
+          
+          return matchesRole && matchesCareLevel && matchesTankSize && matchesSearch && notInExisting;
         });
-  
-          // Apply other filters: role, care level, tank size, search query
-          const filteredFish = availableFish.filter(fish => {
-              const matchesRole = !roleFilter || fish.role === roleFilter;
-              const matchesCareLevel = !careLevelFilter || fish.careLevel === careLevelFilter;
-              const matchesTankSize = !minTankSizeFilter || Number(fish.minTankSize) <= minTankSizeFilter;
-              const matchesSearch = !searchQuery || (fish.name && fish.name.toLowerCase().includes(searchQuery.toLowerCase()));
-  
-              return matchesRole && matchesCareLevel && matchesTankSize && matchesSearch;
-          });
-  
-          console.log("Filtered fish list:", filteredFish);
-          setFilteredFishList(filteredFish);
+    
+        setFilteredFishList(filtered);
       }
-  }, [open, aquarium.species, roleFilter, careLevelFilter, minTankSizeFilter, searchQuery]);
+    }, [roleFilter, careLevelFilter, minTankSizeFilter, searchQuery, fishList, open, localFishList]);
+    
   
 
 
@@ -199,6 +182,7 @@ useEffect(() => {
 
     handleSnackbar(`${validFish.length} fish added to the aquarium!`, 'success', true);
 
+    setLocalFishList(prevList => [...prevList, ...validFish]);
     setSelectedFishList([]);  // Clear selected list after adding fish
   };
 
@@ -270,7 +254,7 @@ useEffect(() => {
             setRoleFilter={setRoleFilter}
             careLevelFilter={careLevelFilter}
             setCareLevelFilter={setCareLevelFilter}
-            minTankSizeFilter={minTankSizeFilter}
+            minTankSizeFilter={minTankSizeFilter ?? 0}
             setMinTankSizeFilter={setMinTankSizeFilter}
             searchQuery={searchQuery}
             setSearchQuery={setSearchQuery}
@@ -281,22 +265,24 @@ useEffect(() => {
 
           {/* Fish Table */}
           <InhabitantTable<Fish>
-            data={filteredFishList}
-            page={page}
-            rowsPerPage={rowsPerPage}
-            handleChangePage={handleChangePage}
-            handleChangeRowsPerPage={handleChangeRowsPerPage}
-            onRowClick={handleFishClick}
-            onSelectItem={handleSelectFish}
-            isItemSelected={isFishSelected}
-            columns={[
-              { field: 'name', headerName: 'Fish Name' },
-              { field: 'role', headerName: 'Role' },
-              { field: 'careLevel', headerName: 'Care Level' },
-              { field: 'minTankSize', headerName: 'Min Tank Size' },
-            ]}
-            addButtonColor="primary"
+          key={filteredFishList.length}  // Change key based on filtered list to trigger re-render
+          data={filteredFishList}
+          page={page}
+          rowsPerPage={rowsPerPage}
+          handleChangePage={handleChangePage}
+          handleChangeRowsPerPage={handleChangeRowsPerPage}
+          onRowClick={handleFishClick}
+          onSelectItem={handleSelectFish}
+          isItemSelected={isFishSelected}
+          columns={[
+            { field: 'name', headerName: 'Fish Name' },
+            { field: 'role', headerName: 'Role' },
+            { field: 'careLevel', headerName: 'Care Level' },
+            { field: 'minTankSize', headerName: 'Min Tank Size' },
+          ]}
+          addButtonColor="primary"
           />
+
 
           {/* Selected Fish and Add Button */}
           <SelectedInhabitantsList<Fish>

@@ -73,7 +73,7 @@ const AquariumSidebar: React.FC<AquariumSidebarProps> = ({ aquariums, onOpenWiza
                 transition: 'all 0.3s',
               }}
             >
-              <ViewSidebar
+              <MenuIcon
                 sx={{
                   color: '#438ED9',
                   transition: 'transform 0.2s, color 0.2s',

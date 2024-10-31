@@ -38,6 +38,7 @@ const AddPlantCard: React.FC<AddPlantCardProps> = ({ open, onClose, aquarium, on
   const [filteredPlantList, setFilteredPlantList] = useState<Plant[]>([]);
 
 
+
    /**
    * Fetch plant data when the component is mounted or when the aquarium type changes
    */
