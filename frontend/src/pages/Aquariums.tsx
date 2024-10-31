@@ -372,7 +372,7 @@ const Aquariums: React.FC = () => {
                 </Box>
                 {/* Bottom Section for Aquarium Insights */}
                 {currentAquarium && (
-                <AquariumInsights />
+                <AquariumInsights  aquarium={currentAquarium}/>
                 )}
               </div>
             </>
