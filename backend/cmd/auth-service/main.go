@@ -87,6 +87,9 @@ func main() {
     router.Handle("/details/{id}", auth.JWTAuthMiddleware(http.HandlerFunc(auth.GetDetailHandler))).Methods("GET")
     router.Handle("/details/all/{type}", auth.JWTAuthMiddleware(http.HandlerFunc(auth.GetAllDetailsHandler))).Methods("GET")
 
+    // Parameter entry routes with JWT authentication middleware
+    router.Handle("/aquariums/{aquariumId}/parameter-entries", auth.JWTAuthMiddleware(http.HandlerFunc(auth.CreateParameterEntryHandler))).Methods("POST")
+    router.Handle("/aquariums/{aquariumId}/parameter-entries", auth.JWTAuthMiddleware(http.HandlerFunc(auth.GetParameterEntriesHandler))).Methods("GET")
 
     // Apply the CORS middleware to all routes
     corsHandler := enableCORS(router)

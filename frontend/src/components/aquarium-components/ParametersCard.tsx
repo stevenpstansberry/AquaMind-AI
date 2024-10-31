@@ -169,18 +169,24 @@ const ParametersCard: React.FC<ParametersCardProps> = ({ aquarium, onUpdateParam
   
     return (
       <Box sx={{ marginTop: 2 }}>
-        <Typography variant="body2">
-          Temperature: {latestParameters.temperature ? latestParameters.temperature.value.toFixed(1) : 'N/A'} °F
-        </Typography>
-        <Typography variant="body2">
-          pH: {latestParameters.ph ? latestParameters.ph.value : 'N/A'}
-        </Typography>
-        <Typography variant="body2">
-          Hardness: {latestParameters.hardness ? latestParameters.hardness.value : 'N/A'} dGH
-        </Typography>
-        {/* Add more parameters as needed */}
+        {latestParameters.temperature && (
+          <Typography variant="body2">
+            Temperature: {latestParameters.temperature.value.toFixed(1)}°F
+          </Typography>
+        )}
+        {latestParameters.ph && (
+          <Typography variant="body2">
+            pH: {latestParameters.ph.value.toFixed(1)}
+          </Typography>
+        )}
+        {latestParameters.hardness && (
+          <Typography variant="body2">
+            Hardness: {latestParameters.hardness.value.toFixed(1)} dGH
+          </Typography>
+        )}
+        {/* Add checks for additional parameters as needed */}
         <Typography variant="caption" sx={{ display: 'block', marginTop: 1 }}>
-          Last Updated: {lastUpdatedTimestamp ? new Date(lastUpdatedTimestamp).toLocaleString() : 'N/A'}
+          Last Updated: {new Date(lastUpdatedTimestamp).toLocaleString()}
         </Typography>
       </Box>
     );
@@ -191,7 +197,7 @@ const ParametersCard: React.FC<ParametersCardProps> = ({ aquarium, onUpdateParam
     if (!latestEntry) {
       return <Typography variant="body2">No parameter entries available for graph.</Typography>;
     }
-
+  
     const filteredEntries = parameterEntries
       .slice()
       .sort((a, b) => a.timestamp - b.timestamp)
@@ -202,12 +208,16 @@ const ParametersCard: React.FC<ParametersCardProps> = ({ aquarium, onUpdateParam
         if (timeFrame === 'Last Month') return timeDifference <= 30 * 24 * 60 * 60 * 1000;
         return true;
       });
-
+  
+    const availableParameters = ['temperature', 'ph', 'hardness'].filter((param) =>
+      parameterEntries.some((entry) => entry[param as keyof WaterParameterEntry] !== undefined)
+    );
+  
     const data = {
       labels: filteredEntries.map((entry) => new Date(entry.timestamp).toLocaleDateString()),
       datasets: [
         {
-          label: selectedParameter.charAt(0).toUpperCase() + selectedParameter.slice(1),
+          label: selectedParameter === 'ph' ? 'pH' : selectedParameter.charAt(0).toUpperCase() + selectedParameter.slice(1),
           data: filteredEntries.map((entry) =>
             selectedParameter === 'temperature'
               ? entry[selectedParameter]?.toFixed(1)
@@ -219,7 +229,7 @@ const ParametersCard: React.FC<ParametersCardProps> = ({ aquarium, onUpdateParam
         },
       ],
     };
-
+  
     return (
       <Box sx={{ marginTop: 2 }}>
         <FormControl fullWidth>
@@ -230,19 +240,20 @@ const ParametersCard: React.FC<ParametersCardProps> = ({ aquarium, onUpdateParam
             onChange={(e) => setSelectedParameter(e.target.value as keyof WaterParameterEntry)}
             onClick={(e) => e.stopPropagation()}
           >
-            <MenuItem value="temperature">Temperature</MenuItem>
-            <MenuItem value="ph">pH</MenuItem>
-            <MenuItem value="hardness">Hardness</MenuItem>
-            {/* Add more parameters as needed */}
+            {availableParameters.map((param) => (
+              <MenuItem key={param} value={param}>
+                {param === 'ph' ? 'pH' : param.charAt(0).toUpperCase() + param.slice(1)}
+              </MenuItem>
+            ))}
           </Select>
         </FormControl>
         <FormControl fullWidth sx={{ marginTop: 2 }}>
           <InputLabel>Time Frame</InputLabel>
-          <Select 
-          value={timeFrame} 
-          label="Time Frame" 
-          onChange={(e) => setTimeFrame(e.target.value)} 
-          onClick={(e) => e.stopPropagation()}
+          <Select
+            value={timeFrame}
+            label="Time Frame"
+            onChange={(e) => setTimeFrame(e.target.value)}
+            onClick={(e) => e.stopPropagation()}
           >
             <MenuItem value="All Time">All Time</MenuItem>
             <MenuItem value="Last Week">Last Week</MenuItem>
@@ -254,7 +265,6 @@ const ParametersCard: React.FC<ParametersCardProps> = ({ aquarium, onUpdateParam
       </Box>
     );
   };
-
   const renderHealthCheck = () => {
     if (aquarium.species.length === 0 && aquarium.plants.length === 0) {
       return <Typography variant="body2">No aquarium inhabitants</Typography>;

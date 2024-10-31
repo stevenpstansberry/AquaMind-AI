@@ -10,6 +10,7 @@ import (
     "log"
     "net/http"
     "errors"
+    "time"
 
     "github.com/gorilla/mux"
     "github.com/stevenpstansberry/AquaMind-AI/internal/models"
@@ -462,4 +463,103 @@ func GetAllDetailsHandler(w http.ResponseWriter, r *http.Request) {
 
     w.Header().Set("Content-Type", "application/json")
     json.NewEncoder(w).Encode(result)
+}
+
+
+// CreateParameterEntryHandler handles the creation of a new parameter entry.
+func CreateParameterEntryHandler(w http.ResponseWriter, r *http.Request) {
+    vars := mux.Vars(r)
+    aquariumID := vars["aquariumId"]
+
+    // Extract user information from the JWT token
+    userEmail, err := utils.ExtractEmailFromJWT(r.Header.Get("Authorization"))
+    if err != nil {
+        http.Error(w, "Unauthorized", http.StatusUnauthorized)
+        return
+    }
+
+    // Get user by email
+    user, err := models.GetUserByEmail(userEmail)
+    if err != nil {
+        http.Error(w, "User not found", http.StatusNotFound)
+        return
+    }
+
+    // Verify that the aquarium belongs to the user
+    aquarium, err := models.GetAquariumByID(aquariumID)
+    if err != nil {
+        http.Error(w, "Aquarium not found", http.StatusNotFound)
+        return
+    }
+    if aquarium.UserID != user.ID {
+        http.Error(w, "Forbidden", http.StatusForbidden)
+        return
+    }
+
+    var entry models.WaterParameterEntry
+
+    // Parse JSON request body
+    err = json.NewDecoder(r.Body).Decode(&entry)
+    if err != nil {
+        http.Error(w, "Invalid input", http.StatusBadRequest)
+        return
+    }
+
+    // Set the AquariumID and Timestamp
+    entry.AquariumID = aquariumID
+    if entry.Timestamp == 0 {
+        entry.Timestamp = time.Now().Unix()
+    }
+
+    // Create the parameter entry in the database
+    err = models.CreateWaterParameterEntry(&entry)
+    if err != nil {
+        http.Error(w, "Error creating parameter entry", http.StatusInternalServerError)
+        return
+    }
+
+    // Respond with the created parameter entry
+    w.WriteHeader(http.StatusCreated)
+    json.NewEncoder(w).Encode(entry)
+}
+
+func GetParameterEntriesHandler(w http.ResponseWriter, r *http.Request) {
+    vars := mux.Vars(r)
+    aquariumID := vars["aquariumId"]
+
+    // Extract user information from the JWT token
+    userEmail, err := utils.ExtractEmailFromJWT(r.Header.Get("Authorization"))
+    if err != nil {
+        http.Error(w, "Unauthorized", http.StatusUnauthorized)
+        return
+    }
+
+    // Get user by email
+    user, err := models.GetUserByEmail(userEmail)
+    if err != nil {
+        http.Error(w, "User not found", http.StatusNotFound)
+        return
+    }
+
+    // Verify that the aquarium belongs to the user
+    aquarium, err := models.GetAquariumByID(aquariumID)
+    if err != nil {
+        http.Error(w, "Aquarium not found", http.StatusNotFound)
+        return
+    }
+    if aquarium.UserID != user.ID {
+        http.Error(w, "Forbidden", http.StatusForbidden)
+        return
+    }
+
+    // Retrieve parameter entries from the database
+    entries, err := models.GetWaterParameterEntriesByAquariumID(aquariumID)
+    if err != nil {
+        http.Error(w, "Error retrieving parameter entries", http.StatusInternalServerError)
+        return
+    }
+
+    // Respond with the parameter entries
+    w.Header().Set("Content-Type", "application/json")
+    json.NewEncoder(w).Encode(entries)
 }

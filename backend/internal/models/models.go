@@ -90,7 +90,7 @@ type Aquarium struct {
     Species   []Species `json:"species"`
     Plants    []Plant   `json:"plants"`
     Equipment []Equipment `json:"equipment"`
-}
+    ParameterEntries []WaterParameterEntry `json:"parameterEntries,omitempty"`}
 
 type Species struct {
     Id                      string  `json:"id"`
@@ -149,6 +149,15 @@ type Equipment struct {
     Type                string          `json:"type"`
 }
 
+type WaterParameterEntry struct {
+    ID          string   `json:"id"`
+    AquariumID  string   `json:"aquariumId"`
+    Timestamp   int64    `json:"timestamp"`
+    Temperature *float64 `json:"temperature,omitempty"`
+    Ph          *float64 `json:"ph,omitempty"`
+    Hardness    *float64 `json:"hardness,omitempty"`
+}
+
 
 
 // CreateAquarium inserts a new aquarium into the database.
@@ -173,6 +182,7 @@ func CreateAquarium(aquarium *Aquarium) error {
     _, err = db.Exec(query, aquarium.ID, aquarium.UserID, aquarium.Name, aquarium.Type, aquarium.Size, speciesJSON, plantsJSON, equipmentJSON)
     return err
 }
+
 
 // GetAquariumsByUserID retrieves all aquariums owned by a user.
 func GetAquariumsByUserID(userID string) ([]Aquarium, error) {
@@ -202,11 +212,19 @@ func GetAquariumsByUserID(userID string) ([]Aquarium, error) {
         json.Unmarshal(plantsJSON, &aquarium.Plants)
         json.Unmarshal(equipmentJSON, &aquarium.Equipment)
 
+        // Retrieve parameter entries for this aquarium
+        parameterEntries, err := GetWaterParameterEntriesByAquariumID(aquarium.ID)
+        if err != nil {
+            return nil, err
+        }
+        aquarium.ParameterEntries = parameterEntries
+
         aquariums = append(aquariums, aquarium)
     }
 
     return aquariums, nil
 }
+
 
 // GetAquariumByID retrieves an aquarium by its ID.
 func GetAquariumByID(id string) (*Aquarium, error) {
@@ -223,8 +241,17 @@ func GetAquariumByID(id string) (*Aquarium, error) {
     json.Unmarshal(plantsJSON, &aquarium.Plants)
     json.Unmarshal(equipmentJSON, &aquarium.Equipment)
 
+    // Retrieve parameter entries for this aquarium
+    parameterEntries, err := GetWaterParameterEntriesByAquariumID(aquarium.ID)
+    if err != nil {
+        return nil, err
+    }
+    aquarium.ParameterEntries = parameterEntries
+
     return &aquarium, nil
 }
+
+
 
 // UpdateAquarium updates an existing aquarium in the database.
 func UpdateAquarium(aquarium *Aquarium) error {
@@ -261,6 +288,7 @@ func UpdateAquarium(aquarium *Aquarium) error {
 
     return nil
 }
+
 
 // DeleteAquarium deletes an aquarium from the database.
 func DeleteAquarium(id string, userID string) error {
