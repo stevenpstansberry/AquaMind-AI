@@ -7,7 +7,7 @@ import (
     "encoding/json"
     "errors"
     "fmt"
-    _ "github.com/lib/pq" // PostgreSQL driver
+    "github.com/lib/pq" // PostgreSQL driver
 )
 
 // db is a package-level variable for the database connection.
@@ -90,6 +90,7 @@ type Aquarium struct {
     Species   []Species `json:"species"`
     Plants    []Plant   `json:"plants"`
     Equipment []Equipment `json:"equipment"`
+    ParameterEntryIDs []string             `json:"parameterEntryIds,omitempty"`
 }
 
 type Species struct {
@@ -149,6 +150,15 @@ type Equipment struct {
     Type                string          `json:"type"`
 }
 
+type WaterParameterEntry struct {
+    ID          string   `json:"id"`
+    AquariumID  string   `json:"aquariumId"`
+    Timestamp   int64    `json:"timestamp"`
+    Temperature *float64 `json:"temperature,omitempty"`
+    Ph          *float64 `json:"ph,omitempty"`
+    Hardness    *float64 `json:"hardness,omitempty"`
+}
+
 
 
 // CreateAquarium inserts a new aquarium into the database.
@@ -167,17 +177,17 @@ func CreateAquarium(aquarium *Aquarium) error {
     }
 
     query := `
-        INSERT INTO aquariums (id, user_id, name, type, size, species, plants, equipment)
-        VALUES ($1, $2, $3, $4, $5, $6::jsonb, $7::jsonb, $8::jsonb)
+        INSERT INTO aquariums (id, user_id, name, type, size, species, plants, equipment, parameter_entry_ids)
+        VALUES ($1, $2, $3, $4, $5, $6::jsonb, $7::jsonb, $8::jsonb, $9)
     `
-    _, err = db.Exec(query, aquarium.ID, aquarium.UserID, aquarium.Name, aquarium.Type, aquarium.Size, speciesJSON, plantsJSON, equipmentJSON)
+    _, err = db.Exec(query, aquarium.ID, aquarium.UserID, aquarium.Name, aquarium.Type, aquarium.Size, speciesJSON, plantsJSON, equipmentJSON, aquarium.ParameterEntryIDs)
     return err
 }
 
 // GetAquariumsByUserID retrieves all aquariums owned by a user.
 func GetAquariumsByUserID(userID string) ([]Aquarium, error) {
     query := `
-        SELECT id, user_id, name, type, size, species, plants, equipment
+        SELECT id, user_id, name, type, size, species, plants, equipment, parameter_entry_ids
         FROM aquariums
         WHERE user_id = $1
     `
@@ -192,8 +202,9 @@ func GetAquariumsByUserID(userID string) ([]Aquarium, error) {
     for rows.Next() {
         var aquarium Aquarium
         var speciesJSON, plantsJSON, equipmentJSON []byte
+        var parameterEntryIDs []string 
 
-        err := rows.Scan(&aquarium.ID, &aquarium.UserID, &aquarium.Name, &aquarium.Type, &aquarium.Size, &speciesJSON, &plantsJSON, &equipmentJSON)
+        err := rows.Scan(&aquarium.ID, &aquarium.UserID, &aquarium.Name, &aquarium.Type, &aquarium.Size, &speciesJSON, &plantsJSON, &equipmentJSON, pq.Array(&parameterEntryIDs))
         if err != nil {
             return nil, err
         }
@@ -201,6 +212,9 @@ func GetAquariumsByUserID(userID string) ([]Aquarium, error) {
         json.Unmarshal(speciesJSON, &aquarium.Species)
         json.Unmarshal(plantsJSON, &aquarium.Plants)
         json.Unmarshal(equipmentJSON, &aquarium.Equipment)
+
+        aquarium.ParameterEntryIDs = parameterEntryIDs
+
 
         aquariums = append(aquariums, aquarium)
     }
@@ -210,21 +224,24 @@ func GetAquariumsByUserID(userID string) ([]Aquarium, error) {
 
 // GetAquariumByID retrieves an aquarium by its ID.
 func GetAquariumByID(id string) (*Aquarium, error) {
-    query := `SELECT id, user_id, name, type, size, species, plants, equipment FROM aquariums WHERE id = $1`
+    query := `SELECT id, user_id, name, type, size, species, plants, equipment, parameter_entry_ids FROM aquariums WHERE id = $1`
     var aquarium Aquarium
     var speciesJSON, plantsJSON, equipmentJSON []byte
 
-    err := db.QueryRow(query, id).Scan(&aquarium.ID, &aquarium.UserID, &aquarium.Name, &aquarium.Type, &aquarium.Size, &speciesJSON, &plantsJSON, &equipmentJSON)
+    // Use pq.Array for parameter_entry_ids
+    err := db.QueryRow(query, id).Scan(&aquarium.ID, &aquarium.UserID, &aquarium.Name, &aquarium.Type, &aquarium.Size, &speciesJSON, &plantsJSON, &equipmentJSON, pq.Array(&aquarium.ParameterEntryIDs))
     if err != nil {
         return nil, err
     }
 
+    // Unmarshal JSON fields as before
     json.Unmarshal(speciesJSON, &aquarium.Species)
     json.Unmarshal(plantsJSON, &aquarium.Plants)
     json.Unmarshal(equipmentJSON, &aquarium.Equipment)
 
     return &aquarium, nil
 }
+
 
 // UpdateAquarium updates an existing aquarium in the database.
 func UpdateAquarium(aquarium *Aquarium) error {
@@ -243,10 +260,10 @@ func UpdateAquarium(aquarium *Aquarium) error {
 
     query := `
         UPDATE aquariums
-        SET name = $1, type = $2, size = $3, species = $4::jsonb, plants = $5::jsonb, equipment = $6::jsonb
+        SET name = $1, type = $2, size = $3, species = $4::jsonb, plants = $5::jsonb, equipment = $6::jsonb parameter_entry_ids = $9
         WHERE id = $7 AND user_id = $8
     `
-    result, err := db.Exec(query, aquarium.Name, aquarium.Type, aquarium.Size, speciesJSON, plantsJSON, equipmentJSON, aquarium.ID, aquarium.UserID)
+    result, err := db.Exec(query, aquarium.Name, aquarium.Type, aquarium.Size, speciesJSON, plantsJSON, equipmentJSON, aquarium.ID, aquarium.UserID, aquarium.ParameterEntryIDs)
     if err != nil {
         return err
     }
