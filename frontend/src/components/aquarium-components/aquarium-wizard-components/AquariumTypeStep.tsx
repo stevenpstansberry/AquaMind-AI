@@ -48,7 +48,7 @@ const AquariumTypeStep: React.FC<AquariumTypeStepProps> = ({ setAquariumData, se
             Freshwater
           </Button>
           <Typography variant="body2" color="textSecondary" align="center" sx={{ mt: 1 }}>
-            Easier to maintain, lower cost. Ideal for beginners.
+            Beginner-friendly and easy to maintain. Fish: Neon Tetras, Betta. Plants: Java Fern, Amazon Sword.
           </Typography>
         </Grid>
 
@@ -63,10 +63,16 @@ const AquariumTypeStep: React.FC<AquariumTypeStepProps> = ({ setAquariumData, se
             Saltwater
           </Button>
           <Typography variant="body2" color="textSecondary" align="center" sx={{ mt: 1 }}>
-            Requires more care, higher cost. Vibrant and colorful.
+            Advanced setup with vibrant marine life. Fish: Clownfish, Yellow Tang. Corals: Zoanthids, Star Polyps.
           </Typography>
         </Grid>
       </Grid>
+
+      <Box mt={2} textAlign="center">
+        <Typography variant="body2" color="textSecondary">
+          <strong>Tip:</strong> Freshwater is ideal for beginners, while Saltwater offers a colorful, rewarding challenge!
+        </Typography>
+      </Box>
     </Box>
   );
 };
