@@ -3,16 +3,15 @@
  * @location src/components/aquarium-components/aquarium-wizard-components/SummaryStep.tsx
  * @description This component renders the summary step in the aquarium setup wizard. It displays a summary of the aquarium's name, type, size, selected species, plants, and equipment. It also allows the user to update the aquarium name.
  * 
- * @author Steven Stansberry
+ * @editor Added conditional display for the friendly message based on the validity of the aquarium name.
  */
 
 import React, { useState, useEffect } from 'react';
 import { TextField, Box, Typography } from '@mui/material';
 import { Aquarium } from '../../../interfaces/Aquarium';
 
-
 interface SummaryStepProps {
-  aquariumData: Aquarium
+  aquariumData: Aquarium;
   setAquariumData: React.Dispatch<React.SetStateAction<any>>;
   setIsStepValid: (isValid: boolean) => void;
 }
@@ -21,16 +20,13 @@ const SummaryStep: React.FC<SummaryStepProps> = ({ aquariumData, setAquariumData
   const [aquariumName, setAquariumName] = useState(aquariumData.name);
   const [isNameEmpty, setIsNameEmpty] = useState(false);
 
-
   /**
    * Updates the aquarium name in the parent state whenever the local aquarium name state changes.
-   * 
-   * @returns {void}
    */
   useEffect(() => {
     setAquariumData((prevData: any) => ({ ...prevData, name: aquariumName }));
   }, [aquariumName, setAquariumData]);
-  
+
   // Effect to check if the aquarium name is empty and update the state
   useEffect(() => {
     const isEmpty = aquariumName.trim() === '';
@@ -46,7 +42,9 @@ const SummaryStep: React.FC<SummaryStepProps> = ({ aquariumData, setAquariumData
 
   return (
     <Box>
-      <Typography variant="h5">Summary</Typography>
+      <Typography variant="h5" gutterBottom>
+        Summary
+      </Typography>
 
       {/* Input for Aquarium Name */}
       <TextField
@@ -60,13 +58,20 @@ const SummaryStep: React.FC<SummaryStepProps> = ({ aquariumData, setAquariumData
         sx={{ mb: 3 }}
       />
 
-
+      {/* Summary Information */}
       <Typography variant="body1">
         <strong>Type:</strong> {aquariumData.type}
       </Typography>
-      <Typography variant="body1">
+      <Typography variant="body1" gutterBottom>
         <strong>Size:</strong> {aquariumData.size} gallons
       </Typography>
+
+      {/* Friendly Message - Only shown if the name is valid */}
+      {!isNameEmpty && (
+        <Typography variant="body2" color="textSecondary" sx={{ mt: 2 }}>
+          Great choice! After finishing, you’ll be able to stock your aquarium with fish, plants, and more.
+        </Typography>
+      )}
     </Box>
   );
 };
