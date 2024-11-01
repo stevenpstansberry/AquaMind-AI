@@ -1,12 +1,4 @@
-/**
- * @file TankSizeStep.tsx
- * @location src/components/aquarium-components/aquarium-wizard-components/TankSizeStep.tsx
- * @description This component renders the tank size input step in the aquarium setup wizard. It allows the user to enter the tank size and validates the input to ensure it's a valid number. Updates the parent state with the tank size value.
- * 
- * @editor Enhanced to fix focus loss issue in TextField.
- */
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Typography, TextField, Box, InputAdornment, Slider, Button } from '@mui/material';
 import { Aquarium } from '../../../interfaces/Aquarium';
 
@@ -20,6 +12,16 @@ const TankSizeStep: React.FC<TankSizeStepProps> = ({ setAquariumData, setIsStepV
   const [customSize, setCustomSize] = useState<string>(aquariumData.size || '10'); // Default to 10 gallons
   const [sizeError, setSizeError] = useState(false);
   const [warning, setWarning] = useState<string | null>(null);
+
+  useEffect(() => {
+    const numValue = parseInt(customSize, 10);
+    validateSize(numValue);
+    if (!sizeError && !isNaN(numValue)) {
+      setIsStepValid(true);
+    } else {
+      setIsStepValid(false);
+    }
+  }, []); // Run only on initial render
 
   /**
    * Validates tank size and sets error/warning messages without updating parent state on every keystroke.
