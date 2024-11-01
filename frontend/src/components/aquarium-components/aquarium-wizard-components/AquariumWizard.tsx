@@ -9,6 +9,7 @@
 import React, { useState } from 'react'; 
 import { Card, CardContent, Typography, Button, Box, Backdrop } from '@mui/material';
 import { v4 as uuidv4 } from 'uuid';
+import ChatBubbleIcon from '@mui/icons-material/ChatBubble'; 
 import AquariumTypeStep from './AquariumTypeStep';
 import TankSizeStep from './TankSizeStep';
 import SpeciesSelectionStep from './SpeciesSelectionStep';
@@ -38,6 +39,33 @@ const AquariumWizard: React.FC<AquariumWizardProps> = ({ onClose, handleAddAquar
 
   const [isStepValid, setIsStepValid] = useState(false); 
   const [showChat, setShowChat] = useState(false);
+
+  const suggestions = [
+    [
+      "What are the key differences between freshwater and saltwater aquariums?",
+      "What are some examples of common saltwater fish?"
+    ],
+    [
+      "How do I determine the right tank size for my aquarium?",
+      "What are the benefits of a larger tank?"
+    ],
+    [
+      "What are some beginner-friendly fish species?",
+      "How do I introduce new fish to my aquarium?"
+    ],
+    [
+      "What are the best plants for my aquarium?",
+      "How do I care for live plants in my aquarium?"
+    ],
+    [
+      "What equipment do I need for my aquarium?",
+      "How do I maintain the equipment in my aquarium?"
+    ],
+    [
+      "How do I ensure my aquarium is properly set up?",
+      "What are the common mistakes to avoid in aquarium setup?"
+    ]
+  ];
 
   /**
    * Resets the state of the wizard when it is closed.
@@ -117,8 +145,8 @@ const AquariumWizard: React.FC<AquariumWizardProps> = ({ onClose, handleAddAquar
           <Typography variant="h5">Aquarium Setup Wizard</Typography>
           <Button
             onClick={() => {
-              onClose(); // Close the wizard
-              resetWizard(); // Reset the wizard state
+              onClose();
+              resetWizard();
             }}
             sx={{ fontSize: '1.5rem' }}
           >
@@ -126,29 +154,23 @@ const AquariumWizard: React.FC<AquariumWizardProps> = ({ onClose, handleAddAquar
           </Button>
         </Box>
 
-        {/* Aquarium Wizard Steps */}
         <AquariumWizardProgress activeStep={currentStep} steps={steps} />
         <CardContent>
-          {/* Step components */}
           {currentStep === 0 && <AquariumTypeStep setAquariumData={setAquariumData} setIsStepValid={setIsStepValid} aquariumData={aquariumData} />}
           {currentStep === 1 && <TankSizeStep setAquariumData={setAquariumData} setIsStepValid={setIsStepValid} aquariumData={aquariumData} />}
           {currentStep === 2 && <SpeciesSelectionStep setAquariumData={setAquariumData} aquariumData={aquariumData} setIsStepValid={setIsStepValid}/>}
-          {currentStep === 3 && <PlantSelectionStep setAquariumData={setAquariumData} aquariumData={aquariumData} setIsStepValid={setIsStepValid}/>} {/* Plant step */}
-          
-          {/* EquipmentStep with a unique key */}
+          {currentStep === 3 && <PlantSelectionStep setAquariumData={setAquariumData} aquariumData={aquariumData} setIsStepValid={setIsStepValid}/>}
           {currentStep === 4 && (
             <EquipmentStep
-              key={currentStep} // Add a key to reset state when remounted
+              key={currentStep}
               setAquariumData={setAquariumData}
               setIsStepValid={setIsStepValid}
               aquariumData={aquariumData}
             />
           )}
-          
           {currentStep === 5 && <SummaryStep aquariumData={aquariumData} setAquariumData={setAquariumData} setIsStepValid={setIsStepValid}/>}
         </CardContent>
 
-        {/* Button container */}
         <Box display="flex" justifyContent="space-between" mt={2}>
           {currentStep > 0 ? (
             <Button onClick={handlePrev}>Back</Button>
@@ -157,23 +179,26 @@ const AquariumWizard: React.FC<AquariumWizardProps> = ({ onClose, handleAddAquar
           )}
 
           <Box display="flex" gap={2}>
-            <Button variant="outlined" onClick={() => setShowChat((prev) => !prev)}>
+            <Button
+              variant="outlined"
+              onClick={() => setShowChat((prev) => !prev)}
+              startIcon={<ChatBubbleIcon />} // Adding the icon here
+            >
               {showChat ? "Hide AI" : "Ask AI"}
             </Button>
 
             {currentStep < steps.length - 1 ? (
-            <Button variant="contained" onClick={handleNext} disabled={!isStepValid}>
-              Next
-            </Button>
-          ) : (
-            <Button variant="contained" onClick={handleFinish} disabled={!isStepValid}>
-              Finish
-            </Button>
-          )}
+              <Button variant="contained" onClick={handleNext} disabled={!isStepValid}>
+                Next
+              </Button>
+            ) : (
+              <Button variant="contained" onClick={handleFinish} disabled={!isStepValid}>
+                Finish
+              </Button>
+            )}
           </Box>
         </Box>
-
-        <AIChatInterface showChat={showChat} onClose={() => setShowChat(false)} />
+        <AIChatInterface showChat={showChat} onClose={() => setShowChat(false)} suggestions={suggestions[currentStep]}/>
       </Card>
     </Backdrop>
   );
