@@ -1,0 +1,7 @@
+# Ignore version control files
+.git
+.gitignore
+
+# Ignore local environment and log files
+.env
+*.log

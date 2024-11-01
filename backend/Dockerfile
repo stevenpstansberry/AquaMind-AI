@@ -1,32 +1,33 @@
-# Stage 1: Build the Go application
-FROM golang:1.18 AS builder
+# Use the official Golang image as the base image for building
+FROM golang:1.20 AS builder
 
-# Set the working directory inside the container
+# Set the working directory in the container
 WORKDIR /app
 
-# Copy the Go module files first to cache the dependencies.
+# Copy the Go module files and download dependencies
 COPY go.mod go.sum ./
-
-# Download the Go module dependencies
 RUN go mod download
 
-# Copy the rest of the application source code into the container
+# Copy the source code into the container
 COPY . .
 
 # Build the Go application
-RUN go build -o main .
+RUN CGO_ENABLED=0 GOOS=linux go build -o auth-service ./cmd/auth-service/main.go
 
-# Stage 2: Create a minimal image for production
+# Use a minimal Alpine image for the final container
 FROM alpine:latest
 
-# Set the working directory inside the container
-WORKDIR /root/
+# Set environment variables (for example, port configuration if required)
+ENV PORT=8080
 
 # Copy the compiled binary from the builder stage
-COPY --from=builder /app/main .
+COPY --from=builder /app/auth-service /auth-service
 
-# Expose the port your Go application runs on
-EXPOSE 8000
+# Copy .env if you need environment variables for the app at runtime
+COPY cmd/auth-service/.env .env
 
-# Run the Go binary
-CMD ["./main"]
+# Expose the service port
+EXPOSE 8080
+
+# Run the application
+CMD ["/auth-service"]
