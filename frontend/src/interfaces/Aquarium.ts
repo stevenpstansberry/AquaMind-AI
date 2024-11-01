@@ -64,14 +64,16 @@ export interface Plant {
 
 
 export interface Equipment {
-  name: string;
-  description: string;
-  role: string; // The role of the equipment (e.g., 'Water Filtration', 'Lighting')
-  importance: string; // Why the equipment is important
-  usage: string; // How the equipment is used
-  specialConsiderations: string; // Any special considerations for the equipment
-  fields: { [key: string]: string | undefined }; // Allow fields to be string or undefined
-  type: 'filtration' | 'lighting' | 'heating' | 'feeding' | 'test_chemicals' | 'other'; // Category for display mode
+    id?: string;
+    name: string;
+    description: string;
+    role: string;
+    importance: string;
+    usage: string;
+    specialConsiderations?: string;
+    fields: string[];  // List of field names
+    fieldValues?: { [key: string]: string }; // Map of field values
+    type: 'filtration' | 'lighting' | 'heating' | 'feeding' | 'test_chemicals' | 'other';
 }
   
 export interface WaterParameterEntry {
