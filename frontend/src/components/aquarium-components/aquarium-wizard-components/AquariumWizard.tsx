@@ -143,7 +143,7 @@ const AquariumWizard: React.FC<AquariumWizardProps> = ({ onClose, handleAddAquar
   const steps = ['Aquarium Type', 'Tank Size', 'Species', 'Plants (Optional)', 'Equipment', 'Summary'];
 
   return (
-    <Backdrop open={true} sx={{ zIndex: 1000 }}>
+    <Backdrop open={true} sx={{ zIndex: 2000 }}>
       <Card sx={{
         width: '800px',
         padding: '30px',
