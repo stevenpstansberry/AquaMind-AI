@@ -6,19 +6,9 @@ import {
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import EquipmentInfoCard from './EquipmentInfoCard';
 import { Aquarium, Equipment } from '../../interfaces/Aquarium';
-import equipmentData from '../../util/EquipmentData.json';
 import { getAllDetails } from '../../services/APIServices';
 
-interface EquipmentFromDB {
-  name: string;
-  description: string;
-  role: string;
-  importance: string;
-  usage: string;
-  specialConsiderations?: string;
-  fields: string[];  // List of field names
-  type: 'filtration' | 'lighting' | 'heating' | 'feeding' | 'test_chemicals' | 'other';
-}
+
 
 interface AddEquipmentCardProps {
   open: boolean;
@@ -37,7 +27,6 @@ const fieldUnitMapping: { [key: string]: string[] } = {
   "Quantity": ["Grams (g)", "Milligrams (mg)", "Ounces (oz)"],           
   "Dosage": ["Milliliters (mL)", "Liters (L)", "Fluid Ounces (fl oz)"],   
   "Frequency of Use": ["times/day", "times/week", "times/month"],         
-  // Add more field mappings as necessary...
 };
 
 
