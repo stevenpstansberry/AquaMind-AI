@@ -1,10 +1,12 @@
 import React, { useEffect } from 'react';
 import FishSelectionHelper from './FishSelectionHelper';
 import { Box } from '@mui/material';
+import { Aquarium } from '../../../interfaces/Aquarium';
+
 
 interface SpeciesSelectionStepProps {
   setAquariumData: React.Dispatch<React.SetStateAction<any>>;
-  aquariumData: { name: string; id: string; type: string; size: string;  species: { name: string; count: number }[]; equipment: string[] };
+  aquariumData: Aquarium;
   setIsStepValid: React.Dispatch<React.SetStateAction<boolean>>;
 }
 

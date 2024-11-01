@@ -1,27 +1,28 @@
 /**
  * @file AquariumTypeStep.tsx
  * @location src/components/aquarium-components/aquarium-wizard-components/AquariumTypeStep.tsx
- * @description This component renders the Aquarium Type selection step in the aquarium setup wizard. It allows the user to select between 'Freshwater' and 'Saltwater' types and updates the state accordingly.
+ * @description This component renders the Aquarium Type selection step in the aquarium setup wizard. It allows the user to select the 'Freshwater' type and shows 'Saltwater' as coming soon.
  * 
- * @author Steven Stansberry
+ * @author ...
  */
 
 import React, { useState } from 'react';
-import { Button, Typography, Grid, Box } from '@mui/material';
+import { Button, Typography, Grid, Box, Tooltip } from '@mui/material';
+import { Aquarium } from '../../../interfaces/Aquarium';
 
 interface AquariumTypeStepProps {
   setAquariumData: React.Dispatch<React.SetStateAction<any>>;
   setIsStepValid: React.Dispatch<React.SetStateAction<boolean>>;
-  aquariumData: { name: string; id: string; type: string; size: string; species: { name: string; count: number }[]; equipment: string[] };
+  aquariumData: Aquarium;
 }
 
 const AquariumTypeStep: React.FC<AquariumTypeStepProps> = ({ setAquariumData, setIsStepValid, aquariumData }) => {
   const [selectedType, setSelectedType] = useState<string | null>(aquariumData.type || null); // Initialize from aquariumData
 
   /**
-   * Handles the selection of an aquarium type (Freshwater or Saltwater). Updates the local state and the parent state.
+   * Handles the selection of an aquarium type. Updates the local state and the parent state.
    * 
-   * @param {string} type - The type of aquarium selected by the user ('Freshwater' or 'Saltwater').
+   * @param {string} type - The type of aquarium selected by the user ('Freshwater').
    * @returns {void}
    */
   const handleTypeSelection = (type: string): void => {
@@ -48,25 +49,35 @@ const AquariumTypeStep: React.FC<AquariumTypeStepProps> = ({ setAquariumData, se
             Freshwater
           </Button>
           <Typography variant="body2" color="textSecondary" align="center" sx={{ mt: 1 }}>
-            Easier to maintain, lower cost. Ideal for beginners.
+            Beginner-friendly and easy to maintain. Fish: Neon Tetras, Betta. Plants: Java Fern, Amazon Sword.
           </Typography>
         </Grid>
 
-        {/* Saltwater Option */}
+        {/* Saltwater Option (Coming Soon) */}
         <Grid item xs={12} sm={6}>
-          <Button
-            variant={selectedType === 'Saltwater' ? 'contained' : 'outlined'} // Highlight if selected
-            color="secondary"
-            fullWidth
-            onClick={() => handleTypeSelection('Saltwater')}
-          >
-            Saltwater
-          </Button>
+          <Tooltip title="Coming Soon!">
+            <span>
+              <Button
+                variant="outlined"
+                color="secondary"
+                fullWidth
+                disabled
+              >
+                Saltwater (Coming Soon)
+              </Button>
+            </span>
+          </Tooltip>
           <Typography variant="body2" color="textSecondary" align="center" sx={{ mt: 1 }}>
-            Requires more care, higher cost. Vibrant and colorful.
+            Advanced setup with vibrant marine life. Fish: Clownfish, Yellow Tang. Corals: Zoanthids, Star Polyps.
           </Typography>
         </Grid>
       </Grid>
+
+      <Box mt={2} textAlign="center">
+        <Typography variant="body2" color="textSecondary">
+          <strong>Tip:</strong> Freshwater is ideal for beginners. Stay tuned for Saltwater options coming soon!
+        </Typography>
+      </Box>
     </Box>
   );
 };

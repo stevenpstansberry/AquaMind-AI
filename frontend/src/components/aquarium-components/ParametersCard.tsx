@@ -391,6 +391,7 @@ const ParametersCard: React.FC<ParametersCardProps> = ({ aquarium, onUpdateParam
               size="small"
               onChange={(e) => setFilter(e.target.value)}
               sx={{ marginY: 2 }}
+              onClick={(e) => e.stopPropagation()}
             />
             {Object.entries(filteredGroupedIssues).map(([parameter, issues]) => (
               <Accordion key={parameter}>
