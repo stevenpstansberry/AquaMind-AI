@@ -140,7 +140,7 @@ const AquariumWizard: React.FC<AquariumWizardProps> = ({ onClose, handleAddAquar
   };
 
   // Update steps to include Plant Selection
-  const steps = ['Aquarium Type', 'Tank Size', 'Species', 'Plants (Optional)', 'Equipment', 'Summary'];
+  const steps = ['Aquarium Type', 'Tank Size', 'Species (Optional)', 'Plants (Optional)', 'Equipment (Optional)', 'Summary'];
 
   return (
     <Backdrop open={true} sx={{ zIndex: 2000 }}>
