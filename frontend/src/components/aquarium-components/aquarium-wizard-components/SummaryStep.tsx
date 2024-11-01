@@ -67,31 +67,6 @@ const SummaryStep: React.FC<SummaryStepProps> = ({ aquariumData, setAquariumData
       <Typography variant="body1">
         <strong>Size:</strong> {aquariumData.size} gallons
       </Typography>
-      
-      {/* Display the species with their count */}
-      <Typography variant="body1">
-        <strong>Species:</strong>{' '}
-        {aquariumData.species.length > 0 ? (
-          aquariumData.species.map((s) => `${s.name} (x${s.count})`).join(', ')
-        ) : (
-          'None selected'
-        )}
-      </Typography>
-
-      {/* Display the plants with their count */}
-      <Typography variant="body1">
-        <strong>Plants:</strong>{' '}
-        {aquariumData.plants && aquariumData.plants.length > 0 ? (
-          aquariumData.plants.map((p) => `${p.name} (x${p.count})`).join(', ')
-        ) : (
-          'None selected'
-        )}
-      </Typography>
-
-      {/* Display the equipment */}
-      <Typography variant="body1">
-        <strong>Equipment:</strong>{' '}
-      </Typography>
     </Box>
   );
 };

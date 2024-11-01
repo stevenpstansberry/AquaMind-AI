@@ -140,7 +140,8 @@ const AquariumWizard: React.FC<AquariumWizardProps> = ({ onClose, handleAddAquar
   };
 
   // Update steps to include Plant Selection
-  const steps = ['Aquarium Type', 'Tank Size', 'Species (Optional)', 'Plants (Optional)', 'Equipment (Optional)', 'Summary'];
+  // const steps = ['Aquarium Type', 'Tank Size', 'Species (Optional)', 'Plants (Optional)', 'Equipment (Optional)', 'Summary'];
+  const steps = ['Aquarium Type', 'Tank Size', 'Summary'];
 
   return (
     <Backdrop open={true} sx={{ zIndex: 2000 }}>
@@ -169,9 +170,9 @@ const AquariumWizard: React.FC<AquariumWizardProps> = ({ onClose, handleAddAquar
         <CardContent>
           {currentStep === 0 && <AquariumTypeStep setAquariumData={setAquariumData} setIsStepValid={setIsStepValid} aquariumData={aquariumData} />}
           {currentStep === 1 && <TankSizeStep setAquariumData={setAquariumData} setIsStepValid={setIsStepValid} aquariumData={aquariumData} />}
-          {currentStep === 2 && <SpeciesSelectionStep setAquariumData={setAquariumData} aquariumData={aquariumData} setIsStepValid={setIsStepValid}/>}
-          {currentStep === 3 && <PlantSelectionStep setAquariumData={setAquariumData} aquariumData={aquariumData} setIsStepValid={setIsStepValid}/>}
-          {currentStep === 4 && (
+          {currentStep === 3 && <SpeciesSelectionStep setAquariumData={setAquariumData} aquariumData={aquariumData} setIsStepValid={setIsStepValid}/>}
+          {currentStep === 4 && <PlantSelectionStep setAquariumData={setAquariumData} aquariumData={aquariumData} setIsStepValid={setIsStepValid}/>}
+          {currentStep === 5 && (
             <EquipmentStep
               key={currentStep}
               setAquariumData={setAquariumData}
@@ -179,7 +180,7 @@ const AquariumWizard: React.FC<AquariumWizardProps> = ({ onClose, handleAddAquar
               aquariumData={aquariumData}
             />
           )}
-          {currentStep === 5 && <SummaryStep aquariumData={aquariumData} setAquariumData={setAquariumData} setIsStepValid={setIsStepValid}/>}
+          {currentStep === 2 && <SummaryStep aquariumData={aquariumData} setAquariumData={setAquariumData} setIsStepValid={setIsStepValid}/>}
         </CardContent>
 
         <Box display="flex" justifyContent="space-between" mt={2}>
