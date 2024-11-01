@@ -333,41 +333,24 @@ func UpdateAquariumHandler(w http.ResponseWriter, r *http.Request) {
         return
     }
 
-    // Set the ID from the URL path
+    // Set the ID from the URL path and the UserID from the authenticated user
     aquarium.ID = id
-
-    // Retrieve the existing aquarium
-    existingAquarium, err := models.GetAquariumByID(id)
-    if err != nil {
-        if err == sql.ErrNoRows {
-            http.Error(w, "Aquarium not found", http.StatusNotFound)
-        } else {
-            log.Printf("Error retrieving aquarium: %v", err)
-            http.Error(w, "Error retrieving aquarium", http.StatusInternalServerError)
-        }
-        return
-    }
-
-    // Check if the aquarium belongs to the user
-    if existingAquarium.UserID != user.ID {
-        http.Error(w, "Forbidden", http.StatusForbidden)
-        return
-    }
-
-    // Set the UserID to ensure it remains the same
     aquarium.UserID = user.ID
 
     // Update the aquarium in the database
     err = models.UpdateAquarium(&aquarium)
     if err != nil {
         if err == sql.ErrNoRows {
-            http.Error(w, "Aquarium not found", http.StatusNotFound)
+            http.Error(w, "Aquarium not found or not owned by user", http.StatusNotFound)
         } else {
             log.Printf("Error updating aquarium: %v", err)
             http.Error(w, "Error updating aquarium", http.StatusInternalServerError)
         }
         return
     }
+
+    // Log the updated aquarium object
+    log.Printf("Updated aquarium: %+v", aquarium)
 
     // Respond with the updated aquarium object
     w.Header().Set("Content-Type", "application/json")

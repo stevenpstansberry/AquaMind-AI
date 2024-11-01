@@ -288,7 +288,26 @@ export const getAllDetails = async (type) => {
  * @returns {Promise<Object>} Response data from the API.
  */
 export const updateAquarium = async (aquariumId, aquariumData) => {
-  return putToAPI(`/aquariums/${aquariumId}`, aquariumData, {
+  const stripData = (items) =>
+    items.map((item) => {
+      const { id, count, name } = item;
+      return { id, count, name };
+    });
+
+  // Create a deep copy of aquariumData
+  const aquariumDataCopy = JSON.parse(JSON.stringify(aquariumData));
+
+  if (aquariumDataCopy.species) {
+    aquariumDataCopy.species = stripData(aquariumDataCopy.species);
+  }
+
+  if (aquariumDataCopy.plants) {
+    aquariumDataCopy.plants = stripData(aquariumDataCopy.plants);
+  }
+
+  console.log("Aquarium data copy: ", aquariumDataCopy);
+
+  return putToAPI(`/aquariums/${aquariumId}`, aquariumDataCopy, {
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${localStorage.getItem("token")}`,

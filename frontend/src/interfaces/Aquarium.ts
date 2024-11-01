@@ -34,6 +34,7 @@ export interface Fish {
   stockingRecommendations?: string;
   specialConsiderations?: string;
   imageUrl?: string;
+  wikipediaLink?: string;
 }
 
 export interface Plant {
@@ -56,6 +57,7 @@ export interface Plant {
   propagationMethods?: string;// How the plant propagates (e.g., runners, cuttings)
   specialConsiderations?: string; // Any special care instructions or conditions
   imageUrl?: string;          // Optional image URL for the plant
+  wikipediaLink?: string;     // Optional Wikipedia link for more information
 }
 
 
