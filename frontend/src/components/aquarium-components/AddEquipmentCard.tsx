@@ -6,19 +6,9 @@ import {
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import EquipmentInfoCard from './EquipmentInfoCard';
 import { Aquarium, Equipment } from '../../interfaces/Aquarium';
-import equipmentData from '../../util/EquipmentData.json';
 import { getAllDetails } from '../../services/APIServices';
 
-interface EquipmentFromDB {
-  name: string;
-  description: string;
-  role: string;
-  importance: string;
-  usage: string;
-  specialConsiderations?: string;
-  fields: string[];  // List of field names
-  type: 'filtration' | 'lighting' | 'heating' | 'feeding' | 'test_chemicals' | 'other';
-}
+
 
 interface AddEquipmentCardProps {
   open: boolean;
@@ -37,7 +27,6 @@ const fieldUnitMapping: { [key: string]: string[] } = {
   "Quantity": ["Grams (g)", "Milligrams (mg)", "Ounces (oz)"],           
   "Dosage": ["Milliliters (mL)", "Liters (L)", "Fluid Ounces (fl oz)"],   
   "Frequency of Use": ["times/day", "times/week", "times/month"],         
-  // Add more field mappings as necessary...
 };
 
 
@@ -51,8 +40,8 @@ const AddEquipmentCard: React.FC<AddEquipmentCardProps> = ({ open, onClose, onAd
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [infoOpen, setInfoOpen] = useState(false);
   const [equipmentInfo, setEquipmentInfo] = useState<Equipment | null>(null);
-  const [filteredEquipmentList, setFilteredEquipmentList] = useState<EquipmentFromDB[]>([]);
-  const [equipmentList, setEquipmentList] = useState<EquipmentFromDB[]>([]);
+  const [filteredEquipmentList, setFilteredEquipmentList] = useState<Equipment[]>([]);
+  const [equipmentList, setEquipmentList] = useState<Equipment[]>([]);
 
 
 
@@ -60,7 +49,7 @@ const AddEquipmentCard: React.FC<AddEquipmentCardProps> = ({ open, onClose, onAd
     const fetchEquipmentData = async () => {
       try {
         // Fetch the data
-        const data = await getAllDetails("equipment") as EquipmentFromDB[];
+        const data = await getAllDetails("equipment") as Equipment[];
   
 
         setEquipmentList(data);
@@ -74,17 +63,7 @@ const AddEquipmentCard: React.FC<AddEquipmentCardProps> = ({ open, onClose, onAd
   }, [aquarium.type, handleSnackbar]);
 
 
-  // Update equipmentList when species changes or when the component opens
-useEffect(() => {
-  if (open) {
-    const equipmentData = localStorage.getItem('details_equipment'); // Call speciesList() to get the actual array
-    const parsedEquipmentData = equipmentData ? JSON.parse(equipmentData) : [];
-    console.log("AddEquipmentCard opened. Setting equipmentList to species data from DetailsContext.");
-    setEquipmentList(parsedEquipmentData); // Set equipmentList to the array returned by speciesList()
-    console.log("Current equipmentList:", parsedEquipmentData);
-    console.log("Local storage for equipment:", localStorage.getItem('details_equipment'));
-  }
-}, [open]); // Run this effect when species or open changes
+
   
 
   // Re-filter the equipment list whenever the modal is opened or the aquarium equipment changes
@@ -101,19 +80,14 @@ useEffect(() => {
     }
   }, [open, aquarium.equipment, selectedType, searchQuery]);
 
-  const handleSelectEquipment = (equipment: EquipmentFromDB) => {
+  const handleSelectEquipment = (equipment: Equipment) => {
+    console.log("Selected equipment to add:", equipment);
     const equipmentToAdd: Equipment = {
-      name: equipment.name,
-      description: equipment.description,
-      role: equipment.role,
-      importance: equipment.importance,
-      usage: equipment.usage,
-      specialConsiderations: equipment.specialConsiderations || '',
-      fields: {},  // Initialize fields as an empty object for user input
-      type: equipment.type,
+      ...equipment,
+      fieldValues: {}, // Initialize fieldValues as empty object
     };
     handleSnackbar(`Selected ${equipment.name} to add to the aquarium`, 'info', true);
-    setSelectedEquipment(equipmentToAdd);  // Set only one selected equipment at a time
+    setSelectedEquipment(equipmentToAdd);
   };
 
   // Update `selectedEquipment`'s fields when inputs change
@@ -121,7 +95,10 @@ useEffect(() => {
     if (selectedEquipment) {
       setSelectedEquipment({
         ...selectedEquipment,
-        fields: { ...selectedEquipment.fields, [fieldName]: value },  // Update fields object inside `selectedEquipment`
+        fieldValues: {
+          ...selectedEquipment.fieldValues,
+          [fieldName]: value,
+        },
       });
     }
   };
@@ -129,26 +106,27 @@ useEffect(() => {
   // Ensure selected equipment and its fields are correctly saved
   const handleSaveEquipment = () => {
     if (selectedEquipment) {
-      const updatedFields = { ...selectedEquipment.fields };
+      const updatedFields = { ...selectedEquipment.fieldValues };
   
       // Concatenate the selected unit with the value for each field
       Object.keys(updatedFields).forEach((field) => {
-        // Only concatenate if there is a unit mapping for the field
         const unit = updatedFields[`${field}_unit`];
         if (unit) {
           updatedFields[field] = `${updatedFields[field]} ${unit}`;
         }
       });
   
+      // Convert fieldValues object to an array of strings
+      const fieldsArray = Object.keys(updatedFields).map((field) => `${field}: ${updatedFields[field]}`);
+  
       const equipmentToSave = {
         ...selectedEquipment,
-        fields: updatedFields,
+        fields: fieldsArray, // Overwrite fields with the new array
       };
   
-      console.log("Saving this equipment", equipmentToSave);  // Debugging output
-      onAddEquipment(equipmentToSave);  // Save the selected equipment with concatenated units
-      setCustomFields({});  // Reset custom fields
-      setSelectedEquipment(null);  // Reset selected equipment
+      console.log("Saving this equipment", equipmentToSave);
+      onAddEquipment(equipmentToSave);
+      setSelectedEquipment(null);
     }
   };
   
@@ -162,7 +140,7 @@ useEffect(() => {
     setPage(0);
   };
 
-  const handleEquipmentClick = (equipment: EquipmentFromDB) => {
+  const handleEquipmentClick = (equipment: Equipment) => {
     const equipmentToAdd: Equipment = {
       name: equipment.name,
       description: equipment.description,
@@ -170,7 +148,7 @@ useEffect(() => {
       importance: equipment.importance,
       usage: equipment.usage,
       specialConsiderations: equipment.specialConsiderations || '',
-      fields: {},  // Initialize fields as an empty object for user input
+      fields: equipment.fields,
       type: equipment.type,
     };
     
@@ -182,6 +160,9 @@ useEffect(() => {
     setInfoOpen(false);
     setEquipmentInfo(null);
   };
+
+  // Get the selected equipment details
+  const selectedEquipmentDetails = equipmentList.find((eq) => eq.name === selectedEquipment?.name);
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
@@ -272,42 +253,36 @@ useEffect(() => {
             <Box mt={2}>
               <Typography variant="h6" sx={{ mb: 2 }}>Selected Equipment to Add:</Typography>
               <Typography variant="body2" sx={{ mb: 2 }}>{selectedEquipment.name}</Typography>
-  
+
               {/* Render input fields for the selected equipment's fields */}
-              {equipmentList
-                .find((eq) => eq.name === selectedEquipment.name)
-                ?.fields.map((field) => (
-                  <Box key={field} display="flex" alignItems="center" sx={{ mb: 2 }}>
-                    {/* Input field for custom field */}
-                    <TextField
-                      label={field}
-                      value={selectedEquipment.fields[field] || ''}
-                      onChange={(e) => handleFieldChange(field, e.target.value)}
-                      sx={{ flex: 2, marginRight: '10px' }}  // Adjust for better alignment
-                      margin="dense"
-                    />
-  
-                    {/* Unit of measurement dropdown or placeholder for alignment */}
-                    {fieldUnitMapping[field] ? (
-                      <FormControl sx={{ flex: 1 }} margin="dense">
-                        <InputLabel>Unit</InputLabel>
-                        <Select
-                          value={selectedEquipment.fields[`${field}_unit`] || fieldUnitMapping[field][0]}  // Default to first unit
-                          onChange={(e) => handleFieldChange(`${field}_unit`, e.target.value)}  // Save the selected unit
-                        >
-                          {fieldUnitMapping[field].map((unit) => (
-                            <MenuItem key={unit} value={unit}>
-                              {unit}
-                            </MenuItem>
-                          ))}
-                        </Select>
-                      </FormControl>
-                    ) : (
-                      // Invisible placeholder to keep fields aligned
-                      <Box sx={{ flex: 1 }} />
-                    )}
-                  </Box>
-                ))}
+              {selectedEquipmentDetails && selectedEquipmentDetails.fields && Object.keys(selectedEquipmentDetails.fields).map((field) => (
+                <Box key={field} display="flex" alignItems="center" sx={{ mb: 2 }}>
+                  <TextField
+                    label={field}
+                    value={selectedEquipment.fieldValues ? selectedEquipment.fieldValues[field] || '' : ''}
+                    onChange={(e) => handleFieldChange(field, e.target.value)}
+                    sx={{ flex: 2, marginRight: '10px' }}
+                    margin="dense"
+                  />
+                  {fieldUnitMapping[field] ? (
+                    <FormControl sx={{ flex: 1 }} margin="dense">
+                      <InputLabel>Unit</InputLabel>
+                      <Select
+                        value={selectedEquipment.fieldValues ? selectedEquipment.fieldValues[`${field}_unit`] || fieldUnitMapping[field][0] : fieldUnitMapping[field][0]}
+                        onChange={(e) => handleFieldChange(`${field}_unit`, e.target.value)}
+                      >
+                        {fieldUnitMapping[field].map((unit) => (
+                          <MenuItem key={unit} value={unit}>
+                            {unit}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                  ) : (
+                    <Box sx={{ flex: 1 }} />
+                  )}
+                </Box>
+              ))}
   
               {/* Right-aligned button */}
               <Box display="flex" justifyContent="flex-end" mt={2}>
