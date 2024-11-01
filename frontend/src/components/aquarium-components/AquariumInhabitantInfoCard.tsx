@@ -17,6 +17,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ZoomInIcon from '@mui/icons-material/ZoomIn';
 import CloseIcon from '@mui/icons-material/Close';
 import { Fish, Plant } from '../../interfaces/Aquarium';
+import Link from '@mui/material/Link';
 
 type AquariumInhabitant = Fish | Plant;
 
@@ -93,9 +94,9 @@ const AquariumInhabitantInfoCard: React.FC<AquariumInhabitantInfoCardProps> = ({
               <Typography variant="body2">
                 <strong>Name:</strong> {inhabitant.name}
               </Typography>
-              <Typography variant="body2">
-                <strong>Scientific Name:</strong> {inhabitant.scientificName || 'Scientific name not specified.'}
-              </Typography>
+                <Typography variant="body2">
+                <strong>Scientific Name:</strong> <em>{inhabitant.scientificName || 'Scientific name not specified.'}</em>
+                </Typography>
               <Typography variant="body2">
                 <strong>Count:</strong> {inhabitant.count}
               </Typography>
@@ -107,6 +108,16 @@ const AquariumInhabitantInfoCard: React.FC<AquariumInhabitantInfoCardProps> = ({
               </Typography>
               <Typography variant="body2" sx={{ mt: 1 }}>
                 <strong>Description:</strong> {inhabitant.description || 'No description available.'}
+              </Typography>
+              <Typography variant="body2" sx={{ mt: 1 }}>
+                <strong>Wikipedia Link: </strong> 
+                {inhabitant.wikipediaLink ? (
+                  <Link href={inhabitant.wikipediaLink} target="_blank" rel="noopener">
+                    {inhabitant.wikipediaLink}
+                  </Link>
+                ) : (
+                  'No description available.'
+                )}
               </Typography>
             </AccordionDetails>
           </Accordion>
