@@ -6,7 +6,7 @@
  * @author Steven Stansberry
  */
 
-import React, { useState } from 'react'; 
+import React, { useState, useEffect, useRef } from 'react'; 
 import { Card, CardContent, Typography, Button, Box, Backdrop } from '@mui/material';
 import { v4 as uuidv4 } from 'uuid';
 import ChatBubbleIcon from '@mui/icons-material/ChatBubble'; 
@@ -33,12 +33,23 @@ const AquariumWizard: React.FC<AquariumWizardProps> = ({ onClose, handleAddAquar
     type: '',
     size: '',
     species: [],  
-    plants: [],   // Array to store selected plants
+    plants: [],   
     equipment: [],
   });
 
   const [isStepValid, setIsStepValid] = useState(false); 
   const [showChat, setShowChat] = useState(false);
+
+
+  // Create a ref to access the chat container
+  const chatContainerRef = useRef<HTMLDivElement>(null);
+
+  // Automatically scroll to the bottom of the chat when it opens
+  useEffect(() => {
+    if (showChat && chatContainerRef.current) {
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+    }
+  }, [showChat]);
 
   const suggestions = [
     [
@@ -182,7 +193,7 @@ const AquariumWizard: React.FC<AquariumWizardProps> = ({ onClose, handleAddAquar
             <Button
               variant="outlined"
               onClick={() => setShowChat((prev) => !prev)}
-              startIcon={<ChatBubbleIcon />} // Adding the icon here
+              startIcon={<ChatBubbleIcon />}
             >
               {showChat ? "Hide AI" : "Ask AI"}
             </Button>
@@ -198,7 +209,10 @@ const AquariumWizard: React.FC<AquariumWizardProps> = ({ onClose, handleAddAquar
             )}
           </Box>
         </Box>
-        <AIChatInterface showChat={showChat} onClose={() => setShowChat(false)} suggestions={suggestions[currentStep]}/>
+
+        <div ref={chatContainerRef}>
+          <AIChatInterface showChat={showChat} onClose={() => setShowChat(false)} suggestions={suggestions[currentStep]}/>
+        </div>
       </Card>
     </Backdrop>
   );
