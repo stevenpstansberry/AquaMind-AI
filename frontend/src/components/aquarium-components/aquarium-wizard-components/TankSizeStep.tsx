@@ -3,59 +3,70 @@
  * @location src/components/aquarium-components/aquarium-wizard-components/TankSizeStep.tsx
  * @description This component renders the tank size input step in the aquarium setup wizard. It allows the user to enter the tank size and validates the input to ensure it's a valid number. Updates the parent state with the tank size value.
  * 
- * @author Steven Stansberry
+ * @editor Updated with visual slider, incremental control, scroll wheel functionality, and refined design.
  */
 
 import React, { useState, useEffect } from 'react';
-import { Typography, TextField, Box, InputAdornment } from '@mui/material';
+import { Typography, TextField, Box, InputAdornment, Slider, Button } from '@mui/material';
 
 interface TankSizeStepProps {
   setAquariumData: React.Dispatch<React.SetStateAction<any>>;
   setIsStepValid: React.Dispatch<React.SetStateAction<boolean>>;
-  aquariumData: { type: string; size: string;  species: { name: string; count: number }[]; equipment: string[] };
-
+  aquariumData: { type: string; size: string; species: { name: string; count: number }[]; equipment: string[] };
 }
 
 const TankSizeStep: React.FC<TankSizeStepProps> = ({ setAquariumData, setIsStepValid, aquariumData }) => {
-  const [customSize, setCustomSize] =  useState<string | string>(aquariumData.size || ''); // Initialize from aquariumData
+  const [customSize, setCustomSize] = useState<string>(aquariumData.size || '10'); // Default to 10 gallons
   const [sizeError, setSizeError] = useState(false);
+  const [warning, setWarning] = useState<string | null>(null);
 
   /**
-   * Handles changes in the tank size input field. Validates the input to ensure only numeric values are allowed.
-   * If valid, updates the tank size in the parent state.
+   * Handles changes in the tank size input field and slider. Validates the input to ensure it's a realistic number.
    * 
-   * @param {React.ChangeEvent<HTMLInputElement>} event - The change event for the input field.
-   * @returns {void}
+   * @param {string} value - The tank size value from the input field or slider.
    */
-  const handleCustomSizeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = event.target.value;
+  const handleSizeChange = (value: string) => {
+    const numValue = parseInt(value, 10);
+    if (numValue < 1) return; 
+
+    
     setCustomSize(value);
 
-    // Validate to allow only numbers
-    if (/^\d+$/.test(value)) {
-      setSizeError(false);
-      setAquariumData((prevData: any) => ({ ...prevData, size: `${value}` }));
-    } else if (value === '') {
-      // If the input is cleared, invalidate the step
-      setIsStepValid(false);
-      setAquariumData((prevData: any) => ({ ...prevData, size: '' }));
-    } else {
+    // Validation
+    if (numValue <= 0) {
       setSizeError(true);
+      setWarning("Tank size can't be less than 0 gallons.");
+    } else if (numValue > 100000) {
+      setSizeError(true);
+      setWarning("Please enter a realistic tank size.");
+    } else {
+      setSizeError(false);
+      setWarning(null);
+
+      if (numValue < 5) {
+        setWarning("Please be careful in stocking an aquarium less than 5 gallons.");
+      }
+      setAquariumData((prevData: any) => ({ ...prevData, size: `${numValue}` }));
+      setIsStepValid(true);
     }
   };
 
   /**
-   * Effect that updates the parent state and validates the step when the custom size changes.
-   * This effect runs whenever the `customSize` or `sizeError` state variables change.
-   * 
-   * @returns {void}
+   * Handles scroll wheel events on the slider, adjusting tank size.
+   */
+  const handleWheel = (event: React.WheelEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    const increment = event.deltaY < 0 ? 1 : -1;
+    const newSize = Math.max(10, Math.min(100, Number(customSize) + increment));
+    handleSizeChange(newSize.toString());
+  };
+
+  /**
+   * Effect to update the parent state when tank size changes.
    */
   useEffect(() => {
-    if (!sizeError && customSize) {
-      setAquariumData((prevData: any) => ({ ...prevData, size: `${customSize}` }));
-      setIsStepValid(true); // Mark the step as valid
-    }
-  }, [customSize, sizeError, setAquariumData]);
+    setAquariumData((prevData: any) => ({ ...prevData, size: customSize }));
+  }, [customSize, setAquariumData]);
 
   return (
     <Box display="flex" flexDirection="column" alignItems="center" textAlign="center">
@@ -67,19 +78,64 @@ const TankSizeStep: React.FC<TankSizeStepProps> = ({ setAquariumData, setIsStepV
         Most tank sizes range from 10 to 100 gallons.
       </Typography>
 
-      {/* Custom Size Input */}
+      {/* Placeholder for Future Aquarium Size Graphic */}
+      <Box
+        sx={{
+          width: '100px',
+          height: '100px',
+          borderRadius: '50%',
+          border: '2px dashed lightgray',
+          mb: 2,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)', // Add shadow for visual emphasis
+        }}
+      >
+        <Typography variant="body2" color="textSecondary">
+          Size Graphic
+        </Typography>
+      </Box>
+
+      {/* Tank Size Input with Increment/Decrement Controls */}
       <TextField
         label="Tank Size"
         variant="outlined"
         value={customSize}
-        onChange={handleCustomSizeChange}
+        onChange={(e) => handleSizeChange(e.target.value)}
         error={sizeError}
-        helperText={sizeError ? 'Please enter a valid number' : ''}
+        helperText={sizeError ? 'Invalid tank size' : warning || ''}
         InputProps={{
           endAdornment: <InputAdornment position="end">gallons</InputAdornment>,
+          inputProps: { min: 0, max: 100000, step: 1 },
+          // Increment/Decrement Buttons
+          inputComponent: (props: any) => (
+            <Box display="flex" alignItems="center">
+              <Button onClick={() => handleSizeChange(String(Number(customSize) - 1))} disabled={Number(customSize) <= 0}>-</Button>
+              <input {...props} style={{ textAlign: 'center', width: '50px' }} />
+              <Button onClick={() => handleSizeChange(String(Number(customSize) + 1))}>+</Button>
+            </Box>
+          )
         }}
         sx={{ width: '300px', mt: 2 }}
       />
+
+      {/* Slider for Tank Size with Scroll Wheel Handling */}
+      <Box sx={{ width: '80%', mx: 'auto', mt: 3 }} onWheel={handleWheel}>
+        <Slider
+          value={Number(customSize)}
+          onChange={(e, newValue) => handleSizeChange(String(newValue))}
+          aria-labelledby="tank-size-slider"
+          step={1}
+          min={5}
+          max={250}
+          marks={[{ value: 5, label: '5' }, { value: 125, label: '125' }, { value: 250, label: '250' }]}
+          sx={{
+            '.MuiSlider-track': { backgroundColor: 'primary.main', opacity: 0.8 },
+            '.MuiSlider-rail': { opacity: 0.3 },
+          }}
+        />
+      </Box>
     </Box>
   );
 };
