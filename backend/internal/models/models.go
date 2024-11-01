@@ -80,17 +80,45 @@ func UserExists(email string) bool {
     return exists
 }
 
+// AquariumSpecies represents a species in an aquarium with only Id and Count.
+type AquariumSpecies struct {
+    Id    string `json:"id"`
+    Count int    `json:"count"`
+    Name string `json:"name"`
+}
+
+// AquariumPlant represents a plant in an aquarium with only Id and Count.
+type AquariumPlant struct {
+    Id    string `json:"id"`
+    Count int    `json:"count"`
+    Name string `json:"name"`
+}
+
 // Aquarium represents an aquarium in the system.
 type Aquarium struct {
-    ID        string    `json:"id"`
-    UserID    string    `json:"userId"`
-    Name      string    `json:"name"`
-    Type      string    `json:"type"`
-    Size      string    `json:"size"`
-    Species   []Species `json:"species"`
-    Plants    []Plant   `json:"plants"`
-    Equipment []Equipment `json:"equipment"`
-    ParameterEntries []WaterParameterEntry `json:"parameterEntries,omitempty"`}
+    ID               string                `json:"id"`
+    UserID           string                `json:"userId"`
+    Name             string                `json:"name"`
+    Type             string                `json:"type"`
+    Size             string                `json:"size"`
+    Species          []AquariumSpecies     `json:"species"`
+    Plants           []AquariumPlant       `json:"plants"`
+    Equipment        []Equipment           `json:"equipment"`
+    ParameterEntries []WaterParameterEntry `json:"parameterEntries,omitempty"`
+}
+
+type AquariumResponse struct {
+    ID               string                `json:"id"`
+    UserID           string                `json:"userId"`
+    Name             string                `json:"name"`
+    Type             string                `json:"type"`
+    Size             string                `json:"size"`
+    Species          []Species             `json:"species"`
+    Plants           []Plant               `json:"plants"`
+    Equipment        []Equipment           `json:"equipment"`
+    ParameterEntries []WaterParameterEntry `json:"parameterEntries,omitempty"`
+}
+
 
 type Species struct {
     Id                      string  `json:"id"`
@@ -113,6 +141,9 @@ type Species struct {
     StockingRecommendations *string `json:"stockingRecommendations"`
     SpecialConsiderations   *string `json:"specialConsiderations"`
     MinTankSize             int     `json:"minTankSize"`
+    ScientificName          *string `json:"scientificName"`
+    WikipediaLink           *string `json:"wikipediaLink"`
+    Count                   int     `json:"count"`
 }
 
 type Plant struct {
@@ -134,6 +165,9 @@ type Plant struct {
     PropagationMethods  *string `json:"propagationMethods"`
     SpecialConsiderations *string `json:"specialConsiderations"`
     ImageURL            *string `json:"imageUrl"`
+    ScientificName      *string `json:"scientificName"`
+    WikipediaLink       *string `json:"wikipediaLink"`
+    Count                int     `json:"count"`
 }
 
 
@@ -184,8 +218,7 @@ func CreateAquarium(aquarium *Aquarium) error {
 }
 
 
-// GetAquariumsByUserID retrieves all aquariums owned by a user.
-func GetAquariumsByUserID(userID string) ([]Aquarium, error) {
+func GetAquariumsByUserID(userID string) ([]AquariumResponse, error) {
     query := `
         SELECT id, user_id, name, type, size, species, plants, equipment
         FROM aquariums
@@ -197,10 +230,10 @@ func GetAquariumsByUserID(userID string) ([]Aquarium, error) {
     }
     defer rows.Close()
 
-    var aquariums []Aquarium
+    var aquariums []AquariumResponse
 
     for rows.Next() {
-        var aquarium Aquarium
+        var aquarium AquariumResponse
         var speciesJSON, plantsJSON, equipmentJSON []byte
 
         err := rows.Scan(&aquarium.ID, &aquarium.UserID, &aquarium.Name, &aquarium.Type, &aquarium.Size, &speciesJSON, &plantsJSON, &equipmentJSON)
@@ -208,9 +241,66 @@ func GetAquariumsByUserID(userID string) ([]Aquarium, error) {
             return nil, err
         }
 
-        json.Unmarshal(speciesJSON, &aquarium.Species)
-        json.Unmarshal(plantsJSON, &aquarium.Plants)
-        json.Unmarshal(equipmentJSON, &aquarium.Equipment)
+        // Unmarshal species JSON into a slice of AquariumSpecies
+        var speciesData []AquariumSpecies
+        if err := json.Unmarshal(speciesJSON, &speciesData); err != nil {
+            return nil, fmt.Errorf("error unmarshalling species JSON: %w", err)
+        }
+
+        // Create a map of species ID to count
+        speciesIDToCount := make(map[string]int)
+        var speciesIDs []string
+        for _, species := range speciesData {
+            speciesIDs = append(speciesIDs, species.Id)
+            speciesIDToCount[species.Id] = species.Count
+        }
+
+        // Retrieve species details by IDs
+        speciesDetails, err := GetSpeciesDetailsByIDs(speciesIDs)
+        if err != nil {
+            return nil, err
+        }
+
+        // Add count to speciesDetails
+        for i, species := range speciesDetails {
+            if count, ok := speciesIDToCount[species.Id]; ok {
+                speciesDetails[i].Count = count
+            }
+        }
+        aquarium.Species = speciesDetails
+
+        // Unmarshal plants JSON into a slice of AquariumPlant
+        var plantData []AquariumPlant
+        if err := json.Unmarshal(plantsJSON, &plantData); err != nil {
+            return nil, err
+        }
+
+        // Create a map of plant ID to count
+        plantIDToCount := make(map[string]int)
+        var plantIDs []string
+        for _, plant := range plantData {
+            plantIDs = append(plantIDs, plant.Id)
+            plantIDToCount[plant.Id] = plant.Count
+        }
+
+        // Retrieve plant details by IDs
+        plantDetails, err := GetPlantsDetailsByIDs(plantIDs)
+        if err != nil {
+            return nil, err
+        }
+
+        // Add count to plantDetails
+        for i, plant := range plantDetails {
+            if count, ok := plantIDToCount[plant.Id]; ok {
+                plantDetails[i].Count = count
+            }
+        }
+        aquarium.Plants = plantDetails
+
+        // Unmarshal equipment JSON
+        if err := json.Unmarshal(equipmentJSON, &aquarium.Equipment); err != nil {
+            return nil, fmt.Errorf("error unmarshalling equipment JSON: %w", err)
+        }
 
         // Retrieve parameter entries for this aquarium
         parameterEntries, err := GetWaterParameterEntriesByAquariumID(aquarium.ID)
@@ -218,6 +308,14 @@ func GetAquariumsByUserID(userID string) ([]Aquarium, error) {
             return nil, err
         }
         aquarium.ParameterEntries = parameterEntries
+
+        // Ensure species and plants are not null
+        if aquarium.Species == nil {
+            aquarium.Species = []Species{}
+        }
+        if aquarium.Plants == nil {
+            aquarium.Plants = []Plant{}
+        }
 
         aquariums = append(aquariums, aquarium)
     }
@@ -227,19 +325,77 @@ func GetAquariumsByUserID(userID string) ([]Aquarium, error) {
 
 
 // GetAquariumByID retrieves an aquarium by its ID.
-func GetAquariumByID(id string) (*Aquarium, error) {
+func GetAquariumByID(id string) (*AquariumResponse, error) {
     query := `SELECT id, user_id, name, type, size, species, plants, equipment FROM aquariums WHERE id = $1`
-    var aquarium Aquarium
+    var aquarium AquariumResponse
     var speciesJSON, plantsJSON, equipmentJSON []byte
 
+    // Scan species, plants, and equipment as raw JSON (byte slices)
     err := db.QueryRow(query, id).Scan(&aquarium.ID, &aquarium.UserID, &aquarium.Name, &aquarium.Type, &aquarium.Size, &speciesJSON, &plantsJSON, &equipmentJSON)
     if err != nil {
         return nil, err
     }
 
-    json.Unmarshal(speciesJSON, &aquarium.Species)
-    json.Unmarshal(plantsJSON, &aquarium.Plants)
-    json.Unmarshal(equipmentJSON, &aquarium.Equipment)
+    // Unmarshal species JSON into a slice of AquariumSpecies
+    var speciesData []AquariumSpecies
+    if err := json.Unmarshal(speciesJSON, &speciesData); err != nil {
+        return nil, fmt.Errorf("error unmarshalling species JSON: %w", err)
+    }
+
+    // Create a map of species ID to count
+    speciesIDToCount := make(map[string]int)
+    var speciesIDs []string
+    for _, species := range speciesData {
+        speciesIDs = append(speciesIDs, species.Id)
+        speciesIDToCount[species.Id] = species.Count
+    }
+
+    // Retrieve species details by IDs
+    speciesDetails, err := GetSpeciesDetailsByIDs(speciesIDs)
+    if err != nil {
+        return nil, err
+    }
+
+    // Add count to speciesDetails
+    for i, species := range speciesDetails {
+        if count, ok := speciesIDToCount[species.Id]; ok {
+            speciesDetails[i].Count = count
+        }
+    }
+    aquarium.Species = speciesDetails
+
+    // Unmarshal plants JSON into a slice of AquariumPlant
+    var plantData []AquariumPlant
+    if err := json.Unmarshal(plantsJSON, &plantData); err != nil {
+        return nil, err
+    }
+
+    // Create a map of plant ID to count
+    plantIDToCount := make(map[string]int)
+    var plantIDs []string
+    for _, plant := range plantData {
+        plantIDs = append(plantIDs, plant.Id)
+        plantIDToCount[plant.Id] = plant.Count
+    }
+
+    // Retrieve plant details by IDs
+    plantDetails, err := GetPlantsDetailsByIDs(plantIDs)
+    if err != nil {
+        return nil, err
+    }
+
+    // Add count to plantDetails
+    for i, plant := range plantDetails {
+        if count, ok := plantIDToCount[plant.Id]; ok {
+            plantDetails[i].Count = count
+        }
+    }
+    aquarium.Plants = plantDetails
+
+    // Unmarshal equipment JSON
+    if err := json.Unmarshal(equipmentJSON, &aquarium.Equipment); err != nil {
+        return nil, fmt.Errorf("error unmarshalling equipment JSON: %w", err)
+    }
 
     // Retrieve parameter entries for this aquarium
     parameterEntries, err := GetWaterParameterEntriesByAquariumID(aquarium.ID)
@@ -255,6 +411,7 @@ func GetAquariumByID(id string) (*Aquarium, error) {
 
 // UpdateAquarium updates an existing aquarium in the database.
 func UpdateAquarium(aquarium *Aquarium) error {
+
     speciesJSON, err := json.Marshal(aquarium.Species)
     if err != nil {
         return err
