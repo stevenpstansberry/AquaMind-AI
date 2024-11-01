@@ -1,11 +1,13 @@
 import React, { useEffect } from 'react';
-import PlantSelectionHelper from './PlantSelectionHelper'; // Use PlantSelectionHelper
+import PlantSelectionHelper from './PlantSelectionHelper'; 
 import { Box } from '@mui/material';
+import { Aquarium } from '../../../interfaces/Aquarium';
+
 
 interface PlantSelectionStepProps {
   setAquariumData: React.Dispatch<React.SetStateAction<any>>;
   setIsStepValid: React.Dispatch<React.SetStateAction<boolean>>;
-  aquariumData: { plants: { name: string; count: number }[]; type: string; size: string };
+  aquariumData: Aquarium;
 }
 
 const PlantSelectionStep: React.FC<PlantSelectionStepProps> = ({

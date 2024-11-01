@@ -8,17 +8,11 @@
 
 import React, { useState, useEffect } from 'react';
 import { TextField, Box, Typography } from '@mui/material';
+import { Aquarium } from '../../../interfaces/Aquarium';
+
 
 interface SummaryStepProps {
-  aquariumData: { 
-    name: string; 
-    id: string; 
-    type: string; 
-    size: string;  
-    species: { name: string; count: number }[]; 
-    plants: { name: string; count: number }[]; 
-    equipment: { name: string; details: any }[];  // Equipment is an array of objects
-  };
+  aquariumData: Aquarium
   setAquariumData: React.Dispatch<React.SetStateAction<any>>;
   setIsStepValid: (isValid: boolean) => void;
 }
@@ -97,16 +91,6 @@ const SummaryStep: React.FC<SummaryStepProps> = ({ aquariumData, setAquariumData
       {/* Display the equipment */}
       <Typography variant="body1">
         <strong>Equipment:</strong>{' '}
-        {aquariumData.equipment.length > 0 ? (
-          aquariumData.equipment.map((eq) => {
-            const detailEntries = Object.entries(eq.details)
-              .map(([key, value]) => `${key}: ${value}`)
-              .join(', ');  // Join all details as a string
-            return `${eq.name}${detailEntries ? ` (${detailEntries})` : ''}`;
-          }).join(', ')
-        ) : (
-          'None selected'
-        )}
       </Typography>
     </Box>
   );

@@ -8,11 +8,13 @@
 
 import React, { useState } from 'react';
 import { Button, Typography, Grid, Box } from '@mui/material';
+import { Aquarium } from '../../../interfaces/Aquarium';
+
 
 interface AquariumTypeStepProps {
   setAquariumData: React.Dispatch<React.SetStateAction<any>>;
   setIsStepValid: React.Dispatch<React.SetStateAction<boolean>>;
-  aquariumData: { name: string; id: string; type: string; size: string; species: { name: string; count: number }[]; equipment: string[] };
+  aquariumData: Aquarium;
 }
 
 const AquariumTypeStep: React.FC<AquariumTypeStepProps> = ({ setAquariumData, setIsStepValid, aquariumData }) => {

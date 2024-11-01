@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Box, TextField, Typography, Grid, Card, CardContent, CardActionArea } from '@mui/material';
+import { Aquarium } from '../../../interfaces/Aquarium';
+
 
 interface Fish {
   name: string;
@@ -10,7 +12,7 @@ interface Fish {
 
 interface FishSelectionHelperProps {
   setAquariumData: React.Dispatch<React.SetStateAction<any>>;
-  aquariumData: { name: string; id: string; type: string; size: string; species: { name: string; count: number }[]; equipment: string[] };
+  aquariumData: Aquarium;
   initialSelectedFish: string[];  // Array of fish names
 }
 

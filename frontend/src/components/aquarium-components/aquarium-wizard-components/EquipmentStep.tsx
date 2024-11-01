@@ -19,7 +19,7 @@ interface EquipmentStepProps {
     id: string;
     type: string;
     size: string;
-    species: { name: string; count: number }[];
+    species: { id: string; name: string; count: number }[];
     equipment: { name: string; details: any }[];
   };
   setIsStepValid: React.Dispatch<React.SetStateAction<boolean>>;

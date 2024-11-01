@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Box, TextField, Typography, Grid, Card, CardContent, CardActionArea } from '@mui/material';
+import { Aquarium } from '../../../interfaces/Aquarium';
 
 interface Plant {
   name: string;
@@ -8,8 +9,9 @@ interface Plant {
 
 interface PlantSelectionHelperProps {
   setAquariumData: React.Dispatch<React.SetStateAction<any>>;
-  aquariumData: { plants: { name: string; count: number }[]; type: string; size: string };
+  aquariumData: Aquarium;
   initialSelectedPlants: string[]; // Array of plant names
+  
 }
 
 const plantOptions: Plant[] = [

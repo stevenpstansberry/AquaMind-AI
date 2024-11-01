@@ -2,7 +2,7 @@
 export interface Aquarium {
     id: string;
     name: string;
-    type: "Freshwater" | "Saltwater";
+    type: string;
     size: string;
     species: Fish[]; 
     plants:  Plant[]; 
