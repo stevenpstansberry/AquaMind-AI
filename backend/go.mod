@@ -1,6 +1,6 @@
 module github.com/stevenpstansberry/AquaMind-AI
 
-go 1.23.1
+go 1.23
 
 require (
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
