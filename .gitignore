@@ -33,3 +33,7 @@ backend/cmd/auth-service/.env
 todos.md
 backend/cmd/auth-service/.env
 backend/cmd/auth-service/.env
+backend/cmd/auth-service/.env
+
+
+*.env
