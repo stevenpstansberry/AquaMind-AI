@@ -1,10 +1,9 @@
 import React from 'react';
-
 import config from '../../config/index.json';
 
 const About = () => {
   const { company, about } = config;
-  const { logo, name: companyName } = company;
+  const { name: companyName } = company; // Removed logo as we no longer need it
   const { socialMedia, sections } = about;
 
   return (
@@ -14,18 +13,12 @@ const About = () => {
     >
       <div className="flex flex-col items-center justify-center">
         <div>
-          <img src={logo} alt={companyName} className="w-16 h-16" />
-        </div>
-        <div className="flex flex-wrap sm:gap-10 gap-8 items-center justify-center mt-4 h-12">
-          {sections.map((section, index) => (
-            <a
-              key={`${section.name}-${index}`}
-              href={section.href}
-              className="hover:text-primary text-base cursor-pointer leading-4 text-gray-800 dark:text-gray-400 dark:hover:text-white"
-            >
-              {section.name}
-            </a>
-          ))}
+          <h1
+            style={{ color: '#1876D2' }}
+            className="text-4xl font-bold"
+          >
+            {companyName}
+          </h1>
         </div>
         <div className="flex items-center justify-center gap-x-4 mt-6">
           <a
@@ -67,4 +60,5 @@ const About = () => {
     </div>
   );
 };
+
 export default About;
