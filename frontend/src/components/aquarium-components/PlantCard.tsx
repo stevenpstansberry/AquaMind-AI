@@ -17,10 +17,13 @@ interface PlantCardProps {
 
 enum DisplayMode {
   ALL_PLANTS,
-  FAST_GROWING,
-  SLOW_GROWING,
+  BACKGROUND,
+  MIDGROUND,
+  FOREGROUND,
+  CARPET,
   FLOATING,
   ROOTED,
+  OXYGENATOR,
 }
 
 const PlantCard: React.FC<PlantCardProps> = ({ aquarium, onUpdatePlants, handleSnackbar }) => {
@@ -74,14 +77,20 @@ const PlantCard: React.FC<PlantCardProps> = ({ aquarium, onUpdatePlants, handleS
     switch (displayMode) {
       case DisplayMode.ALL_PLANTS:
         return true;
-      case DisplayMode.FAST_GROWING:
-        return plant.role === 'fast-growing';
-      case DisplayMode.SLOW_GROWING:
-        return plant.role === 'slow-growing';
+      case DisplayMode.BACKGROUND:
+        return plant.role === 'background';
+      case DisplayMode.MIDGROUND:
+        return plant.role === 'midground';
+      case DisplayMode.FOREGROUND:
+        return plant.role === 'foreground';
       case DisplayMode.FLOATING:
         return plant.role === 'floating';
       case DisplayMode.ROOTED:
         return plant.role === 'rooted';
+      case DisplayMode.CARPET:
+        return plant.type === 'carpet';
+      case DisplayMode.OXYGENATOR:
+        return plant.type === 'oxygenator';
       default:
         return false;
     }
@@ -237,10 +246,13 @@ const handleConfirmDelete = () => {
 
   const displayModeText = {
     [DisplayMode.ALL_PLANTS]: 'All Plants',
-    [DisplayMode.FAST_GROWING]: 'Fast Growing Plants',
-    [DisplayMode.SLOW_GROWING]: 'Slow Growing Plants',
+    [DisplayMode.BACKGROUND]: 'Background Plants',
+    [DisplayMode.MIDGROUND]: 'Midground Plants',
+    [DisplayMode.FOREGROUND]: 'Foreground Plants',
     [DisplayMode.FLOATING]: 'Floating Plants',
     [DisplayMode.ROOTED]: 'Rooted Plants',
+    [DisplayMode.CARPET]: 'Carpet Plants',
+    [DisplayMode.OXYGENATOR]: 'Oxygenating Plants',
   };
 
   return (
@@ -345,10 +357,13 @@ const handleConfirmDelete = () => {
 
         <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
             <MenuItem onClick={() => setDisplayMode(DisplayMode.ALL_PLANTS)}>All Plants</MenuItem>
-            <MenuItem onClick={() => setDisplayMode(DisplayMode.FAST_GROWING)}>Fast Growing Plants</MenuItem>
-            <MenuItem onClick={() => setDisplayMode(DisplayMode.SLOW_GROWING)}>Slow Growing Plants</MenuItem>
+            <MenuItem onClick={() => setDisplayMode(DisplayMode.BACKGROUND)}>Background Plants</MenuItem>
+            <MenuItem onClick={() => setDisplayMode(DisplayMode.MIDGROUND)}>Midground Plants</MenuItem>
+            <MenuItem onClick={() => setDisplayMode(DisplayMode.FOREGROUND)}>Foreground Plants</MenuItem>
             <MenuItem onClick={() => setDisplayMode(DisplayMode.FLOATING)}>Floating Plants</MenuItem>
             <MenuItem onClick={() => setDisplayMode(DisplayMode.ROOTED)}>Rooted Plants</MenuItem>
+            <MenuItem onClick={() => setDisplayMode(DisplayMode.CARPET)}>Carpet Plants</MenuItem>
+            <MenuItem onClick={() => setDisplayMode(DisplayMode.OXYGENATOR)}>Oxygenating Plants</MenuItem>
           </Menu>
       </Card>
 
