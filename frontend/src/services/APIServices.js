@@ -334,6 +334,8 @@ export const deleteAquarium = async (aquariumId) => {
   });
 };
 
+const openai_base_url = process.env.REACT_APP_OPENAI_API_URL;
+
 /**
  * Generic function to send a POST request to the OpenAI API.
  *
@@ -345,7 +347,7 @@ export const deleteAquarium = async (aquariumId) => {
  * @throws Will throw an error if the request fails.
  */
 const postToOpenAI = async (endpoint, data) => {
-  const url = `http://localhost:8082${endpoint}`; // Base URL + endpoint
+  const url = `${openai_base_url}${endpoint}`; // Base URL + endpoint
 
   console.log("Making POST request to:", url);
   console.log("Request Data:", JSON.stringify(data, null, 2)); // Pretty print the request data for clarity
