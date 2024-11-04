@@ -63,7 +63,7 @@
       {
         "name": "Intelligent AI Feedback",
         "description": "Get real-time, AI-driven feedback on your aquariums to optimize their conditions and ensure a balanced ecosystem.",
-        "icon": "/assets/images/ai_feedback.png"
+        "icon": "/assets/icons/ai_feedback.png"
       },
       {
         "name": "Health & Compatibility Checks",

@@ -21,6 +21,7 @@ import { useAuth } from '../util/AuthContext';
 import { About, Canvas, Divider, Features, Header, LazyShow, MainHero, MainHeroImage, Pricing, Product, Wave } from '../components/home-components';
 import '../styles/main.css';
 
+
 const Home: React.FC = () => {
   const { isLoggedIn, user, logout } = useAuth(); // Access isLoggedIn and logout function
   const [details, setDetails] = useState<any>(null);
