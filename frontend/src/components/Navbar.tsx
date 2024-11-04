@@ -112,13 +112,13 @@ const Navbar: React.FC = () => {
 
         {/* Navigation Links */}
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <Button color="inherit" component={Link} to="/" sx={{ textTransform: 'none' }}>
+          {/* <Button color="inherit" component={Link} to="/" sx={{ textTransform: 'none' }}>
             Dashboard
-          </Button>
+          </Button> */}
           <Button color="inherit" component={Link} to="/aquariums" sx={{ textTransform: 'none' }}>
             Aquariums
           </Button>
-          <Button color="inherit" component={Link} to="/metrics" sx={{ textTransform: 'none' }}>
+          {/* <Button color="inherit" component={Link} to="/metrics" sx={{ textTransform: 'none' }}>
             Metrics
           </Button>
           <Button color="inherit" component={Link} to="/alerts" sx={{ textTransform: 'none' }}>
@@ -129,20 +129,23 @@ const Navbar: React.FC = () => {
           </Button>
           <Button color="inherit" component={Link} to="/settings" sx={{ textTransform: 'none' }}>
             Settings
-          </Button>
+          </Button> */}
 
         {/* Toggle Theme Button */}
-        <Button
+        {/* <Button
           color="inherit"
           onClick={toggleTheme}
           sx={{ textTransform: 'none' }}
         >
           {isDarkMode ? 'Light Mode' : 'Dark Mode'}
-        </Button>
+        </Button> */}
         </Box>
 
+        {/* Buffer */}
+        <Box sx={{ flexGrow: 72 }} />
+
         {/* Search Bar */}
-        <Search>
+        {/* <Search>
           <SearchIconWrapper>
             <SearchIcon />
           </SearchIconWrapper>
@@ -150,7 +153,7 @@ const Navbar: React.FC = () => {
             placeholder="Search…"
             inputProps={{ 'aria-label': 'search' }}
           />
-        </Search>
+        </Search> */}
 
         {/* Conditional Auth Buttons */}
         {isLoggedIn ? (
@@ -171,8 +174,8 @@ const Navbar: React.FC = () => {
               variant="contained"
               sx={{
                 textTransform: 'none',
-                backgroundColor: theme.palette.text.primary,
-                color: theme.palette.text.secondary,
+                backgroundColor: '#1876D2',
+                color: "white",
                 borderRadius: '20px',
                 ml: 2,
                 '&:hover': {
