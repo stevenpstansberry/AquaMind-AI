@@ -158,7 +158,7 @@ const RegisterEmailCard: React.FC = () => {
 
   return (
     <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', position: 'relative' }}>
-      <Link to="/" style={{ position: 'absolute', top: '10px', left: '10px' }}>
+      <Link to="/account?mode=register" style={{ position: 'absolute', top: '10px', left: '10px' }}>
         <ArrowBackIcon sx={{ fontSize: 30, color: theme.palette.primary.main }} />
       </Link>
       {/* Bubbles inside the card */}
@@ -208,7 +208,7 @@ const RegisterEmailCard: React.FC = () => {
         {/* Form content */}
         <Box sx={{ position: 'relative', zIndex: 1 }}>
           {/* Logo */}
-          <Typography variant="h5" sx={{ fontWeight: 'bold', marginBottom: 2 }}>
+          <Typography variant="h5" sx={{ fontWeight: 'bold', marginBottom: 2, color: theme.palette.primary.main}}>
             Aquamind
           </Typography>    
           {/* Title */}
@@ -258,7 +258,7 @@ const RegisterEmailCard: React.FC = () => {
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
-                  <IconButton onClick={handleClickShowPassword} edge="end">
+                  <IconButton onClick={handleClickShowPassword} edge="end" sx={{ color: 'gray' }}>
                     {showPassword ? <Visibility /> : <VisibilityOff />}
                   </IconButton>
                 </InputAdornment>
