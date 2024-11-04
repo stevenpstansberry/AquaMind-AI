@@ -69,11 +69,7 @@ const Home: React.FC = () => {
         </>
       </LazyShow>
       <LazyShow>
-        <Pricing />
-      </LazyShow>
-      <LazyShow>
         <>
-          <Canvas />
           <About />
         </>
       </LazyShow>
