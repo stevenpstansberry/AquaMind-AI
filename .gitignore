@@ -37,3 +37,4 @@ backend/cmd/auth-service/.env
 
 
 *.env
+backend/secret.yaml

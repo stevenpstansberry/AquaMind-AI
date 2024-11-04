@@ -65,12 +65,14 @@ const postToAPI = async (endpoint, data, options = {}) => {
 
   console.log("Making POST request to:", url);
   console.log("Request Data:", data);
+  console.log("Request Headers:", options.headers || {});
 
   try {
     const response = await axios.post(url, data, options);
 
     console.log("Response Status:", response.status);
     console.log("Response Data:", response.data);
+    console.log("Response Headers:", response.headers);
 
     return response.data;
   } catch (error) {
