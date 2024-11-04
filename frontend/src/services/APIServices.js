@@ -15,10 +15,10 @@
 import axios from "axios";
 
 // Determine if we're in development or production mode
-const baseURL = REACT_APP_AQUAMIND_PROD_URL;
-// process.env.NODE_ENV === "development"
-//   ? process.env.REACT_APP_AQUAMIND_DEV_URL // Localhost for dev
-//   : process.env.REACT_APP_AQUAMIND_PROD_URL; // Production URL for prod
+const baseURL =
+  process.env.NODE_ENV === "development"
+    ? process.env.REACT_APP_AQUAMIND_DEV_URL // Localhost for dev
+    : process.env.REACT_APP_AQUAMIND_PROD_URL; // Production URL for prod
 
 /**
  * Sends a GET request to a specified API endpoint.
