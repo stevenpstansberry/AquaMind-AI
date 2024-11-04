@@ -1,43 +1,65 @@
 package main
 
 import (
-    "log"
-    "net/http"
-    "github.com/joho/godotenv"
-    "github.com/stevenpstansberry/AquaMind-AI/internal/openai"
+	"log"
+	"net/http"
+	"time"
+
+	"github.com/joho/godotenv"
+	"github.com/stevenpstansberry/AquaMind-AI/internal/openai"
 )
 
-// enableCORS is a middleware function that adds headers to allow cross-origin requests.
+// enableCORS is a middleware function that adds headers to allow cross-origin requests and logs the request details.
 func enableCORS(next http.Handler) http.Handler {
-    return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-        w.Header().Set("Access-Control-Allow-Origin", "*")
-        w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
-        w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Api-Key")
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		startTime := time.Now()
+		log.Printf("Received %s request for %s from %s", r.Method, r.URL.Path, r.RemoteAddr)
 
-        // Handle preflight OPTIONS request
-        if r.Method == http.MethodOptions {
-            w.WriteHeader(http.StatusOK)
-            return
-        }
+		// Add CORS headers
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Api-Key")
 
-        // Continue to the next handler if it's not an OPTIONS request
-        next.ServeHTTP(w, r)
-    })
+		// Handle preflight OPTIONS request
+		if r.Method == http.MethodOptions {
+			log.Println("Handled preflight OPTIONS request")
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+
+		// Continue to the next handler if it's not an OPTIONS request
+		next.ServeHTTP(w, r)
+
+		duration := time.Since(startTime)
+		log.Printf("Request for %s completed in %v", r.URL.Path, duration)
+	})
 }
 
 func main() {
-    // Load environment variables from the .env file
-    err := godotenv.Load()
-    if err != nil {
-        log.Fatal("Error loading .env file")
-    }
+	// Load environment variables from the .env file and log the outcome
+	log.Println("Loading .env file...")
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file: ", err)
+	}
+	log.Println(".env file loaded successfully")
 
-    // Set up routes for OpenAI integration
-    http.HandleFunc("/openai/query", openai.HandleQuery)
+	// Log server startup
+	log.Println("Starting OpenAI service...")
+
+	// Set up routes for OpenAI integration and log each route initialization
+	http.HandleFunc("/openai/query", func(w http.ResponseWriter, r *http.Request) {
+		log.Printf("Handling OpenAI query request: %s %s", r.Method, r.URL.Path)
+		openai.HandleQuery(w, r)
+		log.Println("OpenAI query request handled successfully")
+	})
 
 	// Apply the CORS middleware to all routes
 	corsHandler := enableCORS(http.DefaultServeMux)
 
-    // Start the OpenAI service
-    log.Fatal(http.ListenAndServe(":8082", corsHandler))  // OpenAI service runs on port 8082
+	// Start the OpenAI service and log any errors that occur
+	log.Println("OpenAI service running on port 80")
+	if err := http.ListenAndServe(":80", corsHandler); err != nil {
+		log.Fatalf("Server encountered an error: %v", err)
+	}
 }
