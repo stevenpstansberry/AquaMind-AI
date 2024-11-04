@@ -26,7 +26,7 @@
     "text": "Get started",
     "href": "#"
   },
-  "mainHero": {
+"mainHero": {
     "title": "Revolutionize Your Aquarium Experience",
     "subtitle": "with AI-Powered Management",
     "description": "Effortlessly monitor and optimize your aquarium with cutting-edge AI technology. Intelligently stock your aquarium with AI-driven suggestions, manage multiple aquariums seamlessly, and stay informed with both automated insight and personalized care recommendations to keep your aquatic life thriving.",
@@ -38,6 +38,10 @@
     "secondaryAction": {
       "text": "Sign In",
       "href": "/account?mode=signin"
+    },
+    "loggedInAction": {
+      "text": "Go to Aquariums",
+      "href": "/aquariums"
     }
   },
 "product": {
