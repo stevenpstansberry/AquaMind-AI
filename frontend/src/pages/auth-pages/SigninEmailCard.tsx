@@ -11,11 +11,14 @@
 import React, { useState } from 'react';
 import { Card, Typography, TextField, Button, Checkbox, FormControlLabel, Box, Snackbar, Alert } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import IconButton from '@mui/material/IconButton';
 import InputAdornment from '@mui/material/InputAdornment';
 import { Link, useNavigate } from 'react-router-dom';
 import { loginUser } from '../../services/APIServices';
 import { useAuth } from '../../util/AuthContext';
+import { useTheme } from '@mui/material/styles';
+
 
 /**
  * SignInEmailCard component renders a login form for users to authenticate using their email and password.
@@ -32,6 +35,7 @@ const SignInEmailCard: React.FC = () => {
 
   const navigate = useNavigate();
   const { login } = useAuth();
+  const theme = useTheme();
 
   // Define type for Snackbar severity and state
   type SnackbarSeverity = 'success' | 'error' | 'warning' | 'info';
@@ -141,6 +145,9 @@ const SignInEmailCard: React.FC = () => {
 
   return (
     <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', position: 'relative' }}>
+      <Link to="/" style={{ position: 'absolute', top: '10px', left: '10px' }}>
+        <ArrowBackIcon sx={{ fontSize: 30, color: theme.palette.primary.main }} />
+      </Link>
       {/* Bubbles inside the card */}
       <Card sx={{ width: 400, margin: 'auto', padding: 4, textAlign: 'center', borderRadius: 4, position: 'relative', overflow: 'hidden' }}>
         {/* Decorative Bubbles */}
@@ -184,7 +191,7 @@ const SignInEmailCard: React.FC = () => {
             zIndex: 0,
           }}
         />
-
+  
         {/* Form content */}
         <Box sx={{ position: 'relative', zIndex: 1 }}>
           {/* Logo */}
@@ -195,7 +202,7 @@ const SignInEmailCard: React.FC = () => {
           <Typography variant="h5" sx={{ fontWeight: 'bold', marginBottom: 2 }}>
             Sign in with email
           </Typography>
-
+  
           {/* Email field */}
           <TextField
             label="Email"
@@ -205,7 +212,7 @@ const SignInEmailCard: React.FC = () => {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
-
+  
           {/* Password field with toggle visibility */}
           <TextField
             label="Password"
@@ -226,15 +233,17 @@ const SignInEmailCard: React.FC = () => {
             }}
             helperText="Minimum of 7 characters"
           />
-
+  
           {/* CAPTCHA-like checkbox */}
+          {/*}
           <Box sx={{ textAlign: 'left', marginTop: 2, marginBottom: 2 }}>
             <FormControlLabel
               control={<Checkbox />}
               label="I'm not a robot"
             />
           </Box>
-
+          */}
+  
           {/* Action buttons */}
           <Box sx={{ display: 'flex', justifyContent: 'space-between', marginTop: 2 }}>
             <Button color="inherit" variant="text" component={Link} to="/account?mode=signin">
@@ -257,7 +266,7 @@ const SignInEmailCard: React.FC = () => {
           </Box>
         </Box>
       </Card>
-
+  
       {/* Snackbar */}
       <Snackbar
         open={snackbar.open}
