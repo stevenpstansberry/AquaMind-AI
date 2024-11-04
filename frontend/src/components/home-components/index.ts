@@ -1,0 +1,11 @@
+export { default as About } from './About';
+export { default as Canvas } from './Canvas';
+export { default as Divider } from './Divider';
+export { default as Features } from './Features';
+export { default as Header } from './Header';
+export { default as LazyShow } from './LazyShow';
+export { default as MainHero } from './MainHero';
+export { default as MainHeroImage } from './MainHeroImage';
+export { default as Pricing } from './Pricing';
+export { default as Product } from './Product';
+export { default as Wave } from './Wave';

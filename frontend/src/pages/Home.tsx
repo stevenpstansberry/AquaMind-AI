@@ -18,7 +18,8 @@
 import React, { useState, useEffect } from 'react';
 import { getDetailsById, getAllDetails } from '../services/APIServices';
 import { useAuth } from '../util/AuthContext';
-
+import { About, Canvas, Divider, Features, Header, LazyShow, MainHero, MainHeroImage, Pricing, Product, Wave } from '../components/home-components';
+import '../styles/main.css';
 
 
 const Home: React.FC = () => {
@@ -44,9 +45,35 @@ const Home: React.FC = () => {
   };
 
   return (
-    <div>
-      {isLoggedIn ? <h1>Hello, {user?.email}!</h1> : <h1>Welcome to the homepage!</h1>}
-      {renderDetails()}
+    <div className={`bg-background grid gap-y-16 overflow-hidden`}>
+      <div className={`relative bg-background`}>
+        <div className="max-w-7xl mx-auto">
+          <div
+            className={`relative z-10 pb-8 bg-background sm:pb-16 md:pb-20 lg:max-w-2xl lg:w-full lg:pb-28 xl:pb-32`}
+          >
+            <MainHero />
+          </div>
+        </div>
+        <MainHeroImage />
+      </div>
+      <Canvas />
+      <LazyShow>
+        <>
+          <Product />
+          <Canvas />
+        </>
+      </LazyShow>
+      <LazyShow>
+        <>
+          <Features />
+          <Canvas />
+        </>
+      </LazyShow>
+      <LazyShow>
+        <>
+          <About />
+        </>
+      </LazyShow>
     </div>
   );
 };

@@ -1,0 +1,156 @@
+{
+  "company": {
+    "name": "Aquamind AI", 
+    "logo": "/assets/images/logo.png"
+  },
+  "navigation": [
+    {
+      "name": "Product",
+      "href": "product"
+    },
+    {
+      "name": "Features",
+      "href": "features"
+    },
+
+    {
+      "name": "Pricing",
+      "href": "pricing"
+    },
+    {
+      "name": "About",
+      "href": "about"
+    }
+  ],
+  "callToAction": {
+    "text": "Get started",
+    "href": "#"
+  },
+"mainHero": {
+    "title": "Revolutionize Your Aquarium Experience",
+    "subtitle": "with AI-Powered Management",
+    "description": "Effortlessly monitor and optimize your aquarium with cutting-edge AI technology. Intelligently stock your aquarium with AI-driven suggestions, manage multiple aquariums seamlessly, and stay informed with both automated insight and personalized care recommendations to keep your aquatic life thriving.",
+    "img": "/assets/images/aquariumBackground.jpg",
+    "primaryAction": {
+      "text": "Register",
+      "href": "/account?mode=register"
+    },
+    "secondaryAction": {
+      "text": "Sign In",
+      "href": "/account?mode=signin"
+    },
+    "loggedInAction": {
+      "text": "Go to Aquariums",
+      "href": "/aquariums"
+    }
+  },
+"product": {
+  "title": "The Future of Aquarium Management",
+    "items": [
+      {
+        "title": "Your Personal Aquarium Assistant",
+        "description": "Aquamind harnesses the power of AI to make aquarium management easier than ever. From intelligent stocking suggestions to automated monitoring, Aquamind is designed to simplify your aquarium care, so you can focus on enjoying your aquatic world.",
+        "img": "src/assets/images/assistantVector.jpg"
+      },
+      {
+        "title": "Effortless Multi-Aquarium Management",
+        "description": "Whether you own a single tank or manage multiple aquariums, Aquamind centralizes all your data and insights in one intuitive dashboard. Gain personalized recommendations and actionable alerts that keep all your tanks thriving with minimal effort.",
+        "img": "/assets/images/multi_aquarium.jpg"
+      }
+    ]
+  },
+  "features": {
+    "title": "Advanced Aquarium Management",
+    "subtitle": "Your All-in-One Solution for Intelligent Aquarium Care",
+    "description": "Discover the cutting-edge features that make managing your aquarium simple, efficient, and enjoyable. With AI-driven insights, health checks, and customizable options, Aquamind empowers you to maintain a thriving aquatic environment.",
+    "items": [
+      {
+        "name": "Intelligent AI Feedback",
+        "description": "Get real-time, AI-driven feedback on your aquariums to optimize their conditions and ensure a balanced ecosystem.",
+        "icon": "/assets/icons/ai_feedback.png"
+      },
+      {
+        "name": "Health & Compatibility Checks",
+        "description": "Receive detailed health checks on your tank's water quality, fish, and plant compatibility to prevent potential issues.",
+        "icon": "/assets/images/health_check.png"
+      },
+      {
+        "name": "Manage Fish & Plants Easily",
+        "description": "Keep track of your fish and plants with ease. Manage and monitor their wellbeing with an intuitive interface.",
+        "icon": "/assets/images/manage_fish_plants.png"
+      },
+      {
+        "name": "Add Custom Equipment",
+        "description": "Enhance your tank by adding and managing custom equipment like filters, heaters, and lighting for tailored care.",
+        "icon": "/assets/images/custom_equipment.png"
+      }
+    ]
+  },
+  "pricing": {
+    "title": "Pricing",
+    "items": [
+      {
+        "name": "Free",
+        "price": "$0",
+        "priceDetails": "for one user",
+        "features": [
+          "1 user",
+          "Basic Support",
+          "1 GB of storage",
+          "Email support"
+        ]
+      },
+      {
+        "name": "Pro",
+        "price": "$15",
+        "priceDetails": "per user",
+
+        "features": [
+          "5 users",
+          "Priority Support",
+          "10 GB of storage",
+          "Phone and Email support"
+        ]
+      },
+      {
+        "name": "Enterprise",
+        "price": "$29",
+        "priceDetails": "per user",
+        "features": [
+          "50 users",
+          "24/7 Support",
+          "100 GB of storage",
+          "Phone and Email support"
+        ]
+      }
+    ]
+  },
+  "about": {
+    "sections": [
+      {
+        "name": "Something",
+        "href": "#",
+        "content": "It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English."
+      },
+      {
+        "name": "Something",
+        "href": "#",
+        "content": "It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English."
+      },
+      {
+        "name": "Something",
+        "href": "#",
+        "content": "It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English."
+      },
+      {
+        "name": "Something",
+        "href": "#",
+        "content": "It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English."
+      }
+    ],
+    "socialMedia": {
+      "github": "https://github.com/stevenpstansberry",
+      "linkedin": "https://www.linkedin.com/in/steven-stansberry/"
+    }
+  }
+}
