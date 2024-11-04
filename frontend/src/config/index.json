@@ -46,7 +46,7 @@
       {
         "title": "Your Personal Aquarium Assistant",
         "description": "Aquamind harnesses the power of AI to make aquarium management easier than ever. From intelligent stocking suggestions to automated monitoring, Aquamind is designed to simplify your aquarium care, so you can focus on enjoying your aquatic world.",
-        "img": "/assets/images/aquarium_assistant.jpg"
+        "img": "src/assets/images/assistantVector.jpg"
       },
       {
         "title": "Effortless Multi-Aquarium Management",
@@ -146,7 +146,7 @@
     ],
     "socialMedia": {
       "github": "https://github.com/stevenpstansberry",
-      "linkedin": "https://www.linkedin.com/in/issaaf-kattan/"
+      "linkedin": "https://www.linkedin.com/in/steven-stansberry/"
     }
   }
 }

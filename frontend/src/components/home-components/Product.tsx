@@ -2,10 +2,16 @@ import React from 'react';
 
 import config from '../../config/index.json';
 import Divider from './Divider';
+import aquariumVector from '../../assets/images/aquariumVector.jpg';
+import assistantVector from '../../assets/images/assistantVector.png';
 
 const Product = () => {
   const { product } = config;
   const [firstItem, secondItem] = product.items;
+
+  const aquariumVectorImg = aquariumVector;
+  const assistantVectorImg = assistantVector;
+
 
   return (
     <section className={`bg-background py-8`} id="product">
@@ -35,7 +41,7 @@ const Product = () => {
           <div className={`w-full sm:w-1/2 p-6`}>
             <img
               className="h-6/6"
-              src={firstItem?.img}
+              src={aquariumVectorImg}
               alt={firstItem?.title}
             />
           </div>
@@ -44,7 +50,7 @@ const Product = () => {
           <div className={`w-full sm:w-1/2 p-6`}>
             <img
               className="h-6/6"
-              src={secondItem?.img}
+              src={assistantVectorImg}
               alt={secondItem?.title}
             />
           </div>
