@@ -9,8 +9,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { Card, Tabs, Tab, Typography, Button, Box } from '@mui/material';
-import GoogleIcon from '@mui/icons-material/Google';
 import EmailIcon from '@mui/icons-material/Email';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { Link, useLocation } from 'react-router-dom';
 import { useTheme } from '@mui/material/styles';
 
@@ -21,29 +21,15 @@ import { useTheme } from '@mui/material/styles';
  * @returns {JSX.Element} The rendered login/register card component.
  */
 const AccountCard: React.FC = () => {
-  // State to toggle between login and register modes
-  const [activeTab, setActiveTab] = useState(0); // 0 -> Login, 1 -> Register
 
   const theme = useTheme();
-
-  // Get the current URL location
   const location = useLocation();
 
-  /**
-   * Set the active tab based on the URL query parameter.
-   * If 'mode=register', switch to the Register tab.
-   */
-  useEffect(() => {
-    const searchParams = new URLSearchParams(location.search);
-    const mode = searchParams.get('mode'); // Get the 'mode' parameter value
+  // Initialize activeTab based on the URL query parameter
+  const searchParams = new URLSearchParams(location.search);
+  const initialMode = searchParams.get('mode') === 'register' ? 1 : 0;
+  const [activeTab, setActiveTab] = useState(initialMode); // 0 -> Login, 1 -> Register
 
-    if (mode === 'register') {
-      setActiveTab(1); // Switch to Register tab
-      console.log(location);
-    } else {
-      setActiveTab(0); // Default to Sign In tab
-    }
-  }, [location]);
 
   /**
    * Handler to change between Sign In and Register tabs.
@@ -54,9 +40,12 @@ const AccountCard: React.FC = () => {
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setActiveTab(newValue);
   };
-
+  
   return (
     <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+      <Link to="/" style={{ position: 'absolute', top: '10px', left: '10px' }}>
+        <ArrowBackIcon sx={{ fontSize: 30, color: theme.palette.primary.main }} />
+      </Link>
       <Card sx={{ width: 400, padding: 4, textAlign: 'center', borderRadius: 4, position: 'relative', overflow: 'hidden' }}>
         {/* Add Decorative Bubbles Inside the Card */}
         <Box
@@ -120,11 +109,11 @@ const AccountCard: React.FC = () => {
           <Typography variant="h5" sx={{ fontWeight: 'bold', marginBottom: 2, color: theme.palette.primary.main }}>
             Aquamind
           </Typography>
-
+  
           <Typography variant="h4" sx={{ fontWeight: 'bold', marginBottom: 2 }}>
             Welcome!
           </Typography>
-
+  
           {/* Tabs for switching between Sign In and Register */}
           <Tabs value={activeTab} onChange={handleTabChange} centered>
             <Tab
@@ -140,11 +129,12 @@ const AccountCard: React.FC = () => {
               }}
             />
           </Tabs>
-
+  
           {/* Content changes based on activeTab */}
           <Box sx={{ marginTop: 2 }}>
             {activeTab === 0 ? (
               <>
+                {/*
                 <Button
                   variant="outlined"
                   fullWidth
@@ -153,6 +143,7 @@ const AccountCard: React.FC = () => {
                 >
                   Sign In with Google
                 </Button>
+                */}
                 <Button
                   variant="outlined"
                   fullWidth
@@ -164,13 +155,14 @@ const AccountCard: React.FC = () => {
                 </Button>
                 <Typography variant="body2" sx={{ marginTop: 2 }}>
                   Don't have an account?{' '}
-                  <Link to="#" onClick={() => setActiveTab(1)}>
+                  <Link to="/account?mode=register" onClick={() => setActiveTab(1)}>
                     Register
                   </Link>
                 </Typography>
               </>
             ) : (
               <>
+                {/*
                 <Button
                   variant="outlined"
                   fullWidth
@@ -179,6 +171,7 @@ const AccountCard: React.FC = () => {
                 >
                   Register with Google
                 </Button>
+                */}
                 <Button
                   variant="outlined"
                   fullWidth
