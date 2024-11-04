@@ -179,7 +179,7 @@ const Navbar: React.FC = () => {
                 borderRadius: '20px',
                 ml: 2,
                 '&:hover': {
-                  backgroundColor: 'black',
+                  backgroundColor: 'theme.palette.primary.main',
                 },
               }}
             >
