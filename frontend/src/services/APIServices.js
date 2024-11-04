@@ -15,10 +15,10 @@
 import axios from "axios";
 
 // Determine if we're in development or production mode
-const baseURL =
-  process.env.NODE_ENV === "development"
-    ? process.env.REACT_APP_AQUAMIND_DEV_URL // Localhost for dev
-    : process.env.REACT_APP_AQUAMIND_PROD_URL; // Production URL for prod
+const baseURL = REACT_APP_AQUAMIND_PROD_URL;
+// process.env.NODE_ENV === "development"
+//   ? process.env.REACT_APP_AQUAMIND_DEV_URL // Localhost for dev
+//   : process.env.REACT_APP_AQUAMIND_PROD_URL; // Production URL for prod
 
 /**
  * Sends a GET request to a specified API endpoint.
@@ -65,12 +65,14 @@ const postToAPI = async (endpoint, data, options = {}) => {
 
   console.log("Making POST request to:", url);
   console.log("Request Data:", data);
+  console.log("Request Headers:", options.headers || {});
 
   try {
     const response = await axios.post(url, data, options);
 
     console.log("Response Status:", response.status);
     console.log("Response Data:", response.data);
+    console.log("Response Headers:", response.headers);
 
     return response.data;
   } catch (error) {
