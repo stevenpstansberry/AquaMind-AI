@@ -40,18 +40,18 @@
       "href": "/account?mode=signin"
     }
   },
-  "product": {
-    "title": "React landing page 2021",
+"product": {
+  "title": "The Future of Aquarium Management",
     "items": [
       {
-        "title": "A plug n play template",
-        "description": "Just edit the config.json file with details about your company and voila your beautiful state of the art landing page is ready to go live! Remember to also update your assets, add any images you want to show to /assets/images and link them in the config.json",
-        "img": "/assets/images/product1.jpg"
+        "title": "Your Personal Aquarium Assistant",
+        "description": "Aquamind harnesses the power of AI to make aquarium management easier than ever. From intelligent stocking suggestions to automated monitoring, Aquamind is designed to simplify your aquarium care, so you can focus on enjoying your aquatic world.",
+        "img": "/assets/images/aquarium_assistant.jpg"
       },
       {
-        "title": "Make it your own!",
-        "description": "Play around with the theme.ts file and configure the color palette to match the branding of your company! If you're feeling wild, maybe change some tailwind css as well!",
-        "img": "/assets/images/product2.jpg"
+        "title": "Effortless Multi-Aquarium Management",
+        "description": "Whether you own a single tank or manage multiple aquariums, Aquamind centralizes all your data and insights in one intuitive dashboard. Gain personalized recommendations and actionable alerts that keep all your tanks thriving with minimal effort.",
+        "img": "/assets/images/multi_aquarium.jpg"
       }
     ]
   },
