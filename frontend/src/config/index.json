@@ -27,17 +27,17 @@
     "href": "#"
   },
   "mainHero": {
-    "title": "Use me as your",
-    "subtitle": "landing page.",
-    "description": "It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English.",
-    "img": "/assets/images/happyTeam.jpeg",
+    "title": "Revolutionize Your Aquarium Experience",
+    "subtitle": "with AI-Powered Management",
+    "description": "Effortlessly monitor and optimize your aquarium with cutting-edge AI technology. Intelligently stock your aquarium with AI-driven suggestions, manage multiple aquariums seamlessly, and stay informed with real-time alerts, automated insights, and personalized care recommendations to keep your aquatic life thriving.",
+    "img": "/assets/images/aquariumBackground.jpg",
     "primaryAction": {
-      "text": "Get started",
-      "href": "#"
+      "text": "Register",
+      "href": "/account?mode=register"
     },
     "secondaryAction": {
-      "text": "Email us",
-      "href": "mailto:issaafakattan@gmail.com?subject=I like react landing page!"
+      "text": "Sign In",
+      "href": "/account?mode=signin"
     }
   },
   "product": {
