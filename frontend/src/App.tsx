@@ -36,7 +36,7 @@ const Layout: React.FC<React.PropsWithChildren<{}>> = ({ children }) => {
   const location = useLocation();
 
   // Specify paths where the Navbar should be hidden (e.g., "/login")
-  const hideNavbarPaths = ['/account', '/register', '/signin'];
+  const hideNavbarPaths = ['/account', '/register', '/signin',];
 
   return (
     <>
@@ -65,12 +65,12 @@ const App: React.FC = () => {
                 {/* Private Routes */}
                 
                 <Route path="/dashboard" element={<Home />} />
-                <Route path="/aquariums" element={<Aquariums />} />
                 <Route path="/metrics" element={<Home />} />
                 <Route path="/alerts" element={<Home />} />
                 <Route path="/ai-insights" element={<Home />} />
                 <Route element={<PrivateRoute />}>
                   <Route path="/settings" element={<Settings />} />
+                  <Route path="/aquariums" element={<Aquariums />} />
                 </Route>
 
                 {/* Protected Public Routes */}
