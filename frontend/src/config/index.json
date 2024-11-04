@@ -29,7 +29,7 @@
   "mainHero": {
     "title": "Revolutionize Your Aquarium Experience",
     "subtitle": "with AI-Powered Management",
-    "description": "Effortlessly monitor and optimize your aquarium with cutting-edge AI technology. Intelligently stock your aquarium with AI-driven suggestions, manage multiple aquariums seamlessly, and stay informed with real-time alerts, automated insights, and personalized care recommendations to keep your aquatic life thriving.",
+    "description": "Effortlessly monitor and optimize your aquarium with cutting-edge AI technology. Intelligently stock your aquarium with AI-driven suggestions, manage multiple aquariums seamlessly, and stay informed with both automated insight and personalized care recommendations to keep your aquatic life thriving.",
     "img": "/assets/images/aquariumBackground.jpg",
     "primaryAction": {
       "text": "Register",
@@ -56,29 +56,29 @@
     ]
   },
   "features": {
-    "title": "Latest & greatest ",
-    "subtitle": "All the best technologies out there!",
-    "description": "It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English.",
+    "title": "Advanced Aquarium Management",
+    "subtitle": "Your All-in-One Solution for Intelligent Aquarium Care",
+    "description": "Discover the cutting-edge features that make managing your aquarium simple, efficient, and enjoyable. With AI-driven insights, health checks, and customizable options, Aquamind empowers you to maintain a thriving aquatic environment.",
     "items": [
       {
-        "name": "React.js",
-        "description": "React is a free and open-source front-end JavaScript library for building user interfaces or UI components.",
-        "icon": "/assets/images/react.png"
+        "name": "Intelligent AI Feedback",
+        "description": "Get real-time, AI-driven feedback on your aquariums to optimize their conditions and ensure a balanced ecosystem.",
+        "icon": "/assets/images/ai_feedback.png"
       },
       {
-        "name": "Tailwind",
-        "description": "Tailwind CSS is a highly customizable, low-level CSS framework for quickly creating beautiful designs without any annoying opinionated stylesheet nonsense.",
-        "icon": "/assets/images/tailwindcss.svg"
+        "name": "Health & Compatibility Checks",
+        "description": "Receive detailed health checks on your tank's water quality, fish, and plant compatibility to prevent potential issues.",
+        "icon": "/assets/images/health_check.png"
       },
       {
-        "name": "Next.js",
-        "description": "Next.js is a framework for server-rendered React applications using Next.js.",
-        "icon": "/assets/images/nextjs.svg"
+        "name": "Manage Fish & Plants Easily",
+        "description": "Keep track of your fish and plants with ease. Manage and monitor their wellbeing with an intuitive interface.",
+        "icon": "/assets/images/manage_fish_plants.png"
       },
       {
-        "name": "Typescript",
-        "description": "TypeScript is a programming language developed and maintained by Microsoft.",
-        "icon": "/assets/images/ts.png"
+        "name": "Add Custom Equipment",
+        "description": "Enhance your tank by adding and managing custom equipment like filters, heaters, and lighting for tailored care.",
+        "icon": "/assets/images/custom_equipment.png"
       }
     ]
   },
