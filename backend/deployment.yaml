@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: auth-service
-          image: aquamind-auth-service:latest
+          image: stevenpstansberry/aquamind-auth-service:latest
           ports:
             - containerPort: 8080
           env:
