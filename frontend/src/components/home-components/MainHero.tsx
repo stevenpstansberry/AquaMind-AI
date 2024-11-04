@@ -1,6 +1,7 @@
 import React from 'react';
 import config from '../../config/index.json';
 import { useAuth } from '../../util/AuthContext';
+import {Link} from 'react-router-dom';
 
 const MainHero = () => {
   const { mainHero } = config;
@@ -21,12 +22,12 @@ const MainHero = () => {
         <div className="mt-5 sm:mt-8 sm:flex sm:justify-center lg:justify-start">
           {isLoggedIn ? (
             <div className="rounded-full shadow">
-              <a
-                href={mainHero.loggedInAction.href}
+              <Link
+                to="/aquariums"
                 className="w-full flex items-center justify-center px-10 py-3 border border-transparent text-base font-medium rounded-full text-white bg-[#1876D2] hover:bg-[#145ea8] md:py-4 md:text-lg md:px-12"
               >
                 {mainHero.loggedInAction.text}
-              </a>
+              </Link>
             </div>
           ) : (
             <>
