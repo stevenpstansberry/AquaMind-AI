@@ -11,15 +11,10 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import {
-  Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField,
-  Box, MenuItem, Select, InputLabel, FormControl, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TablePagination, Typography, IconButton, List, ListItem
-} from '@mui/material';
-import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';  
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Box} from '@mui/material';
 import AIChatInterface from '../ai-components/AIChatInterface'; 
 import AquariumInhabitantInfoCard from './AquariumInhabitantInfoCard';
 import { Aquarium, Fish } from '../../interfaces/Aquarium';
-import { getAllDetails } from '../../services/APIServices';
 import saltWaterFishData from '../../util/SaltwaterFishData.json';
 import { useDetails } from '../../util/DetailsContext';
 import SelectedInhabitantsList from './SelectedInhabitantsList';
@@ -57,8 +52,8 @@ const AddFishCard: React.FC<AddFishCardProps> = ({ open, onClose, aquarium, onAd
   console.log("species list from context" , species);
 
   const [roleFilter, setRoleFilter] = useState('');  
-  const [careLevelFilter, setCareLevelFilter] = useState('');  // New filter for care level
-  const [minTankSizeFilter, setMinTankSizeFilter] = useState<number>(parseInt(aquarium.size));  // Default to aquarium size
+  const [careLevelFilter, setCareLevelFilter] = useState('');  
+  const [minTankSizeFilter, setMinTankSizeFilter] = useState<number>(parseInt(aquarium.size));  
   const [searchQuery, setSearchQuery] = useState('');  
   const [showChat, setShowChat] = useState(false);  
   const [page, setPage] = useState(0);  

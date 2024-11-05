@@ -15,7 +15,7 @@
  * @exports Home
  */
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { About, Canvas, Features, LazyShow, MainHero, MainHeroImage, Product } from '../components/home-components';
 import '../styles/main.css';
 

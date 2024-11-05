@@ -200,7 +200,7 @@ useEffect(() => {
               setMinTankSizeFilter={setMinTankSizeFilter}
               searchQuery={searchQuery}
               setSearchQuery={setSearchQuery}
-              roles={['Oxygenator', 'Decorative', 'Carpet']}
+              roles={['All Plants', 'Background', 'Midground', 'Foreground', 'Floating', 'Rooted', 'Carpeting', 'Oxygenating']}
               careLevels={['Easy', 'Moderate', 'Difficult']}
               searchLabel="Search Plant"
             />
