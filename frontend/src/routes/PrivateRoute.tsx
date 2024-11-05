@@ -17,10 +17,17 @@ import { useAuth } from '../util/AuthContext';
  * 
  * @returns {JSX.Element} - The rendered outlet for protected routes or a redirection to the login page.
  */
+
 const PrivateRoute = () => {
-  const { token } = useAuth(); 
+  const { token, loading } = useAuth();
+
+  if (loading) {
+    // Render null or a loading spinner while checking authentication
+    return null; // Or a loading spinner
+  }
 
   return token ? <Outlet /> : <Navigate to="/account?mode=signin" />;
 };
 
 export default PrivateRoute;
+

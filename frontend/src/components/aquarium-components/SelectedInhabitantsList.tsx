@@ -30,7 +30,13 @@ function SelectedInhabitantsList<T extends { name: string; count: number }>(
 ): JSX.Element | null {
   const { selectedItems, onAddAll, label, buttonText, onQuantityChange, onRemoveItem, onInfoClick } = props;
 
-  if (selectedItems.length === 0) {
+  // Ensure each item's count is at least 1
+  const processedItems = selectedItems.map((item) => ({
+    ...item,
+    count: item.count > 0 ? item.count : 1,
+  }));
+
+  if (processedItems.length === 0) {
     return null;
   }
 
@@ -50,7 +56,7 @@ function SelectedInhabitantsList<T extends { name: string; count: number }>(
             </TableRow>
           </TableHead>
           <TableBody>
-            {selectedItems.map((item) => (
+            {processedItems.map((item) => (
               <TableRow key={item.name}>
                 <TableCell component="th" scope="row">
                   {item.name}
@@ -64,7 +70,7 @@ function SelectedInhabitantsList<T extends { name: string; count: number }>(
                     <Remove />
                   </IconButton>
                   <Typography variant="body1" display="inline" mx={1}>
-                    {item.count ?? 1}
+                    {item.count}
                   </Typography>
                   <IconButton
                     aria-label="increase quantity"
@@ -97,5 +103,6 @@ function SelectedInhabitantsList<T extends { name: string; count: number }>(
     </Box>
   );
 }
+
 
 export default SelectedInhabitantsList;

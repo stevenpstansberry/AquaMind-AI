@@ -11,11 +11,13 @@
 import React, { useState } from 'react';
 import { Card, Typography, TextField, Button, Checkbox, FormControlLabel, Box, Snackbar, Alert } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import IconButton from '@mui/material/IconButton';
 import InputAdornment from '@mui/material/InputAdornment';
 import { Link, useNavigate } from 'react-router-dom';
 import { registerUser } from '../../services/APIServices';
 import { useAuth } from '../../util/AuthContext';
+import { useTheme } from '@mui/material/styles';
 
 /**
  * RegisterEmailCard component renders a registration form that allows new users to sign up using their email, 
@@ -35,6 +37,7 @@ const RegisterEmailCard: React.FC = () => {
 
   const navigate = useNavigate();
   const { login } = useAuth();
+  const theme = useTheme();
 
 
   // Define type for Snackbar severity and state
@@ -155,6 +158,9 @@ const RegisterEmailCard: React.FC = () => {
 
   return (
     <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', position: 'relative' }}>
+      <Link to="/account?mode=register" style={{ position: 'absolute', top: '10px', left: '10px' }}>
+        <ArrowBackIcon sx={{ fontSize: 30, color: theme.palette.primary.main }} />
+      </Link>
       {/* Bubbles inside the card */}
       <Card sx={{ width: 400, margin: 'auto', padding: 4, textAlign: 'center', borderRadius: 4, position: 'relative', overflow: 'hidden' }}>
         {/* Decorative Bubbles */}
@@ -202,7 +208,7 @@ const RegisterEmailCard: React.FC = () => {
         {/* Form content */}
         <Box sx={{ position: 'relative', zIndex: 1 }}>
           {/* Logo */}
-          <Typography variant="h5" sx={{ fontWeight: 'bold', marginBottom: 2 }}>
+          <Typography variant="h5" sx={{ fontWeight: 'bold', marginBottom: 2, color: theme.palette.primary.main}}>
             Aquamind
           </Typography>    
           {/* Title */}
@@ -210,14 +216,14 @@ const RegisterEmailCard: React.FC = () => {
             Register with email
           </Typography>
 
-          {/* Email field */}
+          {/* First Name field */}
           <TextField
-            label="Email"
+            label="First Name"
             variant="outlined"
             fullWidth
             margin="normal"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            value={firstName}
+            onChange={(e) => setFirstName(e.target.value)}
           />
 
           {/* Username field */}
@@ -228,6 +234,16 @@ const RegisterEmailCard: React.FC = () => {
           margin="normal"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
+          />
+
+          {/* Email field */}
+          <TextField
+            label="Email"
+            variant="outlined"
+            fullWidth
+            margin="normal"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
           />
 
           {/* Password field with toggle visibility */}
@@ -242,7 +258,7 @@ const RegisterEmailCard: React.FC = () => {
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
-                  <IconButton onClick={handleClickShowPassword} edge="end">
+                  <IconButton onClick={handleClickShowPassword} edge="end" sx={{ color: 'gray' }}>
                     {showPassword ? <Visibility /> : <VisibilityOff />}
                   </IconButton>
                 </InputAdornment>
@@ -251,23 +267,17 @@ const RegisterEmailCard: React.FC = () => {
             helperText="Minimum of 7 characters"
           />
 
-          {/* First Name field */}
-          <TextField
-            label="First Name"
-            variant="outlined"
-            fullWidth
-            margin="normal"
-            value={firstName}
-            onChange={(e) => setFirstName(e.target.value)}
-          />
+
 
           {/* CAPTCHA-like checkbox */}
+          {/*
           <Box sx={{ textAlign: 'left', marginTop: 2, marginBottom: 2 }}>
             <FormControlLabel
               control={<Checkbox />}
               label="I'm not a robot"
             />
           </Box>
+          */}
 
           {/* Subscribe to newsletter checkbox */}
           <Box sx={{ textAlign: 'left', marginBottom: 2 }}>

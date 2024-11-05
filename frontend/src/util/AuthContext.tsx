@@ -26,6 +26,8 @@ interface AuthContextType {
   isLoggedIn: boolean;
   login: (userData: { user: User; token: string }) => void;
   logout: () => void;
+  loading: boolean;
+
 }
 
 // Create the AuthContext with default values
@@ -35,6 +37,7 @@ const AuthContext = createContext<AuthContextType>({
   isLoggedIn: false, 
   login: () => {},
   logout: () => {},
+  loading: true,
 });
 
 /**
@@ -55,6 +58,7 @@ export const useAuth = () => useContext(AuthContext);
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
   // Determine if the user is logged in
   const isLoggedIn = !!user && !!token;
@@ -79,8 +83,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const logout = () => {
     setUser(null);
     setToken(null);
-    localStorage.removeItem('token'); // Remove token from local storage
-    localStorage.removeItem('user');
+    localStorage.clear(); // Clear all local storage
     window.location.reload(); // Reload the page to clear any remaining state
   };
 
@@ -107,11 +110,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setToken(savedToken);
         setUser(savedUser);
     }
+    setLoading(false);
 }, []);
 
 
   return (
-    <AuthContext.Provider value={{ user, token, isLoggedIn, login, logout }}>
+    <AuthContext.Provider value={{ user, token, isLoggedIn, login, logout, loading }}>
       {children}
     </AuthContext.Provider>
   );

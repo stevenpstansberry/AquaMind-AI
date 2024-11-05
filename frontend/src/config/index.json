@@ -27,8 +27,8 @@
     "href": "#"
   },
 "mainHero": {
-    "title": "Revolutionize Your Aquarium Experience",
-    "subtitle": "with AI-Powered Management",
+    "title": "Revolutionize Your Aquarium Experience with",
+    "subtitle": "AI-Powered Management",
     "description": "Effortlessly monitor and optimize your aquarium with cutting-edge AI technology. Intelligently stock your aquarium with AI-driven suggestions, manage multiple aquariums seamlessly, and stay informed with both automated insight and personalized care recommendations to keep your aquatic life thriving.",
     "img": "/assets/images/aquariumBackground.jpg",
     "primaryAction": {
@@ -83,45 +83,6 @@
         "name": "Add Custom Equipment",
         "description": "Enhance your tank by adding and managing custom equipment like filters, heaters, and lighting for tailored care.",
         "icon": "/assets/images/custom_equipment.png"
-      }
-    ]
-  },
-  "pricing": {
-    "title": "Pricing",
-    "items": [
-      {
-        "name": "Free",
-        "price": "$0",
-        "priceDetails": "for one user",
-        "features": [
-          "1 user",
-          "Basic Support",
-          "1 GB of storage",
-          "Email support"
-        ]
-      },
-      {
-        "name": "Pro",
-        "price": "$15",
-        "priceDetails": "per user",
-
-        "features": [
-          "5 users",
-          "Priority Support",
-          "10 GB of storage",
-          "Phone and Email support"
-        ]
-      },
-      {
-        "name": "Enterprise",
-        "price": "$29",
-        "priceDetails": "per user",
-        "features": [
-          "50 users",
-          "24/7 Support",
-          "100 GB of storage",
-          "Phone and Email support"
-        ]
       }
     ]
   },
