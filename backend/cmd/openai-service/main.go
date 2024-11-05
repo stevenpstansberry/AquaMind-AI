@@ -74,7 +74,7 @@ func main() {
 	corsHandler := enableCORS(http.DefaultServeMux)
 
 	// Start the OpenAI service and log any errors that occur
-	port := ":8080" // Change this if needed
+	port := ":80"
 	log.Printf("OpenAI service running on port %s", port)
 	if err := http.ListenAndServe(port, corsHandler); err != nil {
 		log.Fatalf("Server encountered an error: %v", err)
