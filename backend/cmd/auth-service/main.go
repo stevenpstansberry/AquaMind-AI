@@ -119,8 +119,8 @@ func main() {
 	// Apply the CORS middleware to all routes
 	corsHandler := enableCORS(router)
 
-	log.Println("Starting the server on port 80...")
-	err = http.ListenAndServe(":80", corsHandler)
+	log.Println("Starting the server on port 443...")
+	err = http.ListenAndServe(":443", corsHandler)
 	if err != nil {
 		log.Fatalf("Server encountered an error: %v", err)
 	}

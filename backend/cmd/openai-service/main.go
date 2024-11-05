@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/joho/godotenv"
+	"github.com/stevenpstansberry/AquaMind-AI/internal/auth"
 	"github.com/stevenpstansberry/AquaMind-AI/internal/openai"
 )
 
@@ -47,19 +48,19 @@ func main() {
 	// Log server startup
 	log.Println("Starting OpenAI service...")
 
-	// Set up routes for OpenAI integration and log each route initialization
-	http.HandleFunc("/openai/query", func(w http.ResponseWriter, r *http.Request) {
+	// Set up routes for OpenAI integration and apply JWTAuthMiddleware
+	http.HandleFunc("/openai/query", auth.JWTAuthMiddleware(func(w http.ResponseWriter, r *http.Request) {
 		log.Printf("Handling OpenAI query request: %s %s", r.Method, r.URL.Path)
 		openai.HandleQuery(w, r)
 		log.Println("OpenAI query request handled successfully")
-	})
+	}))
 
 	// Apply the CORS middleware to all routes
 	corsHandler := enableCORS(http.DefaultServeMux)
 
 	// Start the OpenAI service and log any errors that occur
-	log.Println("OpenAI service running on port 80")
-	if err := http.ListenAndServe(":80", corsHandler); err != nil {
+	log.Println("OpenAI service running on port 443")
+	if err := http.ListenAndServe(":443", corsHandler); err != nil {
 		log.Fatalf("Server encountered an error: %v", err)
 	}
 }
