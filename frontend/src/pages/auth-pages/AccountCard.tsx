@@ -7,7 +7,7 @@
  * users to either sign in or register using Google (OAuth) or email. 
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Card, Tabs, Tab, Typography, Button, Box } from '@mui/material';
 import EmailIcon from '@mui/icons-material/Email';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';

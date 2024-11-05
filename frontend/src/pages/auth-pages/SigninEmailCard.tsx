@@ -9,7 +9,7 @@
  */
 
 import React, { useState } from 'react';
-import { Card, Typography, TextField, Button, Checkbox, FormControlLabel, Box, Snackbar, Alert } from '@mui/material';
+import { Card, Typography, TextField, Button, Box, Snackbar, Alert } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import IconButton from '@mui/material/IconButton';
