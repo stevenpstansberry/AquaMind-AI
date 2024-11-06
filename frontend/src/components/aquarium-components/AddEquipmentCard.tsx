@@ -7,6 +7,8 @@ import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import EquipmentInfoCard from './EquipmentInfoCard';
 import { Aquarium, Equipment } from '../../interfaces/Aquarium';
 import { getAllDetails } from '../../services/APIServices';
+import AIChatInterface from '../ai-components/AIChatInterface';
+import AIButton from '../ai-components/AIButton';
 
 
 
@@ -42,6 +44,8 @@ const AddEquipmentCard: React.FC<AddEquipmentCardProps> = ({ open, onClose, onAd
   const [equipmentInfo, setEquipmentInfo] = useState<Equipment | null>(null);
   const [filteredEquipmentList, setFilteredEquipmentList] = useState<Equipment[]>([]);
   const [equipmentList, setEquipmentList] = useState<Equipment[]>([]);
+  const [showChat, setShowChat] = useState(false);  
+
 
 
 
@@ -296,6 +300,19 @@ const AddEquipmentCard: React.FC<AddEquipmentCardProps> = ({ open, onClose, onAd
               </Box>
             </Box>
           )}
+        </Box>
+        {/* AI Chat Interface */}
+        <Box mt={2}>
+          <AIButton isChatActive={showChat} onClick={() => setShowChat(!showChat)} />
+          <AIChatInterface
+            showChat={showChat}
+            onClose={() => setShowChat(false)}
+            aquarium={aquarium}
+            suggestions={[
+              'Should I add any equipment to my tank?',
+              'What is the ideal flow rate for my aquarium?',
+            ]}
+          />
         </Box>
       </DialogContent>
       <DialogActions>
