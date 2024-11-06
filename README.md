@@ -22,31 +22,42 @@ Check out the live demo: [Link to demo](https://www.aquamind.fish)
 
 AquaMind makes managing your aquarium simple and effective by combining intelligent stocking recommendations, personalized advice, and real-time guidance. AquaMind's AI analyzes your tank specifications—such as size, water type, and existing species—to provide smart stocking suggestions, factoring in fish compatibility, bioload, and user preferences to ensure a balanced and healthy environment. With ChatGPT integration, AquaMind offers conversational, expert-level guidance tailored to your specific setup. Ask questions, receive detailed explanations, and get step-by-step care instructions, all by chatting with AquaMind AI. Whether you're a beginner or an experienced aquarist, AquaMind empowers you to create and maintain a thriving aquarium with ease and confidence.
 
-![dynamic-ai-suggestions](./images/dynamic-ai-suggestions.png)
+<p align="center">
+  <img src="./images/dynamic-ai-suggestions.png" alt="Dynamic AI Suggestions" width="70%">
+</p>
 
-![adding-fish](./images/adding-fish.png)
-
-![adding-filter](./images/adding-filter.png)
+<p align="center">
+  <img src="./images/adding-fish.png" alt="Adding Fish" width="45%">
+  <img src="./images/adding-filter.png" alt="Adding Filter" width="45%">
+</p>
 
 ### 2. Easy Aquarium Monitoring & Logging 📊🐠
 
 With AquaMind's intuitive monitoring and logging features, keeping track of your aquarium's health has never been easier. Log key parameters like water temperature, pH levels, nitrate levels, and more, all within the app. AquaMind uses this data to provide real-time insights and alerts, helping you spot trends and identify potential issues early. This continuous monitoring empowers you to make timely adjustments, ensuring your aquarium remains a stable and healthy environment for your aquatic life.
 
-![aquarium-dashboard](./images/aquarium-dashboard.png)
+<p align="center">
+  <img src="./images/aquarium-dashboard.png" alt="Aquarium Dashboard" width="70%">
+</p>
 
 ### 3. Seamless Setup Wizard & Multi-Aquarium Management 🛠️🐟
 
-AquaMind makes setting up and managing aquariums easy. The intuitive Aquarium Setup Wizard guides you step-by-step through the initial setup process as well as providing realtime AI powered assistance to help users make their dream aquarium a reality. Managing multiple aquariums is just as effortless—easily switch between tanks, track individual parameters, and receive customized care reminders for each setup, making multi-aquarium care accessible and stress-free.
+AquaMind makes setting up and managing aquariums easy. The intuitive Aquarium Setup Wizard guides you step-by-step through the initial setup process as well as providing real-time AI-powered assistance to help users make their dream aquarium a reality. Managing multiple aquariums is just as effortless—easily switch between tanks, track individual parameters, and receive customized care reminders for each setup, making multi-aquarium care accessible and stress-free.
 
-![aquarium-setup-wizard](./images/aquarium-setup-wizard.png)
+<p align="center">
+  <img src="./images/aquarium-setup-wizard.png" alt="Aquarium Setup Wizard" width="70%">
+</p>
 
-![manage-multiple-tanks](./images/manage-multiple-tanks.png)
+<p align="center">
+  <img src="./images/manage-multiple-tanks.png" alt="Manage Multiple Tanks" width="45%">
+</p>
 
 ### 4. Personalized Care and Maintenance Suggestions 📝
 
 Get personalized care instructions, feeding schedules, and maintenance tips based on your aquarium setup and the species you keep. AquaMind AI continuously learns from user interactions to provide more tailored advice over time.
 
-![health-check](./images/health-check.png)
+<p align="center">
+  <img src="./images/health-check.png" alt="Health Check" width="70%">
+</p>
 
 ### 5. IoT realtime connectivity (Coming soon) 🌐📡
 
