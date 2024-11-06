@@ -3,13 +3,13 @@
  * @location src/components/aquarium-components/aquarium-wizard-components/AquariumWizard.tsx
  * @description This component renders the Aquarium Setup Wizard, guiding the user through different setup steps such as choosing the aquarium type, tank size, species, plants, equipment, and providing a summary. It handles navigation between steps, validating inputs, and saving the setup.
  * 
- * @author Steven Stansberry
+ * @autor Steven Stansberry
  */
 
 import React, { useState, useEffect, useRef } from 'react'; 
-import { Card, CardContent, Typography, Button, Box, Backdrop } from '@mui/material';
+import { Card, CardContent, Typography, Button, Box, Backdrop, IconButton } from '@mui/material';
+import { Close as CloseIcon, ChatBubble as ChatBubbleIcon } from '@mui/icons-material';
 import { v4 as uuidv4 } from 'uuid';
-import ChatBubbleIcon from '@mui/icons-material/ChatBubble'; 
 import AquariumTypeStep from './AquariumTypeStep';
 import TankSizeStep from './TankSizeStep';
 import SpeciesSelectionStep from './SpeciesSelectionStep';
@@ -39,7 +39,6 @@ const AquariumWizard: React.FC<AquariumWizardProps> = ({ onClose, handleAddAquar
 
   const [isStepValid, setIsStepValid] = useState(false); 
   const [showChat, setShowChat] = useState(false);
-
 
   // Create a ref to access the chat container
   const chatContainerRef = useRef<HTMLDivElement>(null);
@@ -154,16 +153,21 @@ const AquariumWizard: React.FC<AquariumWizardProps> = ({ onClose, handleAddAquar
         overflowY: 'auto',
       }}>
         <Box display="flex" justifyContent="space-between">
-          <Typography variant="h5">Aquarium Setup Wizard</Typography>
-          <Button
+          <IconButton
             onClick={() => {
               onClose();
               resetWizard();
             }}
-            sx={{ fontSize: '1.5rem' }}
+            sx={{
+              position: 'absolute',
+              top: 8,
+              left: 8,
+              color: 'lightgray',
+            }}
           >
-            ×
-          </Button>
+            <CloseIcon />
+          </IconButton>
+          <Typography variant="h5" sx={{ marginLeft: 'auto', marginRight: 'auto' }}>Aquarium Setup Wizard</Typography>
         </Box>
 
         <AquariumWizardProgress activeStep={currentStep} steps={steps} />
