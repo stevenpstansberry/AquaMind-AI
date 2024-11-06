@@ -8,7 +8,10 @@ import {
   TextField,
   DialogActions,
   Button,
+  Box,
+  IconButton,
 } from '@mui/material';
+import {Close as CloseIcon} from '@mui/icons-material';
 import { WaterParameterEntry } from '../../interfaces/Aquarium';
 import { v4 as uuidv4 } from 'uuid';
 import { Aquarium } from '../../interfaces/Aquarium';
@@ -50,6 +53,11 @@ const ParameterLoggingModal: React.FC<ParameterLoggingModalProps> = ({ open, onC
   return (
     <Dialog open={open} onClose={onClose}>
       <DialogTitle>Log New Water Parameters</DialogTitle>
+      <Box position="absolute" top={8} right={8}>
+        <IconButton onClick={onClose} aria-label="close" sx={{color: (theme) => theme.palette.grey[500],}}>
+          <CloseIcon />
+        </IconButton>
+      </Box>
       <DialogContent>
         <TextField
           label="Temperature (°F)"
@@ -78,9 +86,6 @@ const ParameterLoggingModal: React.FC<ParameterLoggingModalProps> = ({ open, onC
         {/* Add more fields as needed */}
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose} color="secondary">
-          Cancel
-        </Button>
         <Button onClick={handleSubmit} color="primary" variant="contained">
           Log Parameters
         </Button>

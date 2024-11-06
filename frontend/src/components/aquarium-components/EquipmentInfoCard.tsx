@@ -32,7 +32,7 @@ const EquipmentInfoCard: React.FC<EquipmentInfoCardProps> = ({ open, onClose, eq
         {`${equipment.name} Information`}
         <IconButton
           onClick={onClose}
-          sx={{ position: 'absolute', right: 8, top: 8 }}
+          sx={{ position: 'absolute', right: 8, top: 8, color: (theme) => theme.palette.grey[500],}}
           aria-label="close"
         >
           <CloseIcon />
