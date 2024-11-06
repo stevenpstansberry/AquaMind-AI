@@ -18,27 +18,37 @@ Check out the live demo: [Link to demo](https://www.aquamind.fish)
 
 ## Features 🌊
 
-### 1. AI-Powered Stocking Recommendations 🐠
+### 1. AI-Powered Aquarium Management 🐠🤖💬
 
-AquaMind analyzes your aquarium specifications—tank size, water type, existing species, and more—to provide intelligent stocking recommendations. It considers fish compatibility, tank requirements, bioload, and user preferences to create a balanced and thriving aquarium environment.
+AquaMind makes managing your aquarium simple and effective by combining intelligent stocking recommendations, personalized advice, and real-time guidance. AquaMind's AI analyzes your tank specifications—such as size, water type, and existing species—to provide smart stocking suggestions, factoring in fish compatibility, bioload, and user preferences to ensure a balanced and healthy environment. With ChatGPT integration, AquaMind offers conversational, expert-level guidance tailored to your specific setup. Ask questions, receive detailed explanations, and get step-by-step care instructions, all by chatting with AquaMind AI. Whether you're a beginner or an experienced aquarist, AquaMind empowers you to create and maintain a thriving aquarium with ease and confidence.
 
-### 2. Conversational Advice with LLM Integration 🤖 💬
+![dynamic-ai-suggestions](./images/dynamic-ai-suggestions.png)
 
-Our AquaMind is directly powered by ChatGPT, to provide detailed explanations and answer your questions in a conversational manner. Get expert-level advice, follow-up recommendations, and detailed care instructions just by chatting with AquaMind AI.
+![adding-fish](./images/adding-fish.png)
 
-### 3. Easy Aquarium Monitoring & Logging 📊🐠
+![adding-filter](./images/adding-filter.png)
+
+### 2. Easy Aquarium Monitoring & Logging 📊🐠
 
 With AquaMind's intuitive monitoring and logging features, keeping track of your aquarium's health has never been easier. Log key parameters like water temperature, pH levels, nitrate levels, and more, all within the app. AquaMind uses this data to provide real-time insights and alerts, helping you spot trends and identify potential issues early. This continuous monitoring empowers you to make timely adjustments, ensuring your aquarium remains a stable and healthy environment for your aquatic life.
 
-### 4. Fish and Plant Compatibility Checker 🐟🌿
+![aquarium-dashboard](./images/aquarium-dashboard.png)
 
-A built-in compatibility checker helps you identify potential conflicts between fish species, plants, and invertebrates. Understand which combinations work best for your setup and which to avoid to maintain a harmonious aquatic environment.
+### 3. Seamless Setup Wizard & Multi-Aquarium Management 🛠️🐟
 
-### 5. Personalized Care and Maintenance Suggestions 📝
+AquaMind makes setting up and managing aquariums easy. The intuitive Aquarium Setup Wizard guides you step-by-step through the initial setup process as well as providing realtime AI powered assistance to help users make their dream aquarium a reality. Managing multiple aquariums is just as effortless—easily switch between tanks, track individual parameters, and receive customized care reminders for each setup, making multi-aquarium care accessible and stress-free.
+
+![aquarium-setup-wizard](./images/aquarium-setup-wizard.png)
+
+![manage-multiple-tanks](./images/manage-multiple-tanks.png)
+
+### 4. Personalized Care and Maintenance Suggestions 📝
 
 Get personalized care instructions, feeding schedules, and maintenance tips based on your aquarium setup and the species you keep. AquaMind AI continuously learns from user interactions to provide more tailored advice over time.
 
-### 6. IoT realtime connectivity (Coming soon) 🌐📡
+![health-check](./images/health-check.png)
+
+### 5. IoT realtime connectivity (Coming soon) 🌐📡
 
 AquaMind will soon connect with IoT sensors placed in your aquarium to monitor real-time water conditions, such as temperature, pH, ammonia, and nitrate levels. These sensors will transmit live data via AWS IoT services and process the information using Amazon SQS or Amazon Kinesis to ensure reliable, scalable data streams.
 
