@@ -2,30 +2,30 @@ import React from 'react';
 import { Button, ButtonProps, styled } from '@mui/material';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 
-// Define a styled button with a light blue background
+// Define a styled button with a royal purple background for the AI button
 const StyledButton = styled(Button)<ButtonProps>(({ theme }) => ({
-  backgroundColor: theme.palette.primary.main, // Light blue background (uses primary color from your config)
-  color: '#fff',
+  backgroundColor: '#6A0DAD', // Royal purple background color for the AI button
+  color: '#fff', // White text color for contrast
   textTransform: 'none', // Keep text as-is without uppercase
   display: 'flex',
   alignItems: 'center',
   gap: theme.spacing(1),
   padding: theme.spacing(1.5, 3),
   transition: 'background 0.3s, box-shadow 0.3s',
-  boxShadow: '0px 0px 8px rgba(24, 118, 210, 0.6)', // Soft shadow with the #1876D2 color
+  boxShadow: '0px 0px 8px rgba(106, 13, 173, 0.6)', // Soft shadow with the royal purple color
 
   '&:hover': {
-    backgroundColor: '#1565C0', // Slightly darker blue on hover
-    boxShadow: '0px 0px 12px 4px rgba(24, 118, 210, 0.8)',
+    backgroundColor: '#5B0A99', // Slightly darker purple on hover
+    boxShadow: '0px 0px 12px 4px rgba(106, 13, 173, 0.8)',
     '.shimmer-icon': {
       animation: 'shimmer 1.5s infinite', // Apply shimmer animation to icon on hover
     },
   },
 }));
 
-// Define a styled AutoAwesome icon with a yellow color and shimmer animation
+// Define a styled AutoAwesome icon with a light yellow color and shimmer animation
 const ShimmerIcon = styled(AutoAwesomeIcon)(({ theme }) => ({
-  color: '#FFA726', // Light yellow color for the icon
+  color: '#FFD700', // Gold color for the icon to match the purple theme
   transition: 'transform 0.3s, opacity 0.3s', // Smooth transition when shimmer starts
 
   // Define the shimmer keyframes animation
@@ -37,7 +37,7 @@ const ShimmerIcon = styled(AutoAwesomeIcon)(({ theme }) => ({
 }));
 
 interface AIButtonProps extends ButtonProps {
-  isChatActive: boolean; // New prop to determine if chat is active
+  isChatActive: boolean; // Prop to determine if chat is active
 }
 
 const AIButton: React.FC<AIButtonProps> = ({ isChatActive, ...props }) => {
