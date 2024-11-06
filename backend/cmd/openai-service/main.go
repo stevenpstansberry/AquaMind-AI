@@ -29,16 +29,19 @@ func enableCORS(next http.Handler) http.Handler {
 			return
 		}
 
-		// Check API key
-		apiKey := r.Header.Get("X-Api-Key")
-		expectedApiKey := os.Getenv("API_KEY")
-		if apiKey != expectedApiKey {
-			log.Printf("Unauthorized request: missing or invalid API key for %s", r.URL.Path)
-			http.Error(w, "Forbidden: Invalid API Key", http.StatusForbidden)
-			return
+		// Skip API key check for the health check route
+		if r.URL.Path != "/openai/health" {
+			// Check API key
+			apiKey := r.Header.Get("X-Api-Key")
+			expectedApiKey := os.Getenv("API_KEY")
+			if apiKey != expectedApiKey {
+				log.Printf("Unauthorized request: missing or invalid API key for %s", r.URL.Path)
+				http.Error(w, "Forbidden: Invalid API Key", http.StatusForbidden)
+				return
+			}
 		}
 
-		// Continue to the next handler if the API key is valid
+		// Continue to the next handler if the API key is valid or route is exempted
 		next.ServeHTTP(w, r)
 
 		duration := time.Since(startTime)
@@ -62,6 +65,13 @@ func main() {
 
 	// Log server startup
 	log.Println("Starting OpenAI service...")
+
+	// Health check route for the OpenAI service
+	http.HandleFunc("/openai/health", func(w http.ResponseWriter, r *http.Request) {
+		log.Printf("Handling OpenAI health check request: %s %s", r.Method, r.URL.Path)
+		w.WriteHeader(http.StatusOK)
+		log.Println("OpenAI health check request handled successfully")
+	})
 
 	// Set up routes for OpenAI integration and log each route initialization
 	http.HandleFunc("/openai/query", func(w http.ResponseWriter, r *http.Request) {
