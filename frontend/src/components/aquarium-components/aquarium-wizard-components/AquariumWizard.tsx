@@ -189,7 +189,7 @@ const AquariumWizard: React.FC<AquariumWizardProps> = ({ onClose, handleAddAquar
             sx={{
               position: 'absolute',
               top: 8,
-              left: 8,
+              right: 8,
               color: 'lightgray',
             }}
           >
