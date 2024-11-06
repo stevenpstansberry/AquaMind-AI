@@ -10,7 +10,7 @@ AquaMind analyzes your aquarium specifications—tank size, water type, existing
 
 ### 2. Conversational Advice with LLM Integration 🤖 💬
 
-Our AquaMind AI is directly powered by ChatGPT, to provide detailed explanations and answer your questions in a conversational manner. Get expert-level advice, follow-up recommendations, and detailed care instructions just by chatting with AquaMind AI.
+Our AquaMind is directly powered by ChatGPT, to provide detailed explanations and answer your questions in a conversational manner. Get expert-level advice, follow-up recommendations, and detailed care instructions just by chatting with AquaMind AI.
 
 ### 3. Fish and Plant Compatibility Checker 🐟🌿
 
@@ -22,7 +22,7 @@ Get personalized care instructions, feeding schedules, and maintenance tips base
 
 ### 5. IoT realtime connectivity (Coming soon) 🌐📡
 
-AquaMind AI will soon connect with IoT sensors placed in your aquarium to monitor real-time water conditions, such as temperature, pH, ammonia, and nitrate levels. These sensors will transmit live data via AWS IoT services and process the information using Amazon SQS or Amazon Kinesis to ensure reliable, scalable data streams.
+AquaMind will soon connect with IoT sensors placed in your aquarium to monitor real-time water conditions, such as temperature, pH, ammonia, and nitrate levels. These sensors will transmit live data via AWS IoT services and process the information using Amazon SQS or Amazon Kinesis to ensure reliable, scalable data streams.
 
 ## Tech Stack
 
