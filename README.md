@@ -68,6 +68,8 @@ AquaMind will soon connect with IoT sensors placed in your aquarium to monitor r
 ### Frontend:
 
 - **React**: User interface for managing aquariums and viewing data.
+- **TypeScript**: Statically typed superset of JavaScript that heavily reduces risk of typing based runtime errors.
+- **Axios**: JavaScript library for making HTTP requests to backend services
 
 ### Backend:
 
@@ -83,11 +85,6 @@ AquaMind will soon connect with IoT sensors placed in your aquarium to monitor r
 - **Kubernetes**: Orchestrates microservices for scalability and fault tolerance.
 - **Docker**: Containerize individual backend services to be handled by Kubernetes
 - **AWS**: Cloud infrastructure for hosting, scaling, and managing resources.
-
-### Monitoring:
-
-- **Prometheus**: Real-time monitoring of application performance and metrics.
-- **Grafana**: Visual dashboard for monitoring tank conditions and system health.
 
 ## Setup and Installation
 
