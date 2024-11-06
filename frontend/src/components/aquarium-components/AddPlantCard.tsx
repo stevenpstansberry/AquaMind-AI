@@ -1,16 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import {
-  Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField,
-  Box, MenuItem, Select, InputLabel, FormControl, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TablePagination, Typography, IconButton, List, ListItem
-} from '@mui/material';
-import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
-import AIChatInterface from '../ai-components/AIChatInterface';  // Assuming you have this for AI suggestions
+import {Dialog, DialogTitle, DialogContent, DialogActions, Button, Box, IconButton } from '@mui/material';
+import { Close as CloseIcon } from '@mui/icons-material';
+import AIChatInterface from '../ai-components/AIChatInterface';  
 import AquariumInhabitantInfoCard from './AquariumInhabitantInfoCard';
-import { getAllDetails } from '../../services/APIServices';
-import { Aquarium, Plant } from '../../interfaces/Aquarium';  // Ensure Plant interface is imported
+import { Aquarium, Plant } from '../../interfaces/Aquarium';  
 import SelectedInhabitantsList from './SelectedInhabitantsList';
 import FilterPanel from './FilterPanel';
 import InhabitantTable from './InhabitantTable';
+import AIButton from '../ai-components/AIButton';
+
 
 
 interface AddPlantCardProps {
@@ -188,6 +186,11 @@ useEffect(() => {
     return (
       <>
         <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
+          <Box position="absolute" top={8} right={8}>
+            <IconButton onClick={onClose} aria-label="close" sx={{color: (theme) => theme.palette.grey[500],}}>
+              <CloseIcon />
+            </IconButton>
+          </Box>
           <DialogTitle>Add New Plants</DialogTitle>
           <DialogContent>
             {/* Filter Panel */}
@@ -237,9 +240,7 @@ useEffect(() => {
   
             {/* AI Chat Interface */}
             <Box mt={2}>
-              <Button variant="outlined" onClick={() => setShowChat(!showChat)}>
-                {showChat ? 'Hide' : 'Show'} AI Suggestions
-              </Button>
+              <AIButton isChatActive={showChat} onClick={() => setShowChat(!showChat)} />
               <AIChatInterface
                 showChat={showChat}
                 onClose={() => setShowChat(false)}
@@ -252,12 +253,6 @@ useEffect(() => {
               />
             </Box>
           </DialogContent>
-  
-          <DialogActions>
-            <Button onClick={onClose} color="secondary">
-              Cancel
-            </Button>
-          </DialogActions>
   
           {/* Plant Info Modal */}
           {selectedPlant && (
