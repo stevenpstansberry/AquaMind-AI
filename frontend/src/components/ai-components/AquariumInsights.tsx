@@ -9,7 +9,7 @@ interface AquariumInsightsProps {
 }
 
 const AquariumInsights: React.FC<AquariumInsightsProps> = ({
-  insightText = "Your tank's water temperature is optimal for Tetra species. Make sure to monitor pH levels regularly.",
+  insightText = "Get insights about your aquarium from our AI-powered chat interface.",
   aquarium,
 }) => {
   const [expanded, setExpanded] = useState(false);
