@@ -16,12 +16,14 @@ const TankSizeStep: React.FC<TankSizeStepProps> = ({ setAquariumData, setIsStepV
   useEffect(() => {
     const numValue = parseInt(customSize, 10);
     validateSize(numValue);
+    // Update validation state if there's no error and the input is a valid number
     if (!sizeError && !isNaN(numValue)) {
       setIsStepValid(true);
+      setAquariumData((prevData: any) => ({ ...prevData, size: `${numValue}` }));
     } else {
       setIsStepValid(false);
     }
-  }, []); // Run only on initial render
+  }, [customSize, sizeError]); // Run whenever customSize or sizeError changes
 
   /**
    * Validates tank size and sets error/warning messages without updating parent state on every keystroke.
@@ -41,11 +43,14 @@ const TankSizeStep: React.FC<TankSizeStepProps> = ({ setAquariumData, setIsStepV
 
   /**
    * Handles changes in the tank size input field but does not immediately update the parent state.
+   * Only updates if the value is a valid number or an empty string (to allow clearing the input temporarily)
    */
   const handleSizeChange = (value: string) => {
-    setCustomSize(value);
-    const numValue = parseInt(value, 10);
-    validateSize(numValue);
+    if (/^\d*$/.test(value)) {
+      setCustomSize(value);
+      const numValue = parseInt(value, 10);
+      validateSize(numValue);
+    }
   };
 
   /**
@@ -76,12 +81,10 @@ const TankSizeStep: React.FC<TankSizeStepProps> = ({ setAquariumData, setIsStepV
       <Typography variant="h5" gutterBottom>
         Enter Tank Size
       </Typography>
-      
-      <Typography variant="body2" color="textSecondary" gutterBottom>
-        Most tank sizes range from 10 to 100 gallons.
-      </Typography>
+    
 
       {/* Placeholder for Future Aquarium Size Graphic */}
+      {/*
       <Box
         sx={{
           width: '100px',
@@ -99,6 +102,7 @@ const TankSizeStep: React.FC<TankSizeStepProps> = ({ setAquariumData, setIsStepV
           Size Graphic
         </Typography>
       </Box>
+      */}
 
       {/* Tank Size Input with Increment/Decrement Controls */}
       <Box display="flex" alignItems="center" sx={{ mt: 2 }}>
@@ -108,6 +112,7 @@ const TankSizeStep: React.FC<TankSizeStepProps> = ({ setAquariumData, setIsStepV
         <TextField
           label="Tank Size"
           variant="outlined"
+          type="number" 
           value={customSize}
           onChange={(e) => handleSizeChange(e.target.value)}
           onBlur={handleBlur}
@@ -115,7 +120,7 @@ const TankSizeStep: React.FC<TankSizeStepProps> = ({ setAquariumData, setIsStepV
           helperText={sizeError ? 'Invalid tank size' : warning || ''}
           InputProps={{
             endAdornment: <InputAdornment position="end">gallons</InputAdornment>,
-            inputProps: { min: 0, max: 100000, step: 1, style: { textAlign: 'left', width: '100px' } },
+            inputProps: { min: 1, max: 100000, step: 1, style: { textAlign: 'left', width: '100px' } },
           }}
           sx={{ mx: 1 }}
         />
@@ -123,6 +128,10 @@ const TankSizeStep: React.FC<TankSizeStepProps> = ({ setAquariumData, setIsStepV
           +
         </Button>
       </Box>
+
+      <Typography variant="body2" color="textSecondary" gutterBottom>
+        Most tank sizes range from 10 to 100 gallons.
+      </Typography>
 
       {/* Slider for Tank Size with Scroll Wheel Handling */}
       <Box sx={{ width: '80%', mx: 'auto', mt: 3 }} onWheel={handleWheel}>
@@ -144,6 +153,8 @@ const TankSizeStep: React.FC<TankSizeStepProps> = ({ setAquariumData, setIsStepV
           }}
         />
       </Box>
+
+
 
       {/* Tip Text */}
       <Typography variant="body2" color="textSecondary" sx={{ mt: 2 }}>
