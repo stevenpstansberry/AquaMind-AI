@@ -18,6 +18,7 @@ import EquipmentStep from './EquipmentStep';
 import SummaryStep from './SummaryStep';
 import AquariumWizardProgress from './AquariumWizardProgress';
 import AIChatInterface from '../../ai-components/AIChatInterface'; 
+import AIButton from '../../ai-components/AIButton';
 
 interface AquariumWizardProps {
   onClose: () => void;
@@ -213,7 +214,6 @@ const AquariumWizard: React.FC<AquariumWizardProps> = ({ onClose, handleAddAquar
           )}
           {currentStep === 2 && <SummaryStep aquariumData={aquariumData} setAquariumData={setAquariumData} setIsStepValid={setIsStepValid}/>}
         </CardContent>
-
         <Box display="flex" justifyContent="space-between" mt={2}>
           {currentStep > 0 ? (
             <Button onClick={handlePrev}>Back</Button>
@@ -222,13 +222,11 @@ const AquariumWizard: React.FC<AquariumWizardProps> = ({ onClose, handleAddAquar
           )}
 
           <Box display="flex" gap={2}>
-            <Button
-              variant="outlined"
+            <AIButton
               onClick={() => setShowChat((prev) => !prev)}
-              startIcon={<ChatBubbleIcon />}
+              isChatActive={showChat}
             >
-              {showChat ? "Hide AI" : "Ask AI"}
-            </Button>
+            </AIButton>
 
             {currentStep < steps.length - 1 ? (
               <Button variant="contained" onClick={handleNext} disabled={!isStepValid}>
