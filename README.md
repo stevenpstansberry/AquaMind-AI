@@ -26,15 +26,19 @@ AquaMind analyzes your aquarium specifications—tank size, water type, existing
 
 Our AquaMind is directly powered by ChatGPT, to provide detailed explanations and answer your questions in a conversational manner. Get expert-level advice, follow-up recommendations, and detailed care instructions just by chatting with AquaMind AI.
 
-### 3. Fish and Plant Compatibility Checker 🐟🌿
+### 3. Easy Aquarium Monitoring & Logging 📊🐠
+
+With AquaMind's intuitive monitoring and logging features, keeping track of your aquarium's health has never been easier. Log key parameters like water temperature, pH levels, nitrate levels, and more, all within the app. AquaMind uses this data to provide real-time insights and alerts, helping you spot trends and identify potential issues early. This continuous monitoring empowers you to make timely adjustments, ensuring your aquarium remains a stable and healthy environment for your aquatic life.
+
+### 4. Fish and Plant Compatibility Checker 🐟🌿
 
 A built-in compatibility checker helps you identify potential conflicts between fish species, plants, and invertebrates. Understand which combinations work best for your setup and which to avoid to maintain a harmonious aquatic environment.
 
-### 4. Personalized Care and Maintenance Suggestions 📝
+### 5. Personalized Care and Maintenance Suggestions 📝
 
 Get personalized care instructions, feeding schedules, and maintenance tips based on your aquarium setup and the species you keep. AquaMind AI continuously learns from user interactions to provide more tailored advice over time.
 
-### 5. IoT realtime connectivity (Coming soon) 🌐📡
+### 6. IoT realtime connectivity (Coming soon) 🌐📡
 
 AquaMind will soon connect with IoT sensors placed in your aquarium to monitor real-time water conditions, such as temperature, pH, ammonia, and nitrate levels. These sensors will transmit live data via AWS IoT services and process the information using Amazon SQS or Amazon Kinesis to ensure reliable, scalable data streams.
 
