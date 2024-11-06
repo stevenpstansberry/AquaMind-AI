@@ -20,6 +20,8 @@ const baseURL =
     ? process.env.REACT_APP_AQUAMIND_DEV_URL // Localhost for dev
     : process.env.REACT_APP_AQUAMIND_PROD_URL; // Production URL for prod
 
+const openaiKey = process.env.REACT_APP_OPENAI_API_KEY;
+
 /**
  * Sends a GET request to a specified API endpoint.
  *
@@ -356,6 +358,7 @@ const postToOpenAI = async (endpoint, data) => {
     const response = await axios.post(url, data, {
       headers: {
         "Content-Type": "application/json",
+        "x-api-key": openaiKey,
       },
     });
 
