@@ -1,8 +1,22 @@
 # AquaMind AI: Your AI-Powered Aquarium Stocking Assistant
 
+## Overview
+
 Welcome to **AquaMind**! AquaMind is an AI-driven assistant that empowers aquarium enthusiasts of all levels to easily manage and care for their aquariums. By leveraging advanced AI, AquaMind provides custom recommendations tailored to the unique needs and conditions of your aquarium, making it simple for anyone to make informed decisions on stocking, maintenance, and overall aquarium health. Whether you're a beginner or a pro, AquaMind makes it easy to learn how to create and maintain a thriving aquatic environment, with advice and guidance perfectly matched to your setup. From personalized care insights to interactive management features, AquaMind helps make aquarium care more accessible, engaging, and stress-free.
 
-## 🌊 Features
+## Table of Contents
+
+- [Demo](#demo)
+- [Features](#features)
+- [Tech Stack](#tech-stack)
+- [Setup and Installation](#setup-and-installation)
+- [Future Improvements](#future-improvements)
+
+## Demo
+
+Check out the live demo: [Link to demo](https://www.aquamind.fish)
+
+## Features 🌊
 
 ### 1. AI-Powered Stocking Recommendations 🐠
 
@@ -42,6 +56,7 @@ AquaMind will soon connect with IoT sensors placed in your aquarium to monitor r
 ### Infrastructure:
 
 - **Kubernetes**: Orchestrates microservices for scalability and fault tolerance.
+- **Docker**: Containerize individual backend services to be handled by Kubernetes
 - **AWS**: Cloud infrastructure for hosting, scaling, and managing resources.
 
 ### Monitoring:
@@ -49,4 +64,48 @@ AquaMind will soon connect with IoT sensors placed in your aquarium to monitor r
 - **Prometheus**: Real-time monitoring of application performance and metrics.
 - **Grafana**: Visual dashboard for monitoring tank conditions and system health.
 
----
+## Setup and Installation
+
+- **React** installed on your machine.
+- AWS account with IAM privileges for utulized services
+- **AWS CLI** or other means to configure AWS credentials.
+
+### Clone the Repository
+
+```bash
+git clone https://github.com/stevenpstansberry/AquaMind-AI.git
+cd AquaMind-AI/Frontend
+```
+
+### Install Dependencies
+
+```bash
+npm install
+```
+
+### Set up Environmnetal Variables
+
+If you wish to obtain the neccessary API keys and other secrets please feel free to contact me!
+If you already obtained such information, declare the following in your .env file within the frontend.
+
+```bash
+REACT_APP_AQUAMIND_PROD_URL=<your_aquamind_prod_url>
+REACT_APP_AQUAMIND_PROD_KEY=<your_aquamind_prod_key>
+REACT_APP_OPENAI_API_URL=<your_openai_api_url>
+```
+
+### Run the Application
+
+Start the development server
+
+```bash
+npm start
+```
+
+This will run the app locally at http://localhost:3000 by default
+
+## Future Improvements
+
+1. Implement a mobile app
+2. Social Features - Add abilty to view other's aquariums
+3. Add wish list
