@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Typography, TextField, Box, InputAdornment, Slider, Button } from '@mui/material';
 import { Aquarium } from '../../../interfaces/Aquarium';
 
@@ -12,6 +12,7 @@ const TankSizeStep: React.FC<TankSizeStepProps> = ({ setAquariumData, setIsStepV
   const [customSize, setCustomSize] = useState<string>(aquariumData.size || '10'); // Default to 10 gallons
   const [sizeError, setSizeError] = useState(false);
   const [warning, setWarning] = useState<string | null>(null);
+  const sizeInputRef = useRef<HTMLInputElement>(null); // Reference to the TextField
 
   useEffect(() => {
     const numValue = parseInt(customSize, 10);
@@ -24,6 +25,13 @@ const TankSizeStep: React.FC<TankSizeStepProps> = ({ setAquariumData, setIsStepV
       setIsStepValid(false);
     }
   }, [customSize, sizeError]); // Run whenever customSize or sizeError changes
+
+  // Focus the TextField when the component mounts
+  useEffect(() => {
+    if (sizeInputRef.current) {
+      sizeInputRef.current.focus();
+    }
+  }, []);
 
   /**
    * Validates tank size and sets error/warning messages without updating parent state on every keystroke.
@@ -83,27 +91,6 @@ const TankSizeStep: React.FC<TankSizeStepProps> = ({ setAquariumData, setIsStepV
       </Typography>
     
 
-      {/* Placeholder for Future Aquarium Size Graphic */}
-      {/*
-      <Box
-        sx={{
-          width: '100px',
-          height: '100px',
-          borderRadius: '50%',
-          border: '2px dashed lightgray',
-          mb: 2,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
-        }}
-      >
-        <Typography variant="body2" color="textSecondary">
-          Size Graphic
-        </Typography>
-      </Box>
-      */}
-
       {/* Tank Size Input with Increment/Decrement Controls */}
       <Box display="flex" alignItems="center" sx={{ mt: 2 }}>
         <Button onClick={() => handleSizeChange(String(Number(customSize) - 1))} disabled={Number(customSize) <= 1}>
@@ -123,6 +110,7 @@ const TankSizeStep: React.FC<TankSizeStepProps> = ({ setAquariumData, setIsStepV
             inputProps: { min: 1, max: 100000, step: 1, style: { textAlign: 'left', width: '100px' } },
           }}
           sx={{ mx: 1 }}
+          inputRef={sizeInputRef} // Set the ref to the TextField
         />
         <Button onClick={() => handleSizeChange(String(Number(customSize) + 1))}>
           +
@@ -154,9 +142,6 @@ const TankSizeStep: React.FC<TankSizeStepProps> = ({ setAquariumData, setIsStepV
         />
       </Box>
 
-
-
-      {/* Tip Text */}
       <Typography variant="body2" color="textSecondary" sx={{ mt: 2 }}>
         Tip: Bigger aquariums allow you to stock even more fish!
       </Typography>
