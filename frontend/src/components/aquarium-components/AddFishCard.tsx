@@ -11,7 +11,8 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Box} from '@mui/material';
+import { Dialog, DialogTitle, DialogContent, Box, IconButton } from '@mui/material';
+import { Close as CloseIcon } from '@mui/icons-material';
 import AIChatInterface from '../ai-components/AIChatInterface'; 
 import AquariumInhabitantInfoCard from './AquariumInhabitantInfoCard';
 import { Aquarium, Fish } from '../../interfaces/Aquarium';
@@ -20,6 +21,7 @@ import { useDetails } from '../../util/DetailsContext';
 import SelectedInhabitantsList from './SelectedInhabitantsList';
 import FilterPanel from './FilterPanel';
 import InhabitantTable from './InhabitantTable';
+import AIButton from '../ai-components/AIButton';
 
 
 interface AddFishCardProps {
@@ -241,6 +243,11 @@ useEffect(() => {
   return (
     <>
       <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
+        <Box position="absolute" top={8} right={8}>
+          <IconButton onClick={onClose} aria-label="close" sx={{color: (theme) => theme.palette.grey[500],}}>
+            <CloseIcon />
+          </IconButton>
+        </Box>
         <DialogTitle>Add New Fish</DialogTitle>
         <DialogContent>
           {/* Filter Panel */}
@@ -260,41 +267,38 @@ useEffect(() => {
 
           {/* Fish Table */}
           <InhabitantTable<Fish>
-          key={filteredFishList.length}  // Change key based on filtered list to trigger re-render
-          data={filteredFishList}
-          page={page}
-          rowsPerPage={rowsPerPage}
-          handleChangePage={handleChangePage}
-          handleChangeRowsPerPage={handleChangeRowsPerPage}
-          onRowClick={handleFishClick}
-          onSelectItem={handleSelectFish}
-          isItemSelected={isFishSelected}
-          columns={[
-            { field: 'name', headerName: 'Fish Name' },
-            { field: 'role', headerName: 'Role' },
-            { field: 'careLevel', headerName: 'Care Level' },
-            { field: 'minTankSize', headerName: 'Min Tank Size' },
-          ]}
-          addButtonColor="primary"
+            key={filteredFishList.length}
+            data={filteredFishList}
+            page={page}
+            rowsPerPage={rowsPerPage}
+            handleChangePage={handleChangePage}
+            handleChangeRowsPerPage={handleChangeRowsPerPage}
+            onRowClick={handleFishClick}
+            onSelectItem={handleSelectFish}
+            isItemSelected={isFishSelected}
+            columns={[
+              { field: 'name', headerName: 'Fish Name' },
+              { field: 'role', headerName: 'Role' },
+              { field: 'careLevel', headerName: 'Care Level' },
+              { field: 'minTankSize', headerName: 'Min Tank Size' },
+            ]}
+            addButtonColor="primary"
           />
-
 
           {/* Selected Fish and Add Button */}
           <SelectedInhabitantsList<Fish>
-          selectedItems={selectedFishList}
-          onAddAll={handleAddAllFish}
-          label="Selected Fish to Add:"
-          buttonText="ADD SELECTED FISH TO AQUARIUM"
-          onQuantityChange={handleFishQuantityChange}
-          onRemoveItem={handleRemoveFish}
-          onInfoClick={handleFishClick} // Pass the existing handleFishClick function
-        />
+            selectedItems={selectedFishList}
+            onAddAll={handleAddAllFish}
+            label="Selected Fish to Add:"
+            buttonText="ADD SELECTED FISH TO AQUARIUM"
+            onQuantityChange={handleFishQuantityChange}
+            onRemoveItem={handleRemoveFish}
+            onInfoClick={handleFishClick}
+          />
 
           {/* AI Chat Interface */}
           <Box mt={2}>
-            <Button variant="outlined" onClick={() => setShowChat(!showChat)}>
-              {showChat ? 'Hide' : 'Show'} AI Suggestions
-            </Button>
+            <AIButton isChatActive={showChat} onClick={() => setShowChat(!showChat)} />
             <AIChatInterface
               showChat={showChat}
               onClose={() => setShowChat(false)}
@@ -308,12 +312,6 @@ useEffect(() => {
           </Box>
         </DialogContent>
 
-        <DialogActions>
-          <Button onClick={onClose} color="secondary">
-            Cancel
-          </Button>
-        </DialogActions>
-
         {/* Fish Info Modal */}
         {selectedFish && (
           <AquariumInhabitantInfoCard
@@ -326,6 +324,7 @@ useEffect(() => {
     </>
   );
 };
+
 
 
 export default AddFishCard;

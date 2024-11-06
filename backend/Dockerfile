@@ -30,7 +30,7 @@ COPY --from=auth-builder /app/.env .
 ENV JWT_SECRET=jwt
 
 COPY --from=auth-builder /app/auth-service .
-EXPOSE 8080
+EXPOSE 80
 CMD ["./auth-service"]
 
 # Stage 4: Create a minimal image for production for openai-service

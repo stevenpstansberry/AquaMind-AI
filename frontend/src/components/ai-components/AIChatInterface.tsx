@@ -134,6 +134,9 @@ const AIChatInterface: React.FC<AIChatInterfaceProps> = ({ showChat, onClose, aq
         open={isExpanded}
         onClose={() => setIsExpanded(false)}
         closeAfterTransition
+        sx={{
+          zIndex: 5000,
+        }}
         BackdropProps={{
           timeout: 500,
         }}

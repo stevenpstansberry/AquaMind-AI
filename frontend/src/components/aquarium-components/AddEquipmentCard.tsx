@@ -3,10 +3,13 @@ import {
   Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, Box,
   MenuItem, Select, InputLabel, FormControl, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TablePagination, Typography, IconButton
 } from '@mui/material';
+import { Close as CloseIcon } from '@mui/icons-material';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import EquipmentInfoCard from './EquipmentInfoCard';
 import { Aquarium, Equipment } from '../../interfaces/Aquarium';
 import { getAllDetails } from '../../services/APIServices';
+import AIChatInterface from '../ai-components/AIChatInterface';
+import AIButton from '../ai-components/AIButton';
 
 
 
@@ -42,6 +45,8 @@ const AddEquipmentCard: React.FC<AddEquipmentCardProps> = ({ open, onClose, onAd
   const [equipmentInfo, setEquipmentInfo] = useState<Equipment | null>(null);
   const [filteredEquipmentList, setFilteredEquipmentList] = useState<Equipment[]>([]);
   const [equipmentList, setEquipmentList] = useState<Equipment[]>([]);
+  const [showChat, setShowChat] = useState(false);  
+
 
 
 
@@ -167,6 +172,11 @@ const AddEquipmentCard: React.FC<AddEquipmentCardProps> = ({ open, onClose, onAd
   return (
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
       <DialogTitle>Add New Equipment</DialogTitle>
+      <Box position="absolute" top={8} right={8}>
+        <IconButton onClick={onClose} aria-label="close" sx={{color: (theme) => theme.palette.grey[500],}}>
+          <CloseIcon />
+        </IconButton>
+      </Box>
       <DialogContent>
         <Box>
           {/* Filter by Equipment Type */}
@@ -297,10 +307,20 @@ const AddEquipmentCard: React.FC<AddEquipmentCardProps> = ({ open, onClose, onAd
             </Box>
           )}
         </Box>
+        {/* AI Chat Interface */}
+        <Box mt={2}>
+          <AIButton isChatActive={showChat} onClick={() => setShowChat(!showChat)} />
+          <AIChatInterface
+            showChat={showChat}
+            onClose={() => setShowChat(false)}
+            aquarium={aquarium}
+            suggestions={[
+              'Should I add any equipment to my tank?',
+              'What is the ideal flow rate for my aquarium?',
+            ]}
+          />
+        </Box>
       </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose} color="secondary">Cancel</Button>
-      </DialogActions>
   
       {/* Equipment Info Modal using EquipmentInfoCard */}
       {equipmentInfo && (

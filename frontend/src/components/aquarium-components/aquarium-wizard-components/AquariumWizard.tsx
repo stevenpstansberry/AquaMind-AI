@@ -3,13 +3,13 @@
  * @location src/components/aquarium-components/aquarium-wizard-components/AquariumWizard.tsx
  * @description This component renders the Aquarium Setup Wizard, guiding the user through different setup steps such as choosing the aquarium type, tank size, species, plants, equipment, and providing a summary. It handles navigation between steps, validating inputs, and saving the setup.
  * 
- * @author Steven Stansberry
+ * @autor Steven Stansberry
  */
 
 import React, { useState, useEffect, useRef } from 'react'; 
-import { Card, CardContent, Typography, Button, Box, Backdrop } from '@mui/material';
+import { Dialog, Card, CardContent, Typography, Button, Box, Backdrop, IconButton } from '@mui/material';
+import { Close as CloseIcon, ChatBubble as ChatBubbleIcon } from '@mui/icons-material';
 import { v4 as uuidv4 } from 'uuid';
-import ChatBubbleIcon from '@mui/icons-material/ChatBubble'; 
 import AquariumTypeStep from './AquariumTypeStep';
 import TankSizeStep from './TankSizeStep';
 import SpeciesSelectionStep from './SpeciesSelectionStep';
@@ -18,6 +18,7 @@ import EquipmentStep from './EquipmentStep';
 import SummaryStep from './SummaryStep';
 import AquariumWizardProgress from './AquariumWizardProgress';
 import AIChatInterface from '../../ai-components/AIChatInterface'; 
+import AIButton from '../../ai-components/AIButton';
 
 interface AquariumWizardProps {
   onClose: () => void;
@@ -39,7 +40,6 @@ const AquariumWizard: React.FC<AquariumWizardProps> = ({ onClose, handleAddAquar
 
   const [isStepValid, setIsStepValid] = useState(false); 
   const [showChat, setShowChat] = useState(false);
-
 
   // Create a ref to access the chat container
   const chatContainerRef = useRef<HTMLDivElement>(null);
@@ -143,27 +143,59 @@ const AquariumWizard: React.FC<AquariumWizardProps> = ({ onClose, handleAddAquar
   // const steps = ['Aquarium Type', 'Tank Size', 'Species (Optional)', 'Plants (Optional)', 'Equipment (Optional)', 'Summary'];
   const steps = ['Aquarium Type', 'Tank Size', 'Summary'];
 
+  useEffect(() => {
+    const handleEscapeKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        handleClose();
+      }
+    };
+    document.addEventListener('keydown', handleEscapeKey);
+    return () => document.removeEventListener('keydown', handleEscapeKey);
+  }, []);
+  
+  const handleClose = () => {
+    onClose();
+    resetWizard();
+  };
+
   return (
-    <Backdrop open={true} sx={{ zIndex: 2000 }}>
-      <Card sx={{
-        width: '800px',
-        padding: '30px',
-        position: 'relative',
-        zIndex: 1001,
-        maxHeight: '90vh',
-        overflowY: 'auto',
-      }}>
+      <Backdrop
+      open={true}
+      sx={{ zIndex: 2000 }}
+      onClick={(event) => {
+        if ((event.target as HTMLElement).id === 'aquarium-wizard-backdrop') {
+          handleClose();
+        }
+      }}
+      id="aquarium-wizard-backdrop"
+    >
+      <Card
+        sx={{
+          width: '800px',
+          padding: '30px',
+          position: 'relative',
+          zIndex: 1001,
+          maxHeight: '90vh',
+          overflowY: 'auto',
+        }}
+        onClick={(e) => e.stopPropagation()} 
+      >
         <Box display="flex" justifyContent="space-between">
-          <Typography variant="h5">Aquarium Setup Wizard</Typography>
-          <Button
+          <IconButton
             onClick={() => {
               onClose();
               resetWizard();
             }}
-            sx={{ fontSize: '1.5rem' }}
+            sx={{
+              position: 'absolute',
+              top: 8,
+              right: 8,
+              color: 'lightgray',
+            }}
           >
-            ×
-          </Button>
+            <CloseIcon />
+          </IconButton>
+          <Typography variant="h5" sx={{ marginLeft: 'auto', marginRight: 'auto' }}>Aquarium Setup Wizard</Typography>
         </Box>
 
         <AquariumWizardProgress activeStep={currentStep} steps={steps} />
@@ -182,7 +214,6 @@ const AquariumWizard: React.FC<AquariumWizardProps> = ({ onClose, handleAddAquar
           )}
           {currentStep === 2 && <SummaryStep aquariumData={aquariumData} setAquariumData={setAquariumData} setIsStepValid={setIsStepValid}/>}
         </CardContent>
-
         <Box display="flex" justifyContent="space-between" mt={2}>
           {currentStep > 0 ? (
             <Button onClick={handlePrev}>Back</Button>
@@ -191,13 +222,11 @@ const AquariumWizard: React.FC<AquariumWizardProps> = ({ onClose, handleAddAquar
           )}
 
           <Box display="flex" gap={2}>
-            <Button
-              variant="outlined"
+            <AIButton
               onClick={() => setShowChat((prev) => !prev)}
-              startIcon={<ChatBubbleIcon />}
+              isChatActive={showChat}
             >
-              {showChat ? "Hide AI" : "Ask AI"}
-            </Button>
+            </AIButton>
 
             {currentStep < steps.length - 1 ? (
               <Button variant="contained" onClick={handleNext} disabled={!isStepValid}>

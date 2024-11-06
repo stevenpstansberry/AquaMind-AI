@@ -49,7 +49,7 @@ const AquariumInhabitantInfoCard: React.FC<AquariumInhabitantInfoCardProps> = ({
       <DialogTitle>{inhabitant.name} Information
         <IconButton
             onClick={onClose}
-            sx={{ position: 'absolute', right: 8, top: 8 }}
+            sx={{ position: 'absolute', right: 8, top: 8, color: (theme) => theme.palette.grey[500],}}
             aria-label="close"
             >
           <CloseIcon />

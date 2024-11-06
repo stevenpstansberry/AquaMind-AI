@@ -96,8 +96,15 @@ func main() {
 	log.Println("Initializing router...")
 	router := mux.NewRouter()
 
-	// Set up routes for user registration and login using the auth package
 	log.Println("Setting up routes...")
+
+	// Health check route
+	router.HandleFunc("/auth/health", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte("OK"))
+	}).Methods("GET")
+
+	// Routes for user registration and login using the auth package
 	router.HandleFunc("/register", auth.RegisterUser).Methods("POST")
 	router.HandleFunc("/login", auth.LoginUser).Methods("POST")
 

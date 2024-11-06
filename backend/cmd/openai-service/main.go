@@ -3,13 +3,15 @@ package main
 import (
 	"log"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/joho/godotenv"
 	"github.com/stevenpstansberry/AquaMind-AI/internal/openai"
 )
 
-// enableCORS is a middleware function that adds headers to allow cross-origin requests and logs the request details.
+// enableCORS is a middleware function that adds headers to allow cross-origin requests
+// and performs an API key check for incoming requests.
 func enableCORS(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		startTime := time.Now()
@@ -27,7 +29,19 @@ func enableCORS(next http.Handler) http.Handler {
 			return
 		}
 
-		// Continue to the next handler if it's not an OPTIONS request
+		// Skip API key check for the health check route
+		if r.URL.Path != "/openai/health" {
+			// Check API key
+			apiKey := r.Header.Get("X-Api-Key")
+			expectedApiKey := os.Getenv("API_KEY")
+			if apiKey != expectedApiKey {
+				log.Printf("Unauthorized request: missing or invalid API key for %s", r.URL.Path)
+				http.Error(w, "Forbidden: Invalid API Key", http.StatusForbidden)
+				return
+			}
+		}
+
+		// Continue to the next handler if the API key is valid or route is exempted
 		next.ServeHTTP(w, r)
 
 		duration := time.Since(startTime)
@@ -44,8 +58,20 @@ func main() {
 	}
 	log.Println(".env file loaded successfully")
 
+	// Ensure the API key is set in the environment
+	if os.Getenv("API_KEY") == "" {
+		log.Fatal("API_KEY environment variable is not set.")
+	}
+
 	// Log server startup
 	log.Println("Starting OpenAI service...")
+
+	// Health check route for the OpenAI service
+	http.HandleFunc("/openai/health", func(w http.ResponseWriter, r *http.Request) {
+		log.Printf("Handling OpenAI health check request: %s %s", r.Method, r.URL.Path)
+		w.WriteHeader(http.StatusOK)
+		log.Println("OpenAI health check request handled successfully")
+	})
 
 	// Set up routes for OpenAI integration and log each route initialization
 	http.HandleFunc("/openai/query", func(w http.ResponseWriter, r *http.Request) {
@@ -54,12 +80,13 @@ func main() {
 		log.Println("OpenAI query request handled successfully")
 	})
 
-	// Apply the CORS middleware to all routes
+	// Apply the CORS and API key middleware to all routes
 	corsHandler := enableCORS(http.DefaultServeMux)
 
 	// Start the OpenAI service and log any errors that occur
-	log.Println("OpenAI service running on port 80")
-	if err := http.ListenAndServe(":80", corsHandler); err != nil {
+	port := ":80"
+	log.Printf("OpenAI service running on port %s", port)
+	if err := http.ListenAndServe(port, corsHandler); err != nil {
 		log.Fatalf("Server encountered an error: %v", err)
 	}
 }
