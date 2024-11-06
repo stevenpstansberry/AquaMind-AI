@@ -104,13 +104,12 @@ const TankSizeStep: React.FC<TankSizeStepProps> = ({ setAquariumData, setIsStepV
           onChange={(e) => handleSizeChange(e.target.value)}
           onBlur={handleBlur}
           error={sizeError}
-          helperText={sizeError ? 'Invalid tank size' : warning || ''}
           InputProps={{
             endAdornment: <InputAdornment position="end">gallons</InputAdornment>,
             inputProps: { min: 1, max: 100000, step: 1, style: { textAlign: 'left', width: '100px' } },
           }}
           sx={{ mx: 1 }}
-          inputRef={sizeInputRef} // Set the ref to the TextField
+          inputRef={sizeInputRef} 
         />
         <Button onClick={() => handleSizeChange(String(Number(customSize) + 1))}>
           +
