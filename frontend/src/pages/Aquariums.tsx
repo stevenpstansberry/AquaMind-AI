@@ -24,19 +24,12 @@ import React, { useState, useEffect,useRef } from 'react';
 import { useAquarium } from '../util/AquariumContext';
 import AquariumSidebar from '../components/aquarium-components/AquariumSidebar';
 import AquariumWizard from '../components/aquarium-components/aquarium-wizard-components/AquariumWizard';
-import { Box, AppBar, Toolbar, Typography, Grid, CardContent, Card, Icon, Tooltip, Snackbar, Alert, Button } from '@mui/material';
+import { Box, AppBar, Toolbar, Typography, Grid,  Snackbar, Alert, Button } from '@mui/material';
 import { createAquarium, updateAquarium as apiUpdateAquarium, deleteAquarium as apiDeleteAquarium } from '../services/APIServices';
-import { ViewSidebar } from '@mui/icons-material';
 import EditAquarium from '../components/aquarium-components/EditAquarium';
 import { fetchSpeciesDetails, fetchPlantDetails, fetchEquipmentDetails } from '../util/DetailsService';
 import AquariumInsights from '../components/ai-components/AquariumInsights';
-
-
-
 import { Aquarium, Equipment, Fish, Plant, WaterParameterEntry } from '../interfaces/Aquarium';
-
-
-// Import the card components
 import FishCard from '../components/aquarium-components/FishCard';
 import PlantCard from '../components/aquarium-components/PlantCard';
 import EquipmentCard from '../components/aquarium-components/EquipmentCard';
