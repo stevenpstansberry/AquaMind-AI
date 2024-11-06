@@ -7,7 +7,7 @@
  */
 
 import React, { useState, useEffect, useRef } from 'react'; 
-import { Card, CardContent, Typography, Button, Box, Backdrop, IconButton } from '@mui/material';
+import { Dialog, Card, CardContent, Typography, Button, Box, Backdrop, IconButton } from '@mui/material';
 import { Close as CloseIcon, ChatBubble as ChatBubbleIcon } from '@mui/icons-material';
 import { v4 as uuidv4 } from 'uuid';
 import AquariumTypeStep from './AquariumTypeStep';
@@ -142,16 +142,43 @@ const AquariumWizard: React.FC<AquariumWizardProps> = ({ onClose, handleAddAquar
   // const steps = ['Aquarium Type', 'Tank Size', 'Species (Optional)', 'Plants (Optional)', 'Equipment (Optional)', 'Summary'];
   const steps = ['Aquarium Type', 'Tank Size', 'Summary'];
 
+  useEffect(() => {
+    const handleEscapeKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        handleClose();
+      }
+    };
+    document.addEventListener('keydown', handleEscapeKey);
+    return () => document.removeEventListener('keydown', handleEscapeKey);
+  }, []);
+  
+  const handleClose = () => {
+    onClose();
+    resetWizard();
+  };
+
   return (
-    <Backdrop open={true} sx={{ zIndex: 2000 }}>
-      <Card sx={{
-        width: '800px',
-        padding: '30px',
-        position: 'relative',
-        zIndex: 1001,
-        maxHeight: '90vh',
-        overflowY: 'auto',
-      }}>
+      <Backdrop
+      open={true}
+      sx={{ zIndex: 2000 }}
+      onClick={(event) => {
+        if ((event.target as HTMLElement).id === 'aquarium-wizard-backdrop') {
+          handleClose();
+        }
+      }}
+      id="aquarium-wizard-backdrop"
+    >
+      <Card
+        sx={{
+          width: '800px',
+          padding: '30px',
+          position: 'relative',
+          zIndex: 1001,
+          maxHeight: '90vh',
+          overflowY: 'auto',
+        }}
+        onClick={(e) => e.stopPropagation()} 
+      >
         <Box display="flex" justifyContent="space-between">
           <IconButton
             onClick={() => {
