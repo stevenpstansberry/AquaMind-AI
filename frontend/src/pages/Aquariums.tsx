@@ -34,6 +34,7 @@ import FishCard from '../components/aquarium-components/FishCard';
 import PlantCard from '../components/aquarium-components/PlantCard';
 import EquipmentCard from '../components/aquarium-components/EquipmentCard';
 import ParametersCard from '../components/aquarium-components/ParametersCard';
+import ReactGA from 'react-ga';
 
 
 
@@ -44,6 +45,12 @@ const Aquariums: React.FC = () => {
   const [collapsed, setCollapsed] = useState<boolean>(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const isFirstRender = useRef(true);
+
+
+  // Track page views on route changes
+  useEffect(() => {
+    ReactGA.pageview(window.location.pathname + window.location.search);
+  }, [window.location.pathname, window.location.search]);
 
   // Effect to set the default aquarium when component mounts
   useEffect(() => {

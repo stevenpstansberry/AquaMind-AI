@@ -26,6 +26,7 @@
     "react-chartjs-2": "^5.2.0",
     "react-datetime": "^3.2.0",
     "react-dom": "^18.3.1",
+    "react-ga": "^3.3.1",
     "react-markdown": "^9.0.1",
     "react-router-dom": "^6.26.1",
     "react-scripts": "5.0.1",
