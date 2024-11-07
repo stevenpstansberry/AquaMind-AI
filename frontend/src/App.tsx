@@ -14,7 +14,7 @@
  * @author Steven Stansberry
  */
 
-import React from 'react';
+import React, {useEffect} from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import LoginRegisterCard from './pages/auth-pages/AccountCard';
 import { ThemeContextProvider } from './util/ThemeContext'; 
@@ -23,13 +23,18 @@ import { AquariumProvider } from './util/AquariumContext';
 import PrivateRoute from './routes/PrivateRoute';
 import RegisterEmailCard from './pages/auth-pages/RegisterEmailCard';
 import SignInEmailCard from './pages/auth-pages/SigninEmailCard';
-
-
-// Component Imports
+import ReactGA from 'react-ga';
 import Home from './pages/Home'; 
 import Navbar from './components/Navbar'; 
 import { Settings } from './pages/Pages';
 import Aquariums from './pages/Aquariums';
+
+
+// Initialize Google Analytics
+const measurementId = process.env.REACT_APP_GA_MEASUREMENT_ID;
+if (measurementId) {
+  ReactGA.initialize(measurementId);
+}
 
 // Define a Layout component to conditionally render Navbar
 const Layout: React.FC<React.PropsWithChildren<{}>> = ({ children }) => {
@@ -51,11 +56,17 @@ const Layout: React.FC<React.PropsWithChildren<{}>> = ({ children }) => {
 
 
 const App: React.FC = () => {
+  const location = useLocation();
+
+  // Track page views on route changes
+  useEffect(() => {
+    ReactGA.pageview(location.pathname + location.search);
+  }, [location]);
+
   return (
     <AuthProvider>
       <AquariumProvider>
         <ThemeContextProvider>
-          <Router>
             <Layout>
               <Routes>
                 {/* Public Routes */}
@@ -80,7 +91,6 @@ const App: React.FC = () => {
                 {/* Future Routes */}
               </Routes>
             </Layout>
-          </Router>
         </ThemeContextProvider>  
       </AquariumProvider>  
     </AuthProvider>
