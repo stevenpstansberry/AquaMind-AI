@@ -122,7 +122,7 @@ const AccountCard: React.FC = () => {
         />
         
         {/* Content inside the card */}
-        <Box sx={{ position: 'relative', zIndex: 1 }}>
+        <Box sx={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', height: '100%' }}>
           {/* Logo */}
           <Typography variant="h5" sx={{ fontWeight: 'bold', marginBottom: 2, color: theme.palette.primary.main }}>
             Aquamind
@@ -149,7 +149,7 @@ const AccountCard: React.FC = () => {
           </Tabs>
   
           {/* Content changes based on activeTab */}
-          <Box sx={{ marginTop: 2 }}>
+          <Box sx={{ marginTop: 4, flexGrow: 1 }}> {/* Increased marginTop for more breathing room */}
             {activeTab === 0 ? (
               <>
                 <Button
@@ -169,16 +169,9 @@ const AccountCard: React.FC = () => {
                 >
                   Sign In with Email
                 </Button>
-                <Typography variant="body2" sx={{ marginTop: 2 }}>
-                  Don't have an account?{' '}
-                  <Link to="/account?mode=register" onClick={() => setActiveTab(1)}>
-                    Register
-                  </Link>
-                </Typography>
               </>
             ) : (
               <>
-
                 <GoogleLogin
                   ux_mode='redirect'
                   onSuccess={credentialResponse => {
@@ -189,9 +182,9 @@ const AccountCard: React.FC = () => {
                   }}
                   text='continue_with'
                 />
-
+  
                 <Button
-                  variant="outlined"  // Change variant to outlined for similar border style
+                  variant="outlined"  
                   fullWidth
                   component={Link}
                   to="/register"
@@ -209,9 +202,13 @@ const AccountCard: React.FC = () => {
                     justifyContent: 'center', 
                     alignItems: 'center',
                     position: 'relative',
+                    minWidth: '100%',      
+                    boxSizing: 'border-box', 
                     '&:hover': {
                       backgroundColor: '#f8faff',
-                      borderColor: '#dadce0'  
+                      borderColor: '#dadce0',  
+                      borderWidth: '1px',     
+                      paddingLeft: '33px'    
                     }
                   }}
                 >
@@ -220,16 +217,21 @@ const AccountCard: React.FC = () => {
                   </Box>
                   Continue with Email
                 </Button>
-
-                <Typography variant="body2" sx={{ marginTop: 2 }}>
-                  Already have an account?{' '}
-                  <Link to="#" onClick={() => setActiveTab(0)}>
-                    Sign In
-                  </Link>
-                </Typography>
               </>
             )}
           </Box>
+  
+          {/* Typography moved to the bottom of the Card */}
+          <Typography variant="body2" sx={{ marginTop: 2, textAlign: 'center' }}>
+            {activeTab === 0 ? "Don't have an account?" : "Already have an account?"}{' '}
+            <Link
+              to={activeTab === 0 ? "/account?mode=register" : "#"}
+              onClick={() => setActiveTab(activeTab === 0 ? 1 : 0)}
+              style={{ textDecoration: 'underline', color: '#1876D2' }}
+            >
+              {activeTab === 0 ? "Register" : "Sign In"}
+            </Link>
+          </Typography>
         </Box>
       </Card>
     </Box>
