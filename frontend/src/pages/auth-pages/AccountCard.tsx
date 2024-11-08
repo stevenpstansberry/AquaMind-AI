@@ -13,6 +13,9 @@ import EmailIcon from '@mui/icons-material/Email';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { Link, useLocation } from 'react-router-dom';
 import { useTheme } from '@mui/material/styles';
+import GoogleIcon from '@mui/icons-material/Google';
+
+const clientID = process.env.REACT_APP_GOOGLE_CLIENT_ID;
 
 /**
  * AccountCard component renders a login/register interface with toggling tabs.
@@ -134,7 +137,6 @@ const AccountCard: React.FC = () => {
           <Box sx={{ marginTop: 2 }}>
             {activeTab === 0 ? (
               <>
-                {/*
                 <Button
                   variant="outlined"
                   fullWidth
@@ -143,7 +145,6 @@ const AccountCard: React.FC = () => {
                 >
                   Sign In with Google
                 </Button>
-                */}
                 <Button
                   variant="outlined"
                   fullWidth
@@ -162,7 +163,6 @@ const AccountCard: React.FC = () => {
               </>
             ) : (
               <>
-                {/*
                 <Button
                   variant="outlined"
                   fullWidth
@@ -171,7 +171,6 @@ const AccountCard: React.FC = () => {
                 >
                   Register with Google
                 </Button>
-                */}
                 <Button
                   variant="outlined"
                   fullWidth
