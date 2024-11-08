@@ -220,27 +220,53 @@ const AccountCard: React.FC = () => {
           </Tabs>
   
           {/* Content changes based on activeTab */}
-          <Box sx={{ marginTop: 4, flexGrow: 1 }}> {/* Increased marginTop for more breathing room */}
+          <Box sx={{ marginTop: 4, flexGrow: 1 }}> 
             {activeTab === 0 ? (
               <>
+                <GoogleLogin
+                  onSuccess={handleGoogleResponse}
+                  onError={() => {
+                    console.log('Login Failed');
+                  }}
+                  text='signin_with'
+                />
+
                 <Button
-                  variant="outlined"
+                  variant="outlined"  
                   fullWidth
-                  startIcon={<GoogleIcon />}
-                  sx={{ marginBottom: 2, textTransform: 'none' }}
+                  component={Link}
+                  to="/signin"
+                  sx={{ 
+                    backgroundColor: 'white', 
+                    color: '#3c4043',           
+                    borderColor: '#dadce0',    
+                    borderWidth: '1px',        
+                    borderStyle: 'solid',      
+                    marginBottom: 2, 
+                    marginTop: 1,
+                    paddingLeft: '33px',  
+                    textTransform: 'none', 
+                    display: 'flex', 
+                    justifyContent: 'center', 
+                    alignItems: 'center',
+                    position: 'relative',
+                    minWidth: '100%',      
+                    boxSizing: 'border-box', 
+                    '&:hover': {
+                      backgroundColor: '#f8faff',
+                      borderColor: '#dadce0',  
+                      borderWidth: '1px',     
+                      paddingLeft: '33px'    
+                    }
+                  }}
                 >
-                  Sign In with Google
-                </Button>
-                <Button
-                  variant="outlined"
-                  fullWidth
-                  startIcon={<EmailIcon />}
-                  component={Link} to="/signin"
-                  sx={{ marginBottom: 2, textTransform: 'none' }}
-                >
-                  Sign In with Email
+                  <Box sx={{ position: 'absolute', left: 9 }}>
+                    <EmailIcon />
+                  </Box>
+                  Sign in with Email
                 </Button>
               </>
+
             ) : (
               <>
                 <GoogleLogin
@@ -305,5 +331,28 @@ const AccountCard: React.FC = () => {
     </Box>
   );
 };
+
+
+              /*
+                              <>
+                <Button
+                  variant="outlined"
+                  fullWidth
+                  startIcon={<GoogleIcon />}
+                  sx={{ marginBottom: 2, textTransform: 'none' }}
+                >
+                  Sign In with Google
+                </Button>
+                <Button
+                  variant="outlined"
+                  fullWidth
+                  startIcon={<EmailIcon />}
+                  component={Link} to="/signin"
+                  sx={{ marginBottom: 2, textTransform: 'none' }}
+                >
+                  Sign In with Email
+                </Button>
+              </>
+                */
 
 export default AccountCard;
