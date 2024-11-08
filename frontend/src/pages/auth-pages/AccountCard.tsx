@@ -8,28 +8,38 @@
  */
 
 import React, { useState } from 'react';
-import { Card, Tabs, Tab, Typography, Button, Box } from '@mui/material';
+import { Card, Tabs, Tab, Typography, Button, Box, Snackbar } from '@mui/material';
 import EmailIcon from '@mui/icons-material/Email';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useTheme } from '@mui/material/styles';
 import GoogleIcon from '@mui/icons-material/Google';
 import {  GoogleLogin } from '@react-oauth/google';
 import { jwtDecode } from "jwt-decode";
-import crypto from 'crypto';
+import { registerUser } from '../../services/APIServices';
+import { useAuth } from '../../util/AuthContext';
+
+
 
 
 
 
 /**
  * Generates a random hex string of the given length.
- * Uses the Web Crypto API, which is available in modern browsers.
+ * Uses the Web Crypto API
  */
 const generateRandomHex = (length: number) => {
   const array = new Uint8Array(length / 2);
   window.crypto.getRandomValues(array);
   return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
 };
+
+
+interface LoginResponse {
+  email: string;
+  token: string;
+}
+
 
 
 /**
@@ -42,6 +52,8 @@ const AccountCard: React.FC = () => {
 
   const theme = useTheme();
   const location = useLocation();
+  const navigate = useNavigate();
+  const { login } = useAuth();
 
   // Initialize activeTab based on the URL query parameter
   const searchParams = new URLSearchParams(location.search);
@@ -69,9 +81,9 @@ const AccountCard: React.FC = () => {
    * 
    * @param {any} response - The response from the Google Login.
    */
-  const handleGoogleResponse = (response: any) => {
+  const handleGoogleResponse = async (googleResponse: any) => {
     try {
-      const decodedToken = jwtDecode(response.credential); // Decodes the token
+      const decodedToken = jwtDecode(googleResponse.credential); // Decodes the token
       
       const email = (decodedToken as any).email;
       const firstName = (decodedToken as any).given_name;
@@ -93,6 +105,24 @@ const AccountCard: React.FC = () => {
       };
   
       console.log("User Object:", user);
+
+
+      // Call the registerUser API function
+      const registerUserResponse = await registerUser(user);
+      console.log(registerUserResponse);
+
+
+      const userToStore = {
+        email,
+      }
+
+
+      // Call login from AuthContext and store the token and email
+      const { token } = registerUserResponse as LoginResponse;
+      login({ user: userToStore, token });
+
+      // Navigate to dashboard after successful registration
+      navigate('/aquariums');
 
     } catch (error) {
       console.error("Failed to decode JWT:", error);
