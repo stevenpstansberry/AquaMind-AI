@@ -14,8 +14,11 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { Link, useLocation } from 'react-router-dom';
 import { useTheme } from '@mui/material/styles';
 import GoogleIcon from '@mui/icons-material/Google';
+import {  GoogleLogin } from '@react-oauth/google';
 
-const clientID = process.env.REACT_APP_GOOGLE_CLIENT_ID;
+
+const clientId = process.env.REACT_APP_CLIENT_ID;
+
 
 /**
  * AccountCard component renders a login/register interface with toggling tabs.
@@ -43,6 +46,18 @@ const AccountCard: React.FC = () => {
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setActiveTab(newValue);
   };
+
+
+
+
+
+  // Google response handler
+  const handleGoogleResponse = (response: any) => {
+    console.log("Encoded JWT ID token: " + response.credential);
+    // Here you can decode the token or pass it to your backend for user authentication
+  };
+
+
   
   return (
     <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
@@ -163,23 +178,49 @@ const AccountCard: React.FC = () => {
               </>
             ) : (
               <>
+
+                <GoogleLogin
+                  ux_mode='redirect'
+                  onSuccess={credentialResponse => {
+                    console.log(credentialResponse);
+                  }}
+                  onError={() => {
+                    console.log('Login Failed');
+                  }}
+                  text='continue_with'
+                />
+
                 <Button
-                  variant="outlined"
+                  variant="outlined"  // Change variant to outlined for similar border style
                   fullWidth
-                  startIcon={<GoogleIcon />}
-                  sx={{ marginBottom: 2, textTransform: 'none' }}
+                  component={Link}
+                  to="/register"
+                  sx={{ 
+                    backgroundColor: 'white', 
+                    color: '#3c4043',           
+                    borderColor: '#dadce0',    
+                    borderWidth: '1px',        
+                    borderStyle: 'solid',      
+                    marginBottom: 2, 
+                    marginTop: 1,
+                    paddingLeft: '33px',  
+                    textTransform: 'none', 
+                    display: 'flex', 
+                    justifyContent: 'center', 
+                    alignItems: 'center',
+                    position: 'relative',
+                    '&:hover': {
+                      backgroundColor: '#f8faff',
+                      borderColor: '#dadce0'  
+                    }
+                  }}
                 >
-                  Register with Google
+                  <Box sx={{ position: 'absolute', left: 9 }}>
+                    <EmailIcon />
+                  </Box>
+                  Continue with Email
                 </Button>
-                <Button
-                  variant="outlined"
-                  fullWidth
-                  startIcon={<EmailIcon />}
-                  component={Link} to="/register"
-                  sx={{ marginBottom: 2, textTransform: 'none' }}
-                >
-                  Register with Email
-                </Button>
+
                 <Typography variant="body2" sx={{ marginTop: 2 }}>
                   Already have an account?{' '}
                   <Link to="#" onClick={() => setActiveTab(0)}>
