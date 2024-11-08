@@ -15,9 +15,21 @@ import { Link, useLocation } from 'react-router-dom';
 import { useTheme } from '@mui/material/styles';
 import GoogleIcon from '@mui/icons-material/Google';
 import {  GoogleLogin } from '@react-oauth/google';
+import { jwtDecode } from "jwt-decode";
+import crypto from 'crypto';
 
 
-const clientId = process.env.REACT_APP_CLIENT_ID;
+
+
+/**
+ * Generates a random hex string of the given length.
+ * Uses the Web Crypto API, which is available in modern browsers.
+ */
+const generateRandomHex = (length: number) => {
+  const array = new Uint8Array(length / 2);
+  window.crypto.getRandomValues(array);
+  return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
+};
 
 
 /**
@@ -51,12 +63,41 @@ const AccountCard: React.FC = () => {
 
 
 
-  // Google response handler
+  /**
+   * Handles the response from Google Login.
+   * Decodes the JWT credential and prints the decoded information to the console.
+   * 
+   * @param {any} response - The response from the Google Login.
+   */
   const handleGoogleResponse = (response: any) => {
-    console.log("Encoded JWT ID token: " + response.credential);
-    // Here you can decode the token or pass it to your backend for user authentication
-  };
+    try {
+      const decodedToken = jwtDecode(response.credential); // Decodes the token
+      
+      const email = (decodedToken as any).email;
+      const firstName = (decodedToken as any).given_name;
+  
+      // Generate a random password and username
+      const password = generateRandomHex(32); 
+      const username = generateRandomHex(8);  
+  
+      const subscribe = false;
+      const createdAt = new Date();
+  
+      const user = {
+        username,
+        email,
+        first_name: firstName,
+        password,
+        subscribe: subscribe ? 'true' : 'false',
+        created_at: createdAt.toISOString(),
+      };
+  
+      console.log("User Object:", user);
 
+    } catch (error) {
+      console.error("Failed to decode JWT:", error);
+    }
+  };
 
   
   return (
@@ -173,10 +214,7 @@ const AccountCard: React.FC = () => {
             ) : (
               <>
                 <GoogleLogin
-                  ux_mode='redirect'
-                  onSuccess={credentialResponse => {
-                    console.log(credentialResponse);
-                  }}
+                  onSuccess={handleGoogleResponse}
                   onError={() => {
                     console.log('Login Failed');
                   }}

@@ -176,7 +176,7 @@ export const healthCheck = async () => {
  *
  * @async
  * @function registerUser
- * @param {Object} userData - The user data for registration (email, password, fullName).
+ * @param {Object} userData - The user data for registration (email, password, firstName).
  * @returns {Promise<Object>} Response data from the API, including the JWT token.
  */
 export const registerUser = async (userData) => {
