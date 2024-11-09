@@ -391,6 +391,7 @@ const Aquariums: React.FC = () => {
         </Alert>
       </Snackbar>
   
+      {/* Edit Aquarium Dialog */}
       {currentAquarium && (
         <EditAquarium
           aquarium={currentAquarium}

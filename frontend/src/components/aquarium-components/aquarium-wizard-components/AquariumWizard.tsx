@@ -8,13 +8,10 @@
 
 import React, { useState, useEffect, useRef } from 'react'; 
 import { Dialog, Card, CardContent, Typography, Button, Box, Backdrop, IconButton } from '@mui/material';
-import { Close as CloseIcon, ChatBubble as ChatBubbleIcon } from '@mui/icons-material';
+import { Close as CloseIcon } from '@mui/icons-material';
 import { v4 as uuidv4 } from 'uuid';
 import AquariumTypeStep from './AquariumTypeStep';
 import TankSizeStep from './TankSizeStep';
-import SpeciesSelectionStep from './SpeciesSelectionStep';
-import PlantSelectionStep from './PlantSelectionStep'; 
-import EquipmentStep from './EquipmentStep';
 import SummaryStep from './SummaryStep';
 import AquariumWizardProgress from './AquariumWizardProgress';
 import AIChatInterface from '../../ai-components/AIChatInterface'; 
@@ -202,18 +199,9 @@ const AquariumWizard: React.FC<AquariumWizardProps> = ({ onClose, handleAddAquar
         <CardContent>
           {currentStep === 0 && <AquariumTypeStep setAquariumData={setAquariumData} setIsStepValid={setIsStepValid} aquariumData={aquariumData} />}
           {currentStep === 1 && <TankSizeStep setAquariumData={setAquariumData} setIsStepValid={setIsStepValid} aquariumData={aquariumData} />}
-          {currentStep === 3 && <SpeciesSelectionStep setAquariumData={setAquariumData} aquariumData={aquariumData} setIsStepValid={setIsStepValid}/>}
-          {currentStep === 4 && <PlantSelectionStep setAquariumData={setAquariumData} aquariumData={aquariumData} setIsStepValid={setIsStepValid}/>}
-          {currentStep === 5 && (
-            <EquipmentStep
-              key={currentStep}
-              setAquariumData={setAquariumData}
-              setIsStepValid={setIsStepValid}
-              aquariumData={aquariumData}
-            />
-          )}
           {currentStep === 2 && <SummaryStep aquariumData={aquariumData} setAquariumData={setAquariumData} setIsStepValid={setIsStepValid}/>}
         </CardContent>
+        
         <Box display="flex" justifyContent="space-between" mt={2}>
           {currentStep > 0 ? (
             <Button onClick={handlePrev}>Back</Button>
