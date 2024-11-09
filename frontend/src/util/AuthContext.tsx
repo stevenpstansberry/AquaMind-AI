@@ -84,6 +84,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setUser(null);
     setToken(null);
     localStorage.clear(); // Clear all local storage
+    sessionStorage.clear();
+
     window.location.reload(); // Reload the page to clear any remaining state
   };
 
