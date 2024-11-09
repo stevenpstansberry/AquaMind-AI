@@ -38,12 +38,12 @@ const AquariumSidebar: React.FC<AquariumSidebarProps> = ({
   const theme = useTheme();
 
   const navbarHeight = 64;
-  
+
   return (
     <Box
       sx={{
-        width: collapsed ? '60px' : '200px',
-        height: `100%`,
+        width: collapsed ? '60px' : '220px',
+        height: `calc(100vh - ${navbarHeight}px)`,
         backgroundColor: theme.palette.background.default,
         position: 'fixed',
         left: 0,
@@ -53,14 +53,7 @@ const AquariumSidebar: React.FC<AquariumSidebarProps> = ({
         color: theme.palette.text.primary,
         transition: 'width 0.3s',
         overflow: 'hidden',
-        zIndex: 5 
-      }}
-    >
-    <Box
-      sx={{
-        overflow: 'hidden',
-        width: collapsed ? '60px' : '240px', // Adjust widths as needed
-        transition: 'width 0.3s',
+        zIndex: 5,
       }}
     >
       {/* Header Area */}
@@ -71,6 +64,7 @@ const AquariumSidebar: React.FC<AquariumSidebarProps> = ({
           justifyContent: 'flex-start',
           alignItems: 'center',
           padding: '10px',
+          paddingBottom: 0,
           borderBottom: `1px solid ${theme.palette.divider}`,
         }}
       >
@@ -102,20 +96,18 @@ const AquariumSidebar: React.FC<AquariumSidebarProps> = ({
             transition: 'opacity 0.3s',
             overflow: 'hidden',
             textOverflow: 'ellipsis',
-            flexGrow: 1,
+            fontSize: '1rem',
           }}
         >
           Your Aquariums
         </Typography>
       </Box>
-    </Box>
+
 
       {/* List Area */}
       <Box
         sx={{
           flexGrow: 1,
-          overflowY: 'auto',
-          width: '100%',
           padding: '0 10px', // Apply horizontal padding
           display: 'flex',
           flexDirection: 'column',
@@ -123,10 +115,12 @@ const AquariumSidebar: React.FC<AquariumSidebarProps> = ({
         }}
       >
         {aquariums.length > 0 ? (
-          <List sx={{ width: '100%' }}>
+          <List disablePadding sx={{ width: '100%' }}>
             {aquariums.map((aquarium) => (
               <ListItem
                 key={aquarium.id}
+                disableGutters
+                disablePadding
                 sx={{
                   width: '100%',
                   display: 'flex',
@@ -138,6 +132,7 @@ const AquariumSidebar: React.FC<AquariumSidebarProps> = ({
                   borderRadius: '4px',
                   minHeight: '40px',
                   maxHeight: '40px',
+                  margin: 0,
                   padding: '8px',
                   '&:hover': {
                     backgroundColor: theme.palette.action.hover,
@@ -169,7 +164,7 @@ const AquariumSidebar: React.FC<AquariumSidebarProps> = ({
                     noWrap
                     sx={{
                       ml: 1,
-                      display: collapsed ? 'none' : 'block',
+                      opacity : collapsed ? 0 : 1, 
                       overflow: 'hidden',
                       textOverflow: 'ellipsis',
                       flexGrow: 1,
@@ -189,6 +184,7 @@ const AquariumSidebar: React.FC<AquariumSidebarProps> = ({
                     size="small"
                     sx={{
                       ml: 1,
+                      opacity: collapsed ? 0 : 1
                     }}
                   >
                     <EditIcon fontSize="small" />
@@ -212,32 +208,33 @@ const AquariumSidebar: React.FC<AquariumSidebarProps> = ({
       {/* Footer Area */}
       <Box
         sx={{
-          flexShrink: 0, // Prevent shrinking
+          flexShrink: 0, 
           width: '100%',
           padding: '10px',
           display: 'flex',
           justifyContent: collapsed ? 'center' : 'flex-start',
         }}
       >
-        <Tooltip title="Add a new aquarium" placement={collapsed ? 'right' : 'top'}>
-          {collapsed ? (
+        {collapsed ? (
+          <Tooltip title="Add a new aquarium" placement="right">
             <IconButton color="primary" onClick={onOpenWizard}>
               <AddIcon />
             </IconButton>
-          ) : (
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={onOpenWizard}
-              sx={{
-                width: '100%',
-                whiteSpace: 'nowrap',
-              }}
-            >
-              + Add New Aquarium
-            </Button>
-          )}
-        </Tooltip>
+          </Tooltip>
+        ) : (
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={onOpenWizard}
+            sx={{
+              width: '100%',
+              whiteSpace: 'nowrap',
+              opacity: collapsed ? 0 : 1,  // Hide button when collapsed
+            }}
+          >
+            + Add New Aquarium
+          </Button>
+        )}
       </Box>
     </Box>
   );
