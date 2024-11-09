@@ -372,9 +372,15 @@ const Aquariums: React.FC = () => {
                 </>
               )}
             </Box>
-  
+            
             {/* Bottom Section for Aquarium Insights */}
+            <Box
+              sx={{
+                paddingTop: '20px',
+              }}
+            >
             {currentAquarium && <AquariumInsights aquarium={currentAquarium} />}
+            </Box>
           </div>
         </div>
       )}
