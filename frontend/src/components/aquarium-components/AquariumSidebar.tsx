@@ -157,6 +157,7 @@ const AquariumSidebar: React.FC<AquariumSidebarProps> = ({
                 <Typography
                   noWrap
                   sx={{
+                    paddingLeft: '7px',
                     ml: 1,
                     opacity: collapsed ? 0 : 1,
                     overflow: 'hidden',
