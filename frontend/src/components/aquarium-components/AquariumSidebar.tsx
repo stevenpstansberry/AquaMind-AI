@@ -124,7 +124,7 @@ const AquariumSidebar: React.FC<AquariumSidebarProps> = ({
                 sx={{
                   width: '100%',
                   display: 'flex',
-                  justifyContent: 'space-between',
+                  justifyContent: collapsed ? 'center' : 'space-between',
                   alignItems: 'center',
                   cursor: 'pointer',
                   backgroundColor:
@@ -133,46 +133,39 @@ const AquariumSidebar: React.FC<AquariumSidebarProps> = ({
                   minHeight: '40px',
                   maxHeight: '40px',
                   margin: 0,
-                  padding: '8px',
+                  paddingLeft: '4px', 
                   '&:hover': {
                     backgroundColor: theme.palette.action.hover,
                   },
                 }}
                 onClick={() => setCurrentAquarium(aquarium)}
               >
-                <Box
+                <Tooltip title={aquarium.name} placement="right">
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center', // Center the icon inside the Box
+                      flexShrink: 0,
+                      paddingLeft: '4px',
+                    }}
+                    component="div"
+                  >
+                    <AquariumIcon fontSize="24" />
+                  </Box>
+                </Tooltip>
+                <Typography
+                  noWrap
                   sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    flexShrink: 0,
+                    ml: 1,
+                    opacity: collapsed ? 0 : 1,
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
                     flexGrow: 1,
                   }}
                 >
-                  <Tooltip title={aquarium.name} placement="right">
-                    <Box
-                      sx={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        flexShrink: 0,
-                      }}
-                      component="div"
-                    >
-                      <AquariumIcon fontSize="small" />
-                    </Box>
-                  </Tooltip>
-                  <Typography
-                    noWrap
-                    sx={{
-                      ml: 1,
-                      opacity : collapsed ? 0 : 1, 
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      flexGrow: 1,
-                    }}
-                  >
-                    {aquarium.name}
-                  </Typography>
-                </Box>
+                  {aquarium.name}
+                </Typography>
                 {!collapsed && (
                   <IconButton
                     edge="end"
@@ -184,7 +177,7 @@ const AquariumSidebar: React.FC<AquariumSidebarProps> = ({
                     size="small"
                     sx={{
                       ml: 1,
-                      opacity: collapsed ? 0 : 1
+                      opacity: collapsed ? 0 : 1,
                     }}
                   >
                     <EditIcon fontSize="small" />
