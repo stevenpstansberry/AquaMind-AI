@@ -2,10 +2,11 @@
 package auth
 
 import (
-    "net/http"
-    "strings"
-    "github.com/stevenpstansberry/AquaMind-AI/internal/util"
-    "log"
+	"log"
+	"net/http"
+	"strings"
+
+	utils "github.com/stevenpstansberry/AquaMind-AI/internal/util"
 )
 
 // JWTAuthMiddleware is an HTTP middleware that protects routes by verifying the presence and validity of a JWT token.
@@ -16,7 +17,8 @@ import (
 // This middleware should be used to wrap protected routes.
 //
 // Example:
-//   http.HandleFunc("/protected", middlewares.JWTAuthMiddleware(protectedHandler))
+//
+//	http.HandleFunc("/protected", middlewares.JWTAuthMiddleware(protectedHandler))
 //
 // Params:
 //   - next: the HTTP handler that should be executed if the token is valid.
@@ -24,28 +26,28 @@ import (
 // Returns:
 //   - http.HandlerFunc: a wrapped HTTP handler that verifies JWT authentication.
 func JWTAuthMiddleware(next http.HandlerFunc) http.HandlerFunc {
-    return func(w http.ResponseWriter, r *http.Request) {
-        authHeader := r.Header.Get("Authorization")
-        if authHeader == "" {
-            http.Error(w, "Missing token", http.StatusUnauthorized)
-            return
-        }
+	return func(w http.ResponseWriter, r *http.Request) {
+		authHeader := r.Header.Get("Authorization")
+		if authHeader == "" {
+			http.Error(w, "Missing token", http.StatusUnauthorized)
+			return
+		}
 
-        // Extract the token from the Authorization header
-        tokenString := strings.TrimPrefix(authHeader, "Bearer ")
+		// Extract the token from the Authorization header
+		tokenString := strings.TrimPrefix(authHeader, "Bearer ")
 
-        // Validate the JWT token
-        claims, err := utils.ValidateJWT(tokenString)
-        if err != nil {
-            http.Error(w, "Invalid token", http.StatusUnauthorized)
-            return
-        }
+		// Validate the JWT token
+		claims, err := utils.ValidateJWT(tokenString)
+		if err != nil {
+			http.Error(w, "Invalid token", http.StatusUnauthorized)
+			return
+		}
 
-        log.Printf("Authenticated user: %s", claims.Email)
+		log.Printf("Authenticated user: %s", claims.Email)
 
-        // Optionally, you can pass claims in the request context here if needed
+		// Optionally, you can pass claims in the request context here if needed
 
-        // Call the next handler if token is valid
-        next.ServeHTTP(w, r)
-    }
+		// Call the next handler if token is valid
+		next.ServeHTTP(w, r)
+	}
 }
