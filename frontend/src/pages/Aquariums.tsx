@@ -301,7 +301,7 @@ const Aquariums: React.FC = () => {
           <div
             key={currentAquarium?.id} // Unique key to reset state on aquarium switch
             style={{
-              marginLeft: collapsed ? '60px' : '250px',
+              marginLeft: collapsed ? '60px' : '220px',
               transition: 'margin-left 0.3s',
               padding: '20px',
               width: '100%',
@@ -391,6 +391,7 @@ const Aquariums: React.FC = () => {
         </Alert>
       </Snackbar>
   
+      {/* Edit Aquarium Dialog */}
       {currentAquarium && (
         <EditAquarium
           aquarium={currentAquarium}

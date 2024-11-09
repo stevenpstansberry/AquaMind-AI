@@ -21,11 +21,11 @@ a:hover {
 }
 
 .content p {
-  @apply my-6;
+  @apply my-2;
 }
 
 .content ul {
-  @apply my-6;
+  @apply my-2;
 }
 
 .clipped-image {
