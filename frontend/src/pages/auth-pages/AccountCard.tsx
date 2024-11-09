@@ -7,7 +7,7 @@
  * users to either sign in or register using Google (OAuth) or email. 
  */
 
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { Card, Tabs, Tab, Typography, Button, Box, Snackbar } from '@mui/material';
 import EmailIcon from '@mui/icons-material/Email';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
@@ -55,11 +55,19 @@ const AccountCard: React.FC = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
 
+
   // Initialize activeTab based on the URL query parameter
   const searchParams = new URLSearchParams(location.search);
   const initialMode = searchParams.get('mode') === 'register' ? 1 : 0;
   const [activeTab, setActiveTab] = useState(initialMode); // 0 -> Login, 1 -> Register
 
+    // Reload the page when navigating from the home page to ensure Google login works correctly
+    useEffect(() => {
+      // Check if the previous page was the home page or another specific condition
+      if (location.state && location.state.fromHome) {
+        window.location.reload();
+      }
+    }, [location.state]);
 
   /**
    * Handler to change between Sign In and Register tabs.
