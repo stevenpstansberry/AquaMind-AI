@@ -16,7 +16,7 @@ import { useTheme } from '@mui/material/styles';
 import GoogleIcon from '@mui/icons-material/Google';
 import {  GoogleLogin } from '@react-oauth/google';
 import { jwtDecode } from "jwt-decode";
-import { registerUser } from '../../services/APIServices';
+import { registerUser, OAuthGoogle } from '../../services/APIServices';
 import { useAuth } from '../../util/AuthContext';
 
 
@@ -83,33 +83,33 @@ const AccountCard: React.FC = () => {
    */
   const handleGoogleResponse = async (googleResponse: any) => {
     try {
-      const decodedToken = jwtDecode(googleResponse.credential); // Decodes the token
+      // const decodedToken = jwtDecode(googleResponse.credential); // Decodes the token
       
-      const email = (decodedToken as any).email;
-      const firstName = (decodedToken as any).given_name;
+      // const email = (decodedToken as any).email;
+      // const firstName = (decodedToken as any).given_name;
   
-      // Generate a random password and username
-      const password = generateRandomHex(32); 
-      const username = generateRandomHex(8);  
+      // // Generate a random password and username
+      // const password = generateRandomHex(32); 
+      // const username = generateRandomHex(8);  
   
-      const subscribe = false;
-      const createdAt = new Date();
+      // const subscribe = false;
+      // const createdAt = new Date();
   
-      const user = {
-        username,
-        email,
-        first_name: firstName,
-        password,
-        subscribe: subscribe ? 'true' : 'false',
-        created_at: createdAt.toISOString(),
-      };
+      // const user = {
+      //   username,
+      //   email,
+      //   first_name: firstName,
+      //   password,
+      //   subscribe: subscribe ? 'true' : 'false',
+      //   created_at: createdAt.toISOString(),
+      // };
   
-      console.log("User Object:", user);
+      // console.log("User Object:", user);
 
 
-      // Call the registerUser API function
-      const registerUserResponse = await registerUser(user);
-      console.log(registerUserResponse);
+      // // Call the registerUser API function
+      // const registerUserResponse = await registerUser(user);
+      // console.log(registerUserResponse); 
 
 
       const userToStore = {
