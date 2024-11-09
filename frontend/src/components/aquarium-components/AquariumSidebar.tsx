@@ -74,7 +74,7 @@ const AquariumSidebar: React.FC<AquariumSidebarProps> = ({
           borderBottom: `1px solid ${theme.palette.divider}`,
         }}
       >
-        <Tooltip title={collapsed ? 'Expand Sidebar' : 'Collapse Sidebar'} placement="right">
+        <Tooltip title={collapsed ? 'Expand Sidebar' : 'Collapse Sidebar'} placement="top">
           <IconButton
             onClick={() => setCollapsed(!collapsed)}
             sx={{
@@ -136,6 +136,8 @@ const AquariumSidebar: React.FC<AquariumSidebarProps> = ({
                   backgroundColor:
                     currentAquarium?.id === aquarium.id ? theme.palette.action.selected : 'inherit',
                   borderRadius: '4px',
+                  minHeight: '40px',
+                  maxHeight: '40px',
                   padding: '8px',
                   '&:hover': {
                     backgroundColor: theme.palette.action.hover,
