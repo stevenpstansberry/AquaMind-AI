@@ -172,6 +172,18 @@ export const healthCheck = async () => {
 };
 
 /**
+ * Registers or logs in a user via Google OAuth by sending a POST request to the API.
+ *
+ * @async
+ * @function OAuthGoogle
+ * @param {Object} JWT - The JWT token provided by Google.
+ * @returns {Promise<Object>} Response data from the API, including the JWT token.
+ */
+export const OAuthGoogle = async (JWT) => {
+  return postToAPI("/oauth", JWT);
+};
+
+/**
  * Registers a new user by sending a POST request to the API.
  *
  * @async
