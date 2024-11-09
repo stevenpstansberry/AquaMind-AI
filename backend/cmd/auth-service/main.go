@@ -50,6 +50,7 @@ func main() {
 	log.Printf("DB_USER: %s", os.Getenv("DB_USER"))
 	log.Printf("DB_NAME: %s", os.Getenv("DB_NAME"))
 	log.Printf("DB_SSLMODE: %s", os.Getenv("DB_SSLMODE"))
+	log.Printf("CLIENT_ID: %s", os.Getenv("CLIENT_ID"))
 
 	// Build the connection string using environment variables
 	log.Println("Building connection string...")
@@ -107,6 +108,9 @@ func main() {
 	// Routes for user registration and login using the auth package
 	router.HandleFunc("/register", auth.RegisterUser).Methods("POST")
 	router.HandleFunc("/login", auth.LoginUser).Methods("POST")
+
+	// Google OAuth login route
+	router.HandleFunc("/oauth", auth.HandleGoogleOAuth).Methods("POST")
 
 	// Aquarium routes with JWT authentication middleware
 	router.Handle("/aquariums", auth.JWTAuthMiddleware(http.HandlerFunc(auth.CreateAquariumHandler))).Methods("POST")
