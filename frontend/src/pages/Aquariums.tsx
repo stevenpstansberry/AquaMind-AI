@@ -377,6 +377,7 @@ const Aquariums: React.FC = () => {
             <Box
               sx={{
                 paddingTop: '20px',
+                paddingBottom: '30px',
               }}
             >
             {currentAquarium && <AquariumInsights aquarium={currentAquarium} />}
