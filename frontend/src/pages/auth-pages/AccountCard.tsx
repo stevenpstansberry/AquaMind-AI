@@ -7,12 +7,40 @@
  * users to either sign in or register using Google (OAuth) or email. 
  */
 
-import React, { useState } from 'react';
-import { Card, Tabs, Tab, Typography, Button, Box } from '@mui/material';
+import React, { useState,useEffect } from 'react';
+import { Card, Tabs, Tab, Typography, Button, Box, Snackbar } from '@mui/material';
 import EmailIcon from '@mui/icons-material/Email';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useTheme } from '@mui/material/styles';
+import GoogleIcon from '@mui/icons-material/Google';
+import {  GoogleLogin } from '@react-oauth/google';
+import { jwtDecode } from "jwt-decode";
+import { registerUser, OAuthGoogle } from '../../services/APIServices';
+import { useAuth } from '../../util/AuthContext';
+
+
+
+
+
+
+/**
+ * Generates a random hex string of the given length.
+ * Uses the Web Crypto API
+ */
+const generateRandomHex = (length: number) => {
+  const array = new Uint8Array(length / 2);
+  window.crypto.getRandomValues(array);
+  return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
+};
+
+
+interface LoginResponse {
+  email: string;
+  token: string;
+}
+
+
 
 /**
  * AccountCard component renders a login/register interface with toggling tabs.
@@ -24,12 +52,22 @@ const AccountCard: React.FC = () => {
 
   const theme = useTheme();
   const location = useLocation();
+  const navigate = useNavigate();
+  const { login } = useAuth();
+
 
   // Initialize activeTab based on the URL query parameter
   const searchParams = new URLSearchParams(location.search);
   const initialMode = searchParams.get('mode') === 'register' ? 1 : 0;
   const [activeTab, setActiveTab] = useState(initialMode); // 0 -> Login, 1 -> Register
 
+    // Reload the page when navigating from the home page to ensure Google login works correctly
+    useEffect(() => {
+      // Check if the previous page was the home page or another specific condition
+      if (location.state && location.state.fromHome) {
+        window.location.reload();
+      }
+    }, [location.state]);
 
   /**
    * Handler to change between Sign In and Register tabs.
@@ -40,6 +78,41 @@ const AccountCard: React.FC = () => {
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setActiveTab(newValue);
   };
+
+
+
+
+
+  /**
+   * Handles the response from Google Login.
+   * Decodes the JWT credential and prints the decoded information to the console.
+   * 
+   * @param {any} response - The response from the Google Login.
+   */
+  const handleGoogleResponse = async (googleResponse: any) => {
+    try {
+
+      // Verify the Google OAuth token and get the user's email
+      const OAuthRequest= {
+        token: googleResponse.credential,
+      }
+      const OAuthResponse = await OAuthGoogle(OAuthRequest);
+
+      // Call login from AuthContext and store the token and email
+      const { token, email } = OAuthResponse as LoginResponse;
+      const userToStore = {
+        email,
+      }
+      login({ user: userToStore, token });
+
+      // Navigate to dashboard after successful registration
+      navigate('/aquariums');
+
+    } catch (error) {
+      console.error("Failed to decode JWT:", error);
+    }
+  };
+
   
   return (
     <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
@@ -104,7 +177,7 @@ const AccountCard: React.FC = () => {
         />
         
         {/* Content inside the card */}
-        <Box sx={{ position: 'relative', zIndex: 1 }}>
+        <Box sx={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', height: '100%' }}>
           {/* Logo */}
           <Typography variant="h5" sx={{ fontWeight: 'bold', marginBottom: 2, color: theme.palette.primary.main }}>
             Aquamind
@@ -131,10 +204,121 @@ const AccountCard: React.FC = () => {
           </Tabs>
   
           {/* Content changes based on activeTab */}
-          <Box sx={{ marginTop: 2 }}>
+          <Box sx={{ marginTop: 4, flexGrow: 1 }}> 
             {activeTab === 0 ? (
               <>
-                {/*
+                <GoogleLogin
+                  onSuccess={handleGoogleResponse}
+                  onError={() => {
+                    console.log('Login Failed');
+                  }}
+                  text='signin_with'
+                />
+
+                <Button
+                  variant="outlined"  
+                  fullWidth
+                  component={Link}
+                  to="/signin"
+                  sx={{ 
+                    backgroundColor: 'white', 
+                    color: '#3c4043',           
+                    borderColor: '#dadce0',    
+                    borderWidth: '1px',        
+                    borderStyle: 'solid',      
+                    marginBottom: 2, 
+                    marginTop: 1,
+                    paddingLeft: '33px',  
+                    textTransform: 'none', 
+                    display: 'flex', 
+                    justifyContent: 'center', 
+                    alignItems: 'center',
+                    position: 'relative',
+                    minWidth: '100%',      
+                    boxSizing: 'border-box', 
+                    '&:hover': {
+                      backgroundColor: '#f8faff',
+                      borderColor: '#dadce0',  
+                      borderWidth: '1px',     
+                      paddingLeft: '33px'    
+                    }
+                  }}
+                >
+                  <Box sx={{ position: 'absolute', left: 9 }}>
+                    <EmailIcon />
+                  </Box>
+                  Sign in with Email
+                </Button>
+              </>
+
+            ) : (
+              <>
+                <GoogleLogin
+                  onSuccess={handleGoogleResponse}
+                  onError={() => {
+                    console.log('Login Failed');
+                  }}
+                  text='continue_with'
+                />
+  
+                <Button
+                  variant="outlined"  
+                  fullWidth
+                  component={Link}
+                  to="/register"
+                  sx={{ 
+                    backgroundColor: 'white', 
+                    color: '#3c4043',           
+                    borderColor: '#dadce0',    
+                    borderWidth: '1px',        
+                    borderStyle: 'solid',      
+                    marginBottom: 2, 
+                    marginTop: 1,
+                    paddingLeft: '33px',  
+                    textTransform: 'none', 
+                    display: 'flex', 
+                    justifyContent: 'center', 
+                    alignItems: 'center',
+                    position: 'relative',
+                    minWidth: '100%',      
+                    boxSizing: 'border-box', 
+                    '&:hover': {
+                      backgroundColor: '#f8faff',
+                      borderColor: '#dadce0',  
+                      borderWidth: '1px',     
+                      paddingLeft: '33px'    
+                    }
+                  }}
+                >
+                  <Box sx={{ position: 'absolute', left: 9 }}>
+                    <EmailIcon />
+                  </Box>
+                  Continue with Email
+                </Button>
+              </>
+            )}
+          </Box>
+  
+          {/* Typography moved to the bottom of the Card */}
+          <Typography variant="body2" sx={{ marginTop: 2, textAlign: 'center' }}>
+            {activeTab === 0 ? "Don't have an account?" : "Already have an account?"}{' '}
+            <Link
+              to={activeTab === 0 ? "/account?mode=register" : "#"}
+              onClick={() => setActiveTab(activeTab === 0 ? 1 : 0)}
+              style={{ textDecoration: 'underline', color: '#1876D2' }}
+            >
+              {activeTab === 0 ? "Register" : "Sign In"}
+            </Link>
+          </Typography>
+        </Box>
+      </Card>
+    </Box>
+  );
+};
+
+
+              /*
+                              <>
                 <Button
                   variant="outlined"
                   fullWidth
@@ -143,7 +327,6 @@ const AccountCard: React.FC = () => {
                 >
                   Sign In with Google
                 </Button>
-                */}
                 <Button
                   variant="outlined"
                   fullWidth
@@ -153,47 +336,7 @@ const AccountCard: React.FC = () => {
                 >
                   Sign In with Email
                 </Button>
-                <Typography variant="body2" sx={{ marginTop: 2 }}>
-                  Don't have an account?{' '}
-                  <Link to="/account?mode=register" onClick={() => setActiveTab(1)}>
-                    Register
-                  </Link>
-                </Typography>
               </>
-            ) : (
-              <>
-                {/*
-                <Button
-                  variant="outlined"
-                  fullWidth
-                  startIcon={<GoogleIcon />}
-                  sx={{ marginBottom: 2, textTransform: 'none' }}
-                >
-                  Register with Google
-                </Button>
-                */}
-                <Button
-                  variant="outlined"
-                  fullWidth
-                  startIcon={<EmailIcon />}
-                  component={Link} to="/register"
-                  sx={{ marginBottom: 2, textTransform: 'none' }}
-                >
-                  Register with Email
-                </Button>
-                <Typography variant="body2" sx={{ marginTop: 2 }}>
-                  Already have an account?{' '}
-                  <Link to="#" onClick={() => setActiveTab(0)}>
-                    Sign In
-                  </Link>
-                </Typography>
-              </>
-            )}
-          </Box>
-        </Box>
-      </Card>
-    </Box>
-  );
-};
+                */
 
 export default AccountCard;

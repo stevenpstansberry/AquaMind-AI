@@ -28,6 +28,11 @@ import Home from './pages/Home';
 import Navbar from './components/Navbar'; 
 import { Settings } from './pages/Pages';
 import Aquariums from './pages/Aquariums';
+import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
+
+
+const clientID = process.env.REACT_APP_CLIENT_ID;
+
 
 
 // Initialize Google Analytics
@@ -64,36 +69,38 @@ const App: React.FC = () => {
   }, [location]);
 
   return (
-    <AuthProvider>
-      <AquariumProvider>
-        <ThemeContextProvider>
-            <Layout>
-              <Routes>
-                {/* Public Routes */}
-                <Route path="/" element={<Home />} />
-                <Route path="/home" element={<Home />} />
+    <GoogleOAuthProvider clientId={clientID as string}>
+      <AuthProvider>
+        <AquariumProvider>
+          <ThemeContextProvider>
+              <Layout>
+                <Routes>
+                  {/* Public Routes */}
+                  <Route path="/" element={<Home />} />
+                  <Route path="/home" element={<Home />} />
 
-                {/* Private Routes */}
-                
-                <Route path="/dashboard" element={<Home />} />
-                <Route path="/metrics" element={<Home />} />
-                <Route path="/alerts" element={<Home />} />
-                <Route path="/ai-insights" element={<Home />} />
-                <Route element={<PrivateRoute />}>
-                  <Route path="/settings" element={<Settings />} />
-                  <Route path="/aquariums" element={<Aquariums />} />
-                </Route>
+                  {/* Private Routes */}
+                  
+                  <Route path="/dashboard" element={<Home />} />
+                  <Route path="/metrics" element={<Home />} />
+                  <Route path="/alerts" element={<Home />} />
+                  <Route path="/ai-insights" element={<Home />} />
+                  <Route element={<PrivateRoute />}>
+                    <Route path="/settings" element={<Settings />} />
+                    <Route path="/aquariums" element={<Aquariums />} />
+                  </Route>
 
-                {/* Protected Public Routes */}
-                <Route path="/account" element={<LoginRegisterCard />} />
-                <Route path="/register" element={<RegisterEmailCard />} />
-                <Route path="/signin" element={<SignInEmailCard />} />
-                {/* Future Routes */}
-              </Routes>
-            </Layout>
-        </ThemeContextProvider>  
-      </AquariumProvider>  
-    </AuthProvider>
+                  {/* Protected Public Routes */}
+                  <Route path="/account" element={<LoginRegisterCard />} />
+                  <Route path="/register" element={<RegisterEmailCard />} />
+                  <Route path="/signin" element={<SignInEmailCard />} />
+                  {/* Future Routes */}
+                </Routes>
+              </Layout>
+          </ThemeContextProvider>  
+        </AquariumProvider>  
+      </AuthProvider>
+    </GoogleOAuthProvider>
   );
 };
 

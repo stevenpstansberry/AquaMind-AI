@@ -149,7 +149,7 @@ const RegisterEmailCard: React.FC = () => {
       login({ user: userToStore, token });
 
       // Navigate to dashboard after successful registration
-      navigate('/dashboard');
+      navigate('/aquariums');
     } catch (error) {
       console.error('Error registering user:', error);
       showSnackbar('Error registering user', 'error');
