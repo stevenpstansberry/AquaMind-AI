@@ -88,13 +88,10 @@ const AccountCard: React.FC = () => {
       const OAuthRequest= {
         token: googleResponse.credential,
       }
-
       const OAuthResponse = await OAuthGoogle(OAuthRequest);
-      console.log("OAuth Response: " ,OAuthResponse);
 
       // Call login from AuthContext and store the token and email
       const { token, email } = OAuthResponse as LoginResponse;
-      console.log("Decoded Token:", email, token);
       const userToStore = {
         email,
       }
