@@ -42,11 +42,10 @@ const AquariumSidebar: React.FC<AquariumSidebarProps> = ({
   return (
     <Box
       sx={{
-        width: collapsed ? '60px' : '250px',
-        height: `calc(100vh - ${navbarHeight}px)`,
+        width: collapsed ? '60px' : '200px',
+        height: `100%`,
         backgroundColor: theme.palette.background.default,
         position: 'fixed',
-        top: `${navbarHeight}px`, 
         left: 0,
         boxShadow: '2px 0 5px rgba(0, 0, 0, 0.1)',
         display: 'flex',
@@ -57,10 +56,17 @@ const AquariumSidebar: React.FC<AquariumSidebarProps> = ({
         zIndex: 5 
       }}
     >
+    <Box
+      sx={{
+        overflow: 'hidden',
+        width: collapsed ? '60px' : '240px', // Adjust widths as needed
+        transition: 'width 0.3s',
+      }}
+    >
       {/* Header Area */}
       <Box
         sx={{
-          flexShrink: 0, // Prevent shrinking
+          flexShrink: 0,
           display: 'flex',
           justifyContent: 'flex-start',
           alignItems: 'center',
@@ -88,7 +94,21 @@ const AquariumSidebar: React.FC<AquariumSidebarProps> = ({
             />
           </IconButton>
         </Tooltip>
+        <Typography
+          noWrap
+          sx={{
+            ml: 1,
+            opacity: collapsed ? 0 : 1, // Hide text visually
+            transition: 'opacity 0.3s',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            flexGrow: 1,
+          }}
+        >
+          Your Aquariums
+        </Typography>
       </Box>
+    </Box>
 
       {/* List Area */}
       <Box
