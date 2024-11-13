@@ -55,21 +55,23 @@ type Credentials struct {
 //   - On success: {"token": "generated-jwt-token"}
 //   - On error: HTTP status code with an appropriate error message.
 func RegisterUser(w http.ResponseWriter, r *http.Request) {
+	log.Println("✨ Received Register request")
+
 	var creds Credentials
 
 	// Parse JSON request body
 	err := json.NewDecoder(r.Body).Decode(&creds)
 	if err != nil {
-		log.Printf("Error decoding request body: %v", err)
+		log.Printf("❗ Error decoding request body: %v", err)
 		http.Error(w, "Invalid input", http.StatusBadRequest)
 		return
 	}
 
-	log.Printf("Parsed credentials: %+v", creds)
+	log.Printf("🔍 Parsed credentials: %+v", creds)
 
 	// Check if user already exists
 	if models.UserExists(creds.Email) {
-		log.Printf("User with email %s already exists", creds.Email)
+		log.Printf("⚠️ User with email %s already exists", creds.Email)
 		http.Error(w, "User already exists", http.StatusBadRequest)
 		return
 	}
@@ -77,7 +79,7 @@ func RegisterUser(w http.ResponseWriter, r *http.Request) {
 	// Hash the password before storing it
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(creds.Password), bcrypt.DefaultCost)
 	if err != nil {
-		log.Printf("Error hashing password: %v", err)
+		log.Printf("❗ Error hashing password: %v", err)
 		http.Error(w, "Error processing password", http.StatusInternalServerError)
 		return
 	}
@@ -85,7 +87,7 @@ func RegisterUser(w http.ResponseWriter, r *http.Request) {
 	// Create user in the database with the hashed password
 	err = models.CreateUser(creds.Email, string(hashedPassword), creds.FirstName, creds.Username, creds.Subscribe, creds.CreatedAt)
 	if err != nil {
-		log.Printf("Error creating user in database: %v", err)
+		log.Printf("❗ Error creating user in database: %v", err)
 		http.Error(w, "Error creating user", http.StatusInternalServerError)
 		return
 	}
@@ -93,14 +95,15 @@ func RegisterUser(w http.ResponseWriter, r *http.Request) {
 	// Generate JWT
 	token, err := utils.GenerateJWT(creds.Email)
 	if err != nil {
-		log.Printf("Error generating JWT token: %v", err)
+		log.Printf("❗ Error generating JWT token: %v", err)
 		http.Error(w, "Error generating token", http.StatusInternalServerError)
 		return
 	}
 
 	// Respond with the JWT token
-	log.Printf("User %s created successfully", creds.Email)
+	log.Printf("✅ User %s created successfully", creds.Email)
 	json.NewEncoder(w).Encode(map[string]string{"token": token})
+	log.Println("🚀 Registration complete, token sent to user")
 }
 
 // LoginUser handles user authentication by verifying the user's email and password.
@@ -127,25 +130,24 @@ func RegisterUser(w http.ResponseWriter, r *http.Request) {
 //   - On success: {"token": "generated-jwt-token"}
 //   - On error: HTTP status code with an appropriate error message.
 func LoginUser(w http.ResponseWriter, r *http.Request) {
-	var creds Credentials
+	log.Println("🔑 Login attempt received")
 
-	// Log that the login attempt has started
-	log.Println("Login attempt started")
+	var creds Credentials
 
 	// Parse JSON request body
 	err := json.NewDecoder(r.Body).Decode(&creds)
 	if err != nil {
-		log.Printf("Error decoding request body: %v\n", err)
+		log.Printf("❗ Error decoding request body: %v", err)
 		http.Error(w, "Invalid input", http.StatusBadRequest)
 		return
 	}
 
-	log.Printf("Attempting to authenticate user with email: %s\n", creds.Email)
+	log.Printf("🔍 Authenticating user with email: %s", creds.Email)
 
 	// Get user from the database
 	user, err := models.GetUserByEmail(creds.Email)
 	if err != nil {
-		log.Printf("User not found or invalid credentials for email: %s\n", creds.Email)
+		log.Printf("⚠️ User not found or invalid credentials for email: %s", creds.Email)
 		http.Error(w, "Invalid credentials", http.StatusUnauthorized)
 		return
 	}
@@ -153,27 +155,27 @@ func LoginUser(w http.ResponseWriter, r *http.Request) {
 	// Compare the hashed password
 	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(creds.Password))
 	if err != nil {
-		log.Printf("Invalid password for user: %s\n", creds.Email)
+		log.Printf("❌ Invalid password for user: %s", creds.Email)
 		http.Error(w, "Invalid credentials", http.StatusUnauthorized)
 		return
 	}
 
-	log.Printf("User authenticated successfully: %s\n", creds.Email)
+	log.Printf("✅ User authenticated successfully: %s", creds.Email)
 
 	// Generate JWT token
 	token, err := utils.GenerateJWT(user.Email)
 	if err != nil {
-		log.Printf("Error generating JWT token for user: %s, error: %v\n", creds.Email, err)
+		log.Printf("❗ Error generating JWT token for user: %s, error: %v", creds.Email, err)
 		http.Error(w, "Error generating token", http.StatusInternalServerError)
 		return
 	}
 
 	// Log successful login and token generation
-	log.Printf("JWT token generated successfully for user: %s\n", creds.Email)
+	log.Printf("🔐 JWT token generated successfully for user: %s", creds.Email)
 
 	// Return the JWT token
 	json.NewEncoder(w).Encode(map[string]string{"token": token})
-	log.Println("Login attempt successful, token sent to user")
+	log.Println("🚀 Login complete, token sent to user")
 }
 
 // CreateAquariumHandler handles the creation of a new aquarium.
