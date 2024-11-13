@@ -127,11 +127,11 @@ func main() {
 	router.Handle("/aquariums/{aquariumId}/parameter-entries", auth.JWTAuthMiddleware(http.HandlerFunc(auth.CreateParameterEntryHandler))).Methods("POST")
 	router.Handle("/aquariums/{aquariumId}/parameter-entries", auth.JWTAuthMiddleware(http.HandlerFunc(auth.GetParameterEntriesHandler))).Methods("GET")
 
-	// Apply the CORS middleware to all routes
-	corsHandler := enableCORS(router)
+	// Apply the Logging and CORS middleware to all routes
+	loggingHandler := auth.LoggingMiddleware(enableCORS(router))
 
 	log.Println("Starting the server on port 80...")
-	err = http.ListenAndServe(":80", corsHandler)
+	err = http.ListenAndServe(":80", loggingHandler)
 	if err != nil {
 		log.Fatalf("Server encountered an error: %v", err)
 	}
