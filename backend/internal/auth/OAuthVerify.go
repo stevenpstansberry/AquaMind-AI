@@ -34,7 +34,6 @@ func VerifyGoogleIDToken(idToken string) (*idtoken.Payload, error) {
 }
 
 // HandleGoogleOAuth authenticates or registers a user via Google Sign-In.
-// HandleGoogleOAuth authenticates or registers a user via Google Sign-In.
 func HandleGoogleOAuth(w http.ResponseWriter, r *http.Request) {
 	var req struct {
 		Token string `json:"token"`

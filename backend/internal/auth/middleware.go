@@ -2,6 +2,8 @@
 package auth
 
 import (
+	"bytes"
+	"io"
 	"log"
 	"net/http"
 	"strings"
@@ -24,7 +26,7 @@ import (
 //   - next: the HTTP handler to execute after logging request details.
 //
 // Returns:
-//   - http.HandlerFunc: a wrapped HTTP handler that logs request details.
+//   - http.Handler: a wrapped HTTP handler that logs request details.
 //
 // LoggingMiddleware is an HTTP middleware that provides extensive logging for each request.
 // It logs details such as request method, URL, client IP address, user agent, and authorization status.
@@ -53,10 +55,24 @@ func LoggingMiddleware(next http.Handler) http.Handler {
 		log.Printf("User-Agent: %s", r.UserAgent())
 		log.Printf("Authorization header: %s", r.Header.Get("Authorization"))
 
+		// Read and log the request body
+		if r.Body != nil {
+			bodyBytes, err := io.ReadAll(r.Body)
+			if err != nil {
+				log.Printf("Error reading request body: %v", err)
+			} else {
+				log.Printf("Request Body: %s", string(bodyBytes))
+			}
+			// Reset the request body so it can be read again
+			r.Body = io.NopCloser(bytes.NewBuffer(bodyBytes))
+		} else {
+			log.Printf("Request Body: [empty]")
+		}
+
 		// Call the next handler
 		next.ServeHTTP(w, r)
 
-		// Optionally log after handler execution for additional response info if needed
+		// Log after handler execution for additional response info if needed
 		log.Printf("Response sent for: %s %s", r.Method, r.URL.Path)
 	})
 }
