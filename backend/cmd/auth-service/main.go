@@ -130,8 +130,8 @@ func main() {
 	// Apply the Logging and CORS middleware to all routes
 	loggingHandler := auth.LoggingMiddleware(enableCORS(router))
 
-	log.Println("Starting the server on port 8080...")
-	err = http.ListenAndServe(":8080", loggingHandler)
+	log.Println("Starting the server on port 80...")
+	err = http.ListenAndServe(":80", loggingHandler)
 	if err != nil {
 		log.Fatalf("Server encountered an error: %v", err)
 	}
