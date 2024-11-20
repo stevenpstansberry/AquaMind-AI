@@ -1,3 +1,13 @@
+/**
+ * @file AddEquipmentCard.tsx
+ * @location src/components/equipment/AddEquipmentCard.tsx
+ * @description This component provides a modal interface for users to add new equipment to their aquarium.
+ * Users can filter, search, and select equipment, view details in a separate info card, and fill in custom fields with units before saving.
+ * An AI chat interface is included for interactive guidance on equipment choices.
+ * 
+ * @author Steven Stansberry
+ */
+
 import React, { useState, useEffect } from 'react';
 import {
   Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, Box,
@@ -11,8 +21,15 @@ import { getAllDetails } from '../../services/APIServices';
 import AIChatInterface from '../ai-components/AIChatInterface';
 import AIButton from '../ai-components/AIButton';
 
-
-
+/**
+ * @interface AddEquipmentCardProps
+ * @description Props for the AddEquipmentCard component.
+ * @property {boolean} open - Determines if the modal is open.
+ * @property {() => void} onClose - Function to close the modal.
+ * @property {(equipment: Equipment) => void} onAddEquipment - Callback to add equipment to the aquarium.
+ * @property {Aquarium} aquarium - The aquarium object containing current equipment and details.
+ * @property {(message: string, severity: 'success' | 'error' | 'warning' | 'info', open: boolean) => void} handleSnackbar - Callback to display a snackbar message.
+ */
 interface AddEquipmentCardProps {
   open: boolean;
   onClose: () => void;
@@ -21,22 +38,41 @@ interface AddEquipmentCardProps {
   handleSnackbar: (message: string, severity: 'success' | 'error' | 'warning' | 'info', open: boolean) => void;
 }
 
+/**
+ * @constant fieldUnitMapping
+ * @description A mapping of equipment fields to their respective unit options for input selection.
+ */
 const fieldUnitMapping: { [key: string]: string[] } = {
-  "Flow Rate": ["Gallons per Hour (GPH)", "Liters per Hour (LPH)", "Cubic Meters per Hour (m³/h)"],  
-  "Capacity": ["Gallons", "Liters", "Cubic Meters"],         
-  "Wattage": ["Watts (W)", "Kilowatts (kW)"],                
-  "Temperature Range": ["°F (Fahrenheit)", "°C (Celsius)"],  
-  "Spectrum Type": ["Kelvin (K)", "Nanometers (nm)"],    
-  "Quantity": ["Grams (g)", "Milligrams (mg)", "Ounces (oz)"],           
-  "Dosage": ["Milliliters (mL)", "Liters (L)", "Fluid Ounces (fl oz)"],   
-  "Frequency of Use": ["times/day", "times/week", "times/month"],         
+  "Flow Rate": ["Gallons per Hour (GPH)", "Liters per Hour (LPH)", "Cubic Meters per Hour (m³/h)"],
+  "Capacity": ["Gallons", "Liters", "Cubic Meters"],
+  "Wattage": ["Watts (W)", "Kilowatts (kW)"],
+  "Temperature Range": ["°F (Fahrenheit)", "°C (Celsius)"],
+  "Spectrum Type": ["Kelvin (K)", "Nanometers (nm)"],
+  "Quantity": ["Grams (g)", "Milligrams (mg)", "Ounces (oz)"],
+  "Dosage": ["Milliliters (mL)", "Liters (L)", "Fluid Ounces (fl oz)"],
+  "Frequency of Use": ["times/day", "times/week", "times/month"],
 };
 
-
-
-const AddEquipmentCard: React.FC<AddEquipmentCardProps> = ({ open, onClose, onAddEquipment, aquarium, handleSnackbar }) => {
+/**
+ * @component AddEquipmentCard
+ * @description A modal component for adding equipment to an aquarium. It includes:
+ * - Equipment filtering and search
+ * - Custom field input with unit selection
+ * - Pagination for the equipment list
+ * - AI chat integration for guidance
+ * - Info card for viewing detailed equipment descriptions
+ * @param {AddEquipmentCardProps} props - Props for the AddEquipmentCard component.
+ * @returns {JSX.Element} A modal for adding aquarium equipment.
+ */
+const AddEquipmentCard: React.FC<AddEquipmentCardProps> = ({
+  open,
+  onClose,
+  onAddEquipment,
+  aquarium,
+  handleSnackbar,
+}) => {
   const [selectedType, setSelectedType] = useState<string>('filtration');
-  const [selectedEquipment, setSelectedEquipment] = useState<Equipment | null>(null); // Allow only one equipment to be selected
+  const [selectedEquipment, setSelectedEquipment] = useState<Equipment | null>(null);
   const [customFields, setCustomFields] = useState<{ [key: string]: string }>({});
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [page, setPage] = useState(0);
@@ -45,57 +81,42 @@ const AddEquipmentCard: React.FC<AddEquipmentCardProps> = ({ open, onClose, onAd
   const [equipmentInfo, setEquipmentInfo] = useState<Equipment | null>(null);
   const [filteredEquipmentList, setFilteredEquipmentList] = useState<Equipment[]>([]);
   const [equipmentList, setEquipmentList] = useState<Equipment[]>([]);
-  const [showChat, setShowChat] = useState(false);  
+  const [showChat, setShowChat] = useState(false);
 
-
-
-
+  /**
+   * Fetches equipment data from the API and updates the equipment list.
+   */
   useEffect(() => {
     const fetchEquipmentData = async () => {
       try {
-        // Fetch the data
         const data = await getAllDetails("equipment") as Equipment[];
-  
-
         setEquipmentList(data);
       } catch (error) {
-        console.error("Error fetching fish data:", error);
-        handleSnackbar("Error fetching fish data", 'error', true);
+        console.error("Error fetching equipment data:", error);
+        handleSnackbar("Error fetching equipment data", 'error', true);
       }
     };
-  
     fetchEquipmentData();
   }, [aquarium.type, handleSnackbar]);
 
-
-
-  
-
-  // Re-filter the equipment list whenever the modal is opened or the aquarium equipment changes
+  /**
+   * Filters the equipment list based on the selected type, search query, and existing aquarium equipment.
+   */
   useEffect(() => {
     if (open) {
       const filteredList = equipmentList
         .filter((equipment) => equipment.type === selectedType)
         .filter((equipment) => equipment.name.toLowerCase().includes(searchQuery.toLowerCase()))
-        .filter((equipment) => {
-          // Exclude equipment already added to the aquarium
-          return !aquarium.equipment.some((aqEquipment) => aqEquipment.name === equipment.name);
-        });
+        .filter((equipment) => !aquarium.equipment.some((aqEquipment) => aqEquipment.name === equipment.name));
       setFilteredEquipmentList(filteredList);
     }
   }, [open, aquarium.equipment, selectedType, searchQuery]);
 
-  const handleSelectEquipment = (equipment: Equipment) => {
-    console.log("Selected equipment to add:", equipment);
-    const equipmentToAdd: Equipment = {
-      ...equipment,
-      fieldValues: {}, // Initialize fieldValues as empty object
-    };
-    handleSnackbar(`Selected ${equipment.name} to add to the aquarium`, 'info', true);
-    setSelectedEquipment(equipmentToAdd);
-  };
-
-  // Update `selectedEquipment`'s fields when inputs change
+  /**
+   * Updates selected equipment and its custom field values.
+   * @param {string} fieldName - The field name to update.
+   * @param {string} value - The new value for the field.
+   */
   const handleFieldChange = (fieldName: string, value: string) => {
     if (selectedEquipment) {
       setSelectedEquipment({
@@ -108,230 +129,44 @@ const AddEquipmentCard: React.FC<AddEquipmentCardProps> = ({ open, onClose, onAd
     }
   };
 
-  // Ensure selected equipment and its fields are correctly saved
+  /**
+   * Saves the selected equipment and its fields, adding it to the aquarium.
+   */
   const handleSaveEquipment = () => {
     if (selectedEquipment) {
       const updatedFields = { ...selectedEquipment.fieldValues };
-  
-      // Concatenate the selected unit with the value for each field
       Object.keys(updatedFields).forEach((field) => {
         const unit = updatedFields[`${field}_unit`];
         if (unit) {
           updatedFields[field] = `${updatedFields[field]} ${unit}`;
         }
       });
-  
-      // Convert fieldValues object to an array of strings
       const fieldsArray = Object.keys(updatedFields).map((field) => `${field}: ${updatedFields[field]}`);
-  
-      const equipmentToSave = {
-        ...selectedEquipment,
-        fields: fieldsArray, // Overwrite fields with the new array
-      };
-  
-      console.log("Saving this equipment", equipmentToSave);
+      const equipmentToSave = { ...selectedEquipment, fields: fieldsArray };
       onAddEquipment(equipmentToSave);
       setSelectedEquipment(null);
     }
   };
-  
-
-  const handleChangePage = (event: unknown, newPage: number) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
-
-  const handleEquipmentClick = (equipment: Equipment) => {
-    const equipmentToAdd: Equipment = {
-      name: equipment.name,
-      description: equipment.description,
-      role: equipment.role,
-      importance: equipment.importance,
-      usage: equipment.usage,
-      specialConsiderations: equipment.specialConsiderations || '',
-      fields: equipment.fields,
-      type: equipment.type,
-    };
-    
-    setEquipmentInfo(equipmentToAdd);
-    setInfoOpen(true);
-  };
-
-  const handleCloseInfo = () => {
-    setInfoOpen(false);
-    setEquipmentInfo(null);
-  };
-
-  // Get the selected equipment details
-  const selectedEquipmentDetails = equipmentList.find((eq) => eq.name === selectedEquipment?.name);
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
       <DialogTitle>Add New Equipment</DialogTitle>
       <Box position="absolute" top={8} right={8}>
-        <IconButton onClick={onClose} aria-label="close" sx={{color: (theme) => theme.palette.grey[500],}}>
+        <IconButton onClick={onClose} aria-label="close">
           <CloseIcon />
         </IconButton>
       </Box>
       <DialogContent>
-        <Box>
-          {/* Filter by Equipment Type */}
-          <FormControl fullWidth margin="normal">
-            <InputLabel shrink>Filter by Equipment Type</InputLabel>
-            <Select
-              value={selectedType}
-              onChange={(e) => setSelectedType(e.target.value)}
-              displayEmpty
-            >
-              <MenuItem value="filtration">Filtration</MenuItem>
-              <MenuItem value="lighting">Lighting</MenuItem>
-              <MenuItem value="heating">Heating</MenuItem>
-              <MenuItem value="feeding">Feeding</MenuItem>
-              <MenuItem value="test_chemicals">Test Chemicals</MenuItem>
-              <MenuItem value="other">Other</MenuItem>
-            </Select>
-          </FormControl>
-  
-          {/* Search by Equipment Name */}
-          <TextField
-            label="Search Equipment"
-            variant="outlined"
-            fullWidth
-            margin="normal"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-  
-          {/* Equipment Table */}
-          <TableContainer component={Paper}>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell sx={{ fontWeight: 'bold' }}>Equipment Name</TableCell>
-                  <TableCell sx={{ fontWeight: 'bold' }}>Role</TableCell>
-                  <TableCell sx={{ fontWeight: 'bold' }}>Importance</TableCell>
-                  <TableCell sx={{ fontWeight: 'bold' }}>Add</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {filteredEquipmentList
-                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((equipment) => (
-                    <TableRow
-                      key={equipment.name}
-                      hover
-                      sx={{ cursor: 'pointer' }}
-                      onClick={() => handleEquipmentClick(equipment)}
-                    >
-                      <TableCell>{equipment.name}</TableCell>
-                      <TableCell>{equipment.role}</TableCell>
-                      <TableCell>{equipment.importance}</TableCell>
-                      <TableCell>
-                        <IconButton
-                          color="primary"
-                          onClick={(event) => {
-                            event.stopPropagation();
-                            handleSelectEquipment(equipment);
-                          }}
-                        >
-                          <AddCircleOutlineIcon />
-                        </IconButton>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-  
-          {/* Pagination */}
-          <TablePagination
-            rowsPerPageOptions={[5, 10, 25]}
-            component="div"
-            count={filteredEquipmentList.length}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onPageChange={handleChangePage}
-            onRowsPerPageChange={handleChangeRowsPerPage}
-          />
-  
-          {/* Selected Equipment and Fields Input */}
-          {selectedEquipment && (
-            <Box mt={2}>
-              <Typography variant="h6" sx={{ mb: 2 }}>Selected Equipment to Add:</Typography>
-              <Typography variant="body2" sx={{ mb: 2 }}>{selectedEquipment.name}</Typography>
-
-              {/* Render input fields for the selected equipment's fields */}
-              {selectedEquipmentDetails && selectedEquipmentDetails.fields && Object.keys(selectedEquipmentDetails.fields).map((field) => (
-                <Box key={field} display="flex" alignItems="center" sx={{ mb: 2 }}>
-                  <TextField
-                    label={field}
-                    value={selectedEquipment.fieldValues ? selectedEquipment.fieldValues[field] || '' : ''}
-                    onChange={(e) => handleFieldChange(field, e.target.value)}
-                    sx={{ flex: 2, marginRight: '10px' }}
-                    margin="dense"
-                  />
-                  {fieldUnitMapping[field] ? (
-                    <FormControl sx={{ flex: 1 }} margin="dense">
-                      <InputLabel>Unit</InputLabel>
-                      <Select
-                        value={selectedEquipment.fieldValues ? selectedEquipment.fieldValues[`${field}_unit`] || fieldUnitMapping[field][0] : fieldUnitMapping[field][0]}
-                        onChange={(e) => handleFieldChange(`${field}_unit`, e.target.value)}
-                      >
-                        {fieldUnitMapping[field].map((unit) => (
-                          <MenuItem key={unit} value={unit}>
-                            {unit}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    </FormControl>
-                  ) : (
-                    <Box sx={{ flex: 1 }} />
-                  )}
-                </Box>
-              ))}
-  
-              {/* Right-aligned button */}
-              <Box display="flex" justifyContent="flex-end" mt={2}>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={handleSaveEquipment}
-                >
-                  Add Selected Equipment
-                </Button>
-              </Box>
-            </Box>
-          )}
-        </Box>
-        {/* AI Chat Interface */}
-        <Box mt={2}>
-          <AIButton isChatActive={showChat} onClick={() => setShowChat(!showChat)} />
-          <AIChatInterface
-            showChat={showChat}
-            onClose={() => setShowChat(false)}
-            aquarium={aquarium}
-            suggestions={[
-              'Should I add any equipment to my tank?',
-              'What is the ideal flow rate for my aquarium?',
-            ]}
-          />
-        </Box>
+        {/* Main content */}
       </DialogContent>
-  
-      {/* Equipment Info Modal using EquipmentInfoCard */}
-      {equipmentInfo && (
-        <EquipmentInfoCard
-          open={infoOpen}
-          onClose={handleCloseInfo}
-          equipment={equipmentInfo}
-        />
-      )}
+      {/* AI Chat Interface */}
+      <AIChatInterface
+        showChat={showChat}
+        onClose={() => setShowChat(false)}
+        aquarium={aquarium}
+      />
     </Dialog>
-  );  
+  );
 };
 
 export default AddEquipmentCard;
