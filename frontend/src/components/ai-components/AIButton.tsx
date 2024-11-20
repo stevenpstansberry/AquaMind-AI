@@ -1,8 +1,23 @@
-import React from 'react';
+/**
+ * @file AIButton.tsx
+ * @location src/components/ai-components/AIButton.tsx
+ * @description This component renders a stylized button for interacting with the AI chat interface.
+ * The button dynamically updates its label based on the `isChatActive` prop and includes a shimmering icon effect.
+ * It is styled with a royal purple theme and smooth transitions for better visual feedback.
+ * 
+ * @author Steven Stansberry
+ */
+
 import { Button, ButtonProps, styled } from '@mui/material';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 
 // Define a styled button with a royal purple background for the AI button
+/**
+ * @constant StyledButton
+ * @description A styled Material-UI button with a royal purple background, white text, and smooth transitions.
+ * The button also includes a hover state with an enhanced shadow and animation for a shimmer effect.
+ * @extends ButtonProps
+ */
 const StyledButton = styled(Button)<ButtonProps>(({ theme }) => ({
   backgroundColor: '#6A0DAD', // Royal purple background color for the AI button
   color: '#fff', // White text color for contrast
@@ -24,6 +39,10 @@ const StyledButton = styled(Button)<ButtonProps>(({ theme }) => ({
 }));
 
 // Define a styled AutoAwesome icon with a light yellow color and shimmer animation
+/**
+ * @constant ShimmerIcon
+ * @description A styled Material-UI AutoAwesome icon with a gold color and a shimmer animation applied during hover.
+ */
 const ShimmerIcon = styled(AutoAwesomeIcon)(({ theme }) => ({
   color: '#FFD700', // Gold color for the icon to match the purple theme
   transition: 'transform 0.3s, opacity 0.3s', // Smooth transition when shimmer starts
@@ -36,10 +55,22 @@ const ShimmerIcon = styled(AutoAwesomeIcon)(({ theme }) => ({
   },
 }));
 
+/**
+ * @interface AIButtonProps
+ * @extends ButtonProps
+ * @property {boolean} isChatActive - A boolean indicating whether the AI chat is currently active.
+ */
 interface AIButtonProps extends ButtonProps {
   isChatActive: boolean; // Prop to determine if chat is active
 }
 
+/**
+ * @component AIButton
+ * @description Renders a styled button with dynamic text and a shimmering icon for the AI chat interface.
+ * The button updates its label based on the `isChatActive` prop to toggle between "Ask AI" and "Hide AI".
+ * @param {AIButtonProps} props - Props for the AIButton component, including `isChatActive` and other ButtonProps.
+ * @returns {JSX.Element} A stylized button with dynamic functionality and animations.
+ */
 const AIButton: React.FC<AIButtonProps> = ({ isChatActive, ...props }) => {
   return (
     <StyledButton
