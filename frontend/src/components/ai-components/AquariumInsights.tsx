@@ -1,19 +1,46 @@
+/**
+ * @file AquariumInsights.tsx
+ * @location src/components/aquarium/AquariumInsights.tsx
+ * @description This component provides an interactive card that displays AI-powered insights about a specific aquarium.
+ * Users can expand or collapse the card to access an AI chat interface for more detailed insights.
+ * 
+ * @author Steven Stansberry
+ */
+
 import React, { useState } from 'react';
 import { Box, Card, CardContent, Typography, Collapse, IconButton } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import AIChatInterface from './AIChatInterface'; 
 import { Aquarium } from '../../interfaces/Aquarium'; 
+
+/**
+ * @interface AquariumInsightsProps
+ * @description Props for the AquariumInsights component.
+ * @property {string} [insightText] - Optional text to display as a teaser for the insights. Defaults to a preset description.
+ * @property {Aquarium} aquarium - The aquarium object containing details relevant for generating AI insights.
+ */
 interface AquariumInsightsProps {
   insightText?: string;
   aquarium: Aquarium; 
 }
 
+/**
+ * @component AquariumInsights
+ * @description A collapsible card component that provides AI-powered insights for a specific aquarium.
+ * The card includes a teaser text, an expand/collapse mechanism, and an embedded AIChatInterface component.
+ * @param {AquariumInsightsProps} props - Props for the AquariumInsights component.
+ * @returns {JSX.Element} A responsive, interactive card with expandable AI insights.
+ */
 const AquariumInsights: React.FC<AquariumInsightsProps> = ({
   insightText = "Get insights about your aquarium from our AI-powered chat interface.",
   aquarium,
 }) => {
   const [expanded, setExpanded] = useState(false);
 
+  /**
+   * @function handleExpandClick
+   * @description Toggles the expansion state of the card.
+   */
   const handleExpandClick = () => {
     setExpanded(!expanded);
   };

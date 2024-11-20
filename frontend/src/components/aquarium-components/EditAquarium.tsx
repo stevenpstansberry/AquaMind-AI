@@ -1,3 +1,19 @@
+/**
+ * @file EditAquarium.tsx
+ * @location src/components/aquarium/EditAquarium.tsx
+ * @description This component provides an interface for editing an aquarium's details, such as its name, size, and type.
+ * It also includes a delete functionality with a confirmation dialog to prevent accidental deletions.
+ * 
+ * @interface EditAquariumProps
+ * @property {Aquarium} aquarium - The aquarium to be edited.
+ * @property {Function} onSave - Callback function to save the updated aquarium details.
+ * @property {Function} onDelete - Callback function to delete the aquarium.
+ * @property {Function} onClose - Function to close the edit dialog.
+ * @property {boolean} open - Boolean to indicate whether the dialog is open.
+ * @property {Function} handleSnackbar - Function to display notifications for user actions.
+ * 
+ * @author Steven Stansberry
+ */
 import React, { useState } from 'react';
 import { Box, TextField, Button, Select, MenuItem, Typography, Dialog, DialogActions, DialogContent, DialogTitle, IconButton } from '@mui/material';
 import { Close as CloseIcon } from '@mui/icons-material';
@@ -12,13 +28,22 @@ interface EditAquariumProps {
     handleSnackbar: (message: string, severity: 'success' | 'error' | 'warning' | 'info', open: boolean) => void;
 }
 
+/**
+ * @component EditAquarium
+ * @description A modal component to edit an aquarium's details or delete it with confirmation.
+ * @param {EditAquariumProps} props - The component props.
+ * @returns {JSX.Element} The EditAquarium component.
+ */
 const EditAquarium: React.FC<EditAquariumProps> = ({ aquarium, onSave, onDelete, onClose, open, handleSnackbar }) => {
     const [name, setName] = useState(aquarium.name);
     const [size, setSize] = useState(aquarium.size);
     const [type, setType] = useState(aquarium.type);
     const [confirmDialogOpen, setConfirmDialogOpen] = useState(false); // State to manage confirmation dialog
 
-
+   /**
+   * @function handleSave
+   * @description Validates inputs and triggers the onSave callback with the updated aquarium details.
+   */
     const handleSave = () => {
         if (name.trim() === '' || size.trim() === '') {
             handleSnackbar('Name and size must be filled out!', 'warning', true);
@@ -33,11 +58,19 @@ const EditAquarium: React.FC<EditAquariumProps> = ({ aquarium, onSave, onDelete,
         };
         onSave(updatedAquarium);
     };
-
+   /**
+   * @function handleDelete
+   * @description Opens the confirmation dialog for deletion.
+   */
     const handleDelete = () => {
         setConfirmDialogOpen(true); // Open confirmation dialog when delete is clicked
     };
 
+
+    /**
+    * @function handleConfirmDelete
+    * @description Confirms and triggers the onDelete callback for aquarium deletion.
+    */
     const handleConfirmDelete = () => {
         onDelete(aquarium.id);
         handleSnackbar('Aquarium deleted successfully!', 'success', true);
@@ -45,6 +78,10 @@ const EditAquarium: React.FC<EditAquariumProps> = ({ aquarium, onSave, onDelete,
         onClose(); // Close the edit dialog
     };
 
+   /**
+   * @function handleCancelDelete
+   * @description Closes the confirmation dialog without deleting.
+   */
     const handleCancelDelete = () => {
         setConfirmDialogOpen(false); // Close confirmation dialog without deleting
     };
