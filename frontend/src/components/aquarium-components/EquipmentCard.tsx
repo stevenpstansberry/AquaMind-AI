@@ -1,3 +1,19 @@
+/**
+ * @file EquipmentCard.tsx
+ * @location src/components/equipment/EquipmentCard.tsx
+ * @description This component displays an overview of equipment associated with an aquarium, 
+ * allowing users to filter, view, add, or delete equipment. It supports categorized views, 
+ * detailed equipment information, and a confirmation dialog for deletions.
+ * 
+ * @interface EquipmentCardProps
+ * @property {Aquarium} aquarium - The aquarium object containing equipment details.
+ * @property {Function} onUpdateEquipment - Callback function to update the aquarium's equipment list.
+ * @property {Function} handleSnackbar - Function to display notifications for user actions.
+ * 
+ * @enum DisplayMode - Defines the filter modes for equipment categories.
+ * 
+ * @author Steven Stansberry
+ */
 import React, { useState, useEffect } from 'react';
 import {
   Card, CardContent, Typography, IconButton, Box, Tooltip, Menu, MenuItem, Dialog, DialogActions, DialogContent, DialogTitle, Button
@@ -5,8 +21,8 @@ import {
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
-import DeleteIcon from '@mui/icons-material/Delete'; // Import Delete Icon
-import EquipmentInfoCard from './EquipmentInfoCard'; // Import the EquipmentInfoCard component
+import DeleteIcon from '@mui/icons-material/Delete'; 
+import EquipmentInfoCard from './EquipmentInfoCard'; 
 import AddEquipmentCard from './AddEquipmentCard';
 import { Aquarium, Equipment } from '../../interfaces/Aquarium';
 

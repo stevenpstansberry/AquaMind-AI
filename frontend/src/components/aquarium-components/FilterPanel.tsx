@@ -1,4 +1,24 @@
-// FilterPanel.tsx
+/**
+ * @file FilterPanel.tsx
+ * @location src/components/common/FilterPanel.tsx
+ * @description A reusable filter panel component for filtering items based on role, care level, tank size, and search query.
+ * Provides dropdowns for role and care level filtering, a numeric input for minimum tank size, and a text input for search.
+ * 
+ * @interface FilterPanelProps
+ * @property {string} roleFilter - The selected role filter value.
+ * @property {(value: string) => void} setRoleFilter - Callback to update the role filter.
+ * @property {string} careLevelFilter - The selected care level filter value.
+ * @property {(value: string) => void} setCareLevelFilter - Callback to update the care level filter.
+ * @property {number} minTankSizeFilter - The minimum tank size filter value.
+ * @property {(value: number) => void} setMinTankSizeFilter - Callback to update the minimum tank size filter.
+ * @property {string} searchQuery - The current search query for name filtering.
+ * @property {(value: string) => void} setSearchQuery - Callback to update the search query.
+ * @property {string[]} roles - List of available roles for filtering.
+ * @property {string[]} careLevels - List of available care levels for filtering.
+ * @property {string} searchLabel - Label for the search input field.
+ * 
+ * @author Steven Stansberry
+ */
 import React from 'react';
 import { Box, FormControl, InputLabel, Select, MenuItem, TextField } from '@mui/material';
 
@@ -16,6 +36,12 @@ interface FilterPanelProps {
   searchLabel: string;
 }
 
+/**
+ * @component FilterPanel
+ * @description A panel with controls to filter items based on role, care level, tank size, and name search.
+ * @param {FilterPanelProps} props - The component props.
+ * @returns {JSX.Element} The FilterPanel component.
+ */
 const FilterPanel: React.FC<FilterPanelProps> = ({
   roleFilter,
   setRoleFilter,
