@@ -1,3 +1,20 @@
+/**
+ * @file FishCard.tsx
+ * @location src/components/aquarium/FishCard.tsx
+ * @description A component to manage, display, and update the fish species in an aquarium. 
+ * Users can filter fish by role, increment/decrement counts, and add or remove species. 
+ * Includes modals for adding fish, viewing fish information, and confirming deletions.
+ * 
+ * @interface FishCardProps
+ * @property {Aquarium} aquarium - The aquarium object containing the current list of fish species.
+ * @property {(newSpecies: Fish[]) => void} onUpdateSpecies - Callback function to update the list of fish species in the aquarium.
+ * @property {(message: string, severity: 'success' | 'error' | 'warning' | 'info', open: boolean) => void} handleSnackbar - Function to display notifications for user actions.
+ * 
+ * @enum DisplayMode - Enumeration for filtering fish by categories.
+ * 
+ * @component
+ * @author Steven Stansberry
+ */
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, Typography, IconButton, Menu, MenuItem, Box, Button, Tooltip, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
