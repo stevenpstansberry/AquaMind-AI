@@ -196,6 +196,30 @@ export const registerUser = async (userData) => {
 };
 
 /**
+ * Registers a new user by sending a POST request to the API.
+ *
+ * @async
+ * @function editUser
+ * @param {Object} userData - The user data for registration (email, password, firstName).
+ * @returns {Promise<Object>} Response data from the API
+ */
+export const editUser = async (userData) => {
+  return putToAPI("/editUser", userData);
+};
+
+/**
+ * Registers a new user by sending a POST request to the API.
+ *
+ * @async
+ * @function deleteUser
+ * @param {Object} userData - The user data for registration (email, password, firstName).
+ * @returns {Promise<Object>} Response data from the API
+ */
+export const deleteUser = async (userData) => {
+  return delFromAPI("/deleteUser", userData);
+};
+
+/**
  * Logs in a user by sending a POST request to the API.
  *
  * @async
