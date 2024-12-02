@@ -25,6 +25,7 @@ import RegisterEmailCard from './pages/auth-pages/RegisterEmailCard';
 import SignInEmailCard from './pages/auth-pages/SigninEmailCard';
 import ReactGA from 'react-ga';
 import Home from './pages/Home'; 
+import Profile from './pages/Profile'
 import Navbar from './components/Navbar'; 
 import { Settings } from './pages/Pages';
 import Aquariums from './pages/Aquariums';
@@ -88,6 +89,7 @@ const App: React.FC = () => {
                   <Route element={<PrivateRoute />}>
                     <Route path="/settings" element={<Settings />} />
                     <Route path="/aquariums" element={<Aquariums />} />
+                    <Route path="/profile" element = {<Profile />} />
                   </Route>
 
                   {/* Protected Public Routes */}
