@@ -132,13 +132,13 @@ const Navbar: React.FC = () => {
           </Button> */}
 
         {/* Toggle Theme Button */}
-        {/* <Button
+        <Button
           color="inherit"
           onClick={toggleTheme}
           sx={{ textTransform: 'none' }}
         >
           {isDarkMode ? 'Light Mode' : 'Dark Mode'}
-        </Button> */}
+        </Button> 
         </Box>
 
         {/* Buffer */}
