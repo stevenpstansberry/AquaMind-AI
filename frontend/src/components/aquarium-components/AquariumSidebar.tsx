@@ -92,7 +92,7 @@ const AquariumSidebar: React.FC<AquariumSidebarProps> = ({
           noWrap
           sx={{
             ml: 1,
-            opacity: collapsed ? 0 : 1, // Hide text visually
+            opacity: collapsed ? 0 : 1, 
             transition: 'opacity 0.3s',
             overflow: 'hidden',
             textOverflow: 'ellipsis',
@@ -108,7 +108,7 @@ const AquariumSidebar: React.FC<AquariumSidebarProps> = ({
       <Box
         sx={{
           flexGrow: 1,
-          padding: '0 10px', // Apply horizontal padding
+          padding: '0 10px', 
           display: 'flex',
           flexDirection: 'column',
           alignItems: collapsed ? 'center' : 'flex-start',
@@ -124,7 +124,7 @@ const AquariumSidebar: React.FC<AquariumSidebarProps> = ({
                 sx={{
                   width: '100%',
                   display: 'flex',
-                  justifyContent: collapsed ? 'center' : 'space-between',
+                  justifyContent: 'flex-start',
                   alignItems: 'center',
                   cursor: 'pointer',
                   backgroundColor:
@@ -133,7 +133,6 @@ const AquariumSidebar: React.FC<AquariumSidebarProps> = ({
                   minHeight: '40px',
                   maxHeight: '40px',
                   margin: 0,
-                  paddingLeft: '4px', 
                   '&:hover': {
                     backgroundColor: theme.palette.action.hover,
                   },
@@ -147,7 +146,7 @@ const AquariumSidebar: React.FC<AquariumSidebarProps> = ({
                       alignItems: 'center',
                       justifyContent: 'center', 
                       flexShrink: 0,
-                      paddingLeft: '11px',
+                      paddingLeft: '9px',
                     }}
                     component="div"
                   >
@@ -223,7 +222,7 @@ const AquariumSidebar: React.FC<AquariumSidebarProps> = ({
             sx={{
               width: '100%',
               whiteSpace: 'nowrap',
-              opacity: collapsed ? 0 : 1,  // Hide button when collapsed
+              opacity: collapsed ? 0 : 1,  
             }}
           >
             + Add New Aquarium
