@@ -37,7 +37,7 @@ const AquariumSidebar: React.FC<AquariumSidebarProps> = ({
 }) => {
   const theme = useTheme();
 
-  const navbarHeight = 64;
+  const navbarHeight = 64; // Height of the navbar
 
   return (
     <Box
