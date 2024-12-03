@@ -145,9 +145,9 @@ const AquariumSidebar: React.FC<AquariumSidebarProps> = ({
                     sx={{
                       display: 'flex',
                       alignItems: 'center',
-                      justifyContent: 'center', // Center the icon inside the Box
+                      justifyContent: 'center', 
                       flexShrink: 0,
-                      paddingLeft: '4px',
+                      paddingLeft: '11px',
                     }}
                     component="div"
                   >
