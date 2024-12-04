@@ -65,7 +65,7 @@ const AquariumTypeStep: React.FC<AquariumTypeStepProps> = ({ setAquariumData, se
           </Typography>
         </Grid>
   
-        {/* Saltwater Option (Coming Soon) */}
+        {/* Saltwater Options (Coming Soon) */}
         <Grid item xs={12} sm={6}>
           <Tooltip title="Coming Soon!">
             <span>
