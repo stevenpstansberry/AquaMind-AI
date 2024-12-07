@@ -34,7 +34,7 @@ const lightTheme = createTheme({
     },
   },
 });
-
+// TODO: find better dark theme
 const darkTheme = createTheme({
   palette: {
     mode: 'dark',

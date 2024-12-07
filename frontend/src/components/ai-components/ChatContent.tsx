@@ -14,6 +14,8 @@ import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import SquareIcon from '@mui/icons-material/Square';
 import { Aquarium } from '../../interfaces/Aquarium';
 import { keyframes } from '@mui/system';
+import { useTheme } from '@mui/material/styles';
+import { useThemeContext } from '../../util/ThemeContext';
 import { sendMessageToOpenAI } from '../../services/APIServices';
 import ReactMarkdown from 'react-markdown';
 
@@ -90,7 +92,9 @@ const ChatContent = forwardRef<{ clearChat: () => void }, ChatContentProps>(
     const [isMessageAdding, setIsMessageAdding] = useState(false);  // New state to block stop button during message adding  
     const chatContainerRef = useRef<HTMLDivElement>(null);
     const typingIntervalRef = useRef<NodeJS.Timeout | null>(null); // Ref to track and clear typing interval
-
+    const { isDarkMode } = useThemeContext();
+    const theme = useTheme();
+    
     // Updated to store multiple suggested items
     const [suggestedItems, setSuggestedItems] = useState<SuggestedItem[]>([]);
 
@@ -434,6 +438,7 @@ const ChatContent = forwardRef<{ clearChat: () => void }, ChatContentProps>(
         sx={{
           height: '100%',
           position: 'relative',
+          bgcolor: theme.palette.background.default,
         }}
       >
         {/* Chat area */}
@@ -443,9 +448,9 @@ const ChatContent = forwardRef<{ clearChat: () => void }, ChatContentProps>(
           sx={{
             overflowY: 'auto',
             padding: '15px',
-            border: '1px solid #ddd',
+            border: `1px solid ${theme.palette.divider}`,
             borderRadius: '5px',
-            bgcolor: '#f9f9f9',
+            bgcolor: theme.palette.background.paper,
             height: 'calc(100% - 100px)', // Adjust height accordingly
           }}
         >
@@ -455,20 +460,26 @@ const ChatContent = forwardRef<{ clearChat: () => void }, ChatContentProps>(
               <Typography
                 sx={{
                   fontSize: '12px',
-                  color: '#888',
+                  color: theme.palette.text.secondary,
                   textAlign: message.sender === 'User' ? 'right' : 'left',
                   mb: '5px',
                 }}
               >
                 {message.timestamp}
               </Typography>
-
+    
               {/* Message */}
               <Box display="flex" justifyContent={message.sender === 'User' ? 'flex-end' : 'flex-start'}>
                 <Box
                   sx={{
-                    bgcolor: message.sender === 'User' ? '#007bff' : '#e0e0e0',
-                    color: message.sender === 'User' ? '#fff' : '#000',
+                    bgcolor:
+                      message.sender === 'User'
+                        ? theme.palette.primary.main
+                        : theme.palette.background.default,
+                    color:
+                      message.sender === 'User'
+                        ? theme.palette.primary.contrastText
+                        : theme.palette.text.primary,
                     padding: '10px',
                     borderRadius: '15px',
                     maxWidth: '70%',
@@ -477,26 +488,22 @@ const ChatContent = forwardRef<{ clearChat: () => void }, ChatContentProps>(
                   }}
                 >
                   {message.sender === 'AI' || message.sender === 'System' ? (
-                    <ReactMarkdown skipHtml={true}>
-                      {message.text}
-                    </ReactMarkdown>
+                    <ReactMarkdown skipHtml={true}>{message.text}</ReactMarkdown>
                   ) : (
-                    <Typography>
-                      {message.text}
-                    </Typography>
+                    <Typography>{message.text}</Typography>
                   )}
                 </Box>
               </Box>
             </Box>
           ))}
-
+    
           {/* Typing Indicator */}
           {loading && !typewriterCompleted && (
             <Box display="flex" justifyContent="flex-start" mb={1}>
               <TypingIndicator />
             </Box>
           )}
-
+    
           {/* Add buttons for suggested items */}
           {suggestedItems && suggestedItems.length > 0 && (
             <Box
@@ -517,9 +524,9 @@ const ChatContent = forwardRef<{ clearChat: () => void }, ChatContentProps>(
                   variant="contained"
                   sx={{
                     borderRadius: '24px',
-                    backgroundColor: '#f0f0f0',
-                    color: '#000',
-                    boxShadow: '0 2px 5px rgba(0,0,0,0.2)',
+                    bgcolor: theme.palette.secondary.main,
+                    color: theme.palette.secondary.contrastText,
+                    boxShadow: `0 2px 5px ${theme.palette.action.active}`,
                     padding: '6px 12px',
                     margin: '4px',
                     textTransform: 'none',
@@ -529,29 +536,25 @@ const ChatContent = forwardRef<{ clearChat: () => void }, ChatContentProps>(
                       animation: `${fadeOut} 0.5s ease-in-out`,
                     },
                     '&:hover': {
-                      backgroundColor: '#e0e0e0',
+                      bgcolor: theme.palette.secondary.dark,
                     },
                   }}
                   onClick={() => {
-                    // Apply the fade-out effect before removing the button
                     const button = document.getElementById(`suggested-item-${index}`);
                     if (button) {
                       button.classList.add('fade-out');
                       setTimeout(() => {
                         addItemToAquarium(item);
-                        console.log("Adding item:", item);
-                        // Remove this item from the suggestedItems list
                         setSuggestedItems(suggestedItems.filter((_, i) => i !== index));
-                        // Inform the user that the item has been added
                         setMessages((prev) => [
                           ...prev,
                           {
                             sender: 'System',
-                            text: `${item.name} (${item.type}) has been added to your selection. You will still need to confirm the changes manually`,
+                            text: `${item.name} (${item.type}) has been added to your selection. You will still need to confirm the changes manually.`,
                             timestamp: getCurrentTimestamp(),
                           },
                         ]);
-                      }, 500); // Delay to match the duration of the fade-out animation
+                      }, 500);
                     }
                   }}
                   id={`suggested-item-${index}`}
@@ -561,15 +564,18 @@ const ChatContent = forwardRef<{ clearChat: () => void }, ChatContentProps>(
               ))}
             </Box>
           )}
-
         </Box>
-
+    
         {/* Input area */}
         <Box
           display="flex"
           alignItems="center"
           mt={2}
-          sx={{ borderRadius: '24px', padding: '4px 8px' }}
+          sx={{
+            borderRadius: '24px',
+            padding: '4px 8px',
+            bgcolor: theme.palette.background.paper,
+          }}
         >
           <TextField
             value={userInput}
@@ -581,18 +587,17 @@ const ChatContent = forwardRef<{ clearChat: () => void }, ChatContentProps>(
             InputProps={{
               disableUnderline: true,
               sx: {
-                color: '#000',
+                color: theme.palette.text.primary,
                 padding: '10px',
               },
             }}
             sx={{
-              bgcolor: '#fff',
+              bgcolor: theme.palette.background.paper,
               borderRadius: '24px',
               paddingLeft: '12px',
             }}
-            disabled={loading} // Disable input during AI response
+            disabled={loading}
           />
-
           <IconButton
             onClick={() => {
               if (typewriterCompleted) {
@@ -603,32 +608,33 @@ const ChatContent = forwardRef<{ clearChat: () => void }, ChatContentProps>(
             }}
             sx={{
               ml: 1,
-              color: typewriterCompleted ? '#007bff' : 'gray',
-              backgroundColor: typewriterCompleted ? '#e0e0e0' : '#f0f0f0',
+              color: typewriterCompleted
+                ? theme.palette.primary.main
+                : theme.palette.action.disabled,
+              backgroundColor: theme.palette.background.paper,
               borderRadius: '50%',
               padding: '8px',
               '&:hover': {
-                backgroundColor: typewriterCompleted ? '#d0d0d0' : '#e0e0e0',
+                backgroundColor: typewriterCompleted
+                  ? theme.palette.action.hover
+                  : theme.palette.background.default,
               },
             }}
-            disabled={loading} // Disable button during AI response
+            disabled={loading}
           >
             {typewriterCompleted ? <ArrowUpwardIcon /> : <SquareIcon />}
           </IconButton>
         </Box>
-
+    
         {/* Suggestions */}
         {suggestions && suggestions.length > 0 && (
-          <Box 
-            sx={{ 
-              display: 'flex', 
-              flexDirection: 'row',  
-              flexWrap: 'wrap',      
-              gap: 2,               
-              justifyContent: 'flex-start',  
-              alignItems: 'flex-end',
-              padding: '8px',        
-              height: 'auto',        
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'row',
+              flexWrap: 'wrap',
+              gap: 2,
+              padding: '8px',
             }}
           >
             {suggestions.map((suggestion, index) => (
@@ -637,14 +643,10 @@ const ChatContent = forwardRef<{ clearChat: () => void }, ChatContentProps>(
                 variant="contained"
                 sx={{
                   borderRadius: '24px',
-                  backgroundColor: '#f0f0f0',
-                  color: '#000',
-                  boxShadow: '0 2px 5px rgba(0,0,0,0.2)',
-                  padding: '6px 12px',
-                  margin: '4px',      // Add margin around each button for additional space
-                  textTransform: 'none',
+                  bgcolor: theme.palette.secondary.main,
+                  color: theme.palette.secondary.contrastText,
                   '&:hover': {
-                    backgroundColor: '#e0e0e0',
+                    bgcolor: theme.palette.secondary.dark,
                   },
                 }}
                 onClick={() => handleSuggestionClick(suggestion)}

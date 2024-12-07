@@ -16,6 +16,8 @@ import FullscreenExitIcon from '@mui/icons-material/FullscreenExit';
 import DeleteIcon from '@mui/icons-material/Delete'; 
 import ChatContent from './ChatContent'; 
 import { Aquarium } from '../../interfaces/Aquarium';
+import { useTheme } from '@mui/material/styles';
+import { useThemeContext } from '../../util/ThemeContext';
 
 
 
@@ -23,7 +25,7 @@ interface AIChatInterfaceProps {
   showChat: boolean;
   onClose: () => void;
   aquarium?: Aquarium;
-  suggestions?: string[];  // Optional array for chat suggestions
+  suggestions?: string[];  
   onAddItem?: (itemType: string, itemName: string) => void;
 }
 
@@ -39,6 +41,9 @@ interface AIChatInterfaceProps {
 const AIChatInterface: React.FC<AIChatInterfaceProps> = ({ showChat, onClose, aquarium, suggestions, onAddItem }) => {
   const [isExpanded, setIsExpanded] = useState(false); // State for chat expansion
   const chatContentRef = useRef<{ clearChat: () => void }>(null);
+  const theme = useTheme();
+  const { toggleTheme, isDarkMode } = useThemeContext(); 
+
 
   /**
    * @description Handles the clear chat action.
@@ -49,13 +54,23 @@ const AIChatInterface: React.FC<AIChatInterfaceProps> = ({ showChat, onClose, aq
     }
   };
 
+  const getIconStyles = () => ({
+    color: theme.palette.text.primary,
+    padding: '8px',
+    borderRadius: '50%',
+    backgroundColor: theme.palette.background.paper,
+    boxShadow: '0 2px 5px rgba(0, 0, 0, 0.2)',
+    '&:hover': {
+      backgroundColor: isDarkMode ? theme.palette.background.default : '#f0f0f0',
+    },
+  });
+
   return (
     <>
-      {/* Main Chat Interface */}
       {showChat && (
         <Box
           sx={{
-            backgroundColor: '#f8f9fa',
+            backgroundColor: theme.palette.background.paper,
             height: '400px',
             overflow: 'hidden',
             mt: 2,
@@ -70,7 +85,6 @@ const AIChatInterface: React.FC<AIChatInterfaceProps> = ({ showChat, onClose, aq
               position: 'relative',
             }}
           >
-            {/* Icons */}
             <Box
               sx={{
                 position: 'absolute',
@@ -81,36 +95,16 @@ const AIChatInterface: React.FC<AIChatInterfaceProps> = ({ showChat, onClose, aq
                 gap: 1,
               }}
             >
-              {/* Expand Icon */}
               <IconButton
-                sx={{
-                  color: '#666',
-                  padding: '8px',
-                  borderRadius: '50%',
-                  backgroundColor: '#fff',
-                  boxShadow: '0 2px 5px rgba(0, 0, 0, 0.2)',
-                  '&:hover': {
-                    backgroundColor: '#f0f0f0',
-                  },
-                }}
+                sx={getIconStyles()}
                 onClick={() => setIsExpanded(true)}
                 aria-label="Expand Chat"
               >
                 <FullscreenIcon />
               </IconButton>
 
-              {/* Clear Chat Icon */}
               <IconButton
-                sx={{
-                  color: '#666',
-                  padding: '8px',
-                  borderRadius: '50%',
-                  backgroundColor: '#fff',
-                  boxShadow: '0 2px 5px rgba(0, 0, 0, 0.2)',
-                  '&:hover': {
-                    backgroundColor: '#f0f0f0',
-                  },
-                }}
+                sx={getIconStyles()}
                 onClick={handleClearChat}
                 aria-label="Clear Chat"
               >
@@ -118,7 +112,6 @@ const AIChatInterface: React.FC<AIChatInterfaceProps> = ({ showChat, onClose, aq
               </IconButton>
             </Box>
 
-            {/* Chat Content */}
             <ChatContent
               ref={chatContentRef}
               aquarium={aquarium}
@@ -129,7 +122,6 @@ const AIChatInterface: React.FC<AIChatInterfaceProps> = ({ showChat, onClose, aq
         </Box>
       )}
 
-      {/* Expanded Chat Modal */}
       <Modal
         open={isExpanded}
         onClose={() => setIsExpanded(false)}
@@ -148,14 +140,13 @@ const AIChatInterface: React.FC<AIChatInterfaceProps> = ({ showChat, onClose, aq
             left: '5%',
             width: '90vw',
             height: '85vh',
-            bgcolor: '#f8f9fa',
+            bgcolor: theme.palette.background.paper,
             boxShadow: 24,
             borderRadius: '10px',
             p: 4,
             outline: 'none',
           }}
         >
-          {/* Icons */}
           <Box
             sx={{
               position: 'absolute',
@@ -166,36 +157,16 @@ const AIChatInterface: React.FC<AIChatInterfaceProps> = ({ showChat, onClose, aq
               gap: 1,
             }}
           >
-            {/* Collapse Icon */}
             <IconButton
-              sx={{
-                color: '#666',
-                padding: '8px',
-                borderRadius: '50%',
-                backgroundColor: '#fff',
-                boxShadow: '0 2px 5px rgba(0, 0, 0, 0.2)',
-                '&:hover': {
-                  backgroundColor: '#f0f0f0',
-                },
-              }}
+              sx={getIconStyles()}
               onClick={() => setIsExpanded(false)}
               aria-label="Collapse Chat"
             >
               <FullscreenExitIcon />
             </IconButton>
 
-            {/* Clear Chat Icon */}
             <IconButton
-              sx={{
-                color: '#666',
-                padding: '8px',
-                borderRadius: '50%',
-                backgroundColor: '#fff',
-                boxShadow: '0 2px 5px rgba(0, 0, 0, 0.2)',
-                '&:hover': {
-                  backgroundColor: '#f0f0f0',
-                },
-              }}
+              sx={getIconStyles()}
               onClick={handleClearChat}
               aria-label="Clear Chat"
             >
@@ -203,7 +174,6 @@ const AIChatInterface: React.FC<AIChatInterfaceProps> = ({ showChat, onClose, aq
             </IconButton>
           </Box>
 
-          {/* Chat Content */}
           <ChatContent
             ref={chatContentRef}
             aquarium={aquarium}
