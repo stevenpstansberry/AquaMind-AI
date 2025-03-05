@@ -6,15 +6,12 @@ Welcome to **AquaMind**! AquaMind is an AI-driven assistant that empowers aquari
 
 ## Table of Contents
 
-- [Demo](#demo)
 - [Features](#features)
 - [Tech Stack](#tech-stack)
 - [Setup and Installation](#setup-and-installation)
 - [Future Improvements](#future-improvements)
 
-## Demo
 
-Check out the live demo: [Link to demo](https://www.aquamind.fish)
 
 ## Features 🌊
 
